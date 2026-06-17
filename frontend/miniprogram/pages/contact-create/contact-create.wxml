@@ -1,0 +1,71 @@
+﻿<!--pages/contact-create/contact-create.wxml-->
+<view class="container">
+  <view class="card">
+    <!-- 联系人昵称 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-icon">💬</text>
+        <text class="section-title">联系人昵称</text>
+        <text class="char-count">{{nickname.length}}/20</text>
+      </view>
+      <input
+        class="input-field"
+        placeholder="请输入联系人昵称"
+        value="{{nickname}}"
+        maxlength="20"
+        bindinput="onNicknameInput"
+      />
+    </view>
+  </view>
+
+  <!-- 他的身份 -->
+  <view class="card">
+    <view class="section-title">👤 他的身份</view>
+    <view class="option-grid">
+      <view
+        wx:for="{{identities}}"
+        wx:key="value"
+        class="option-item {{selectedIdentity === item.value ? 'selected' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="selectIdentity"
+      >
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 回复目标 -->
+  <view class="card">
+    <view class="section-title">🎯 回复目标</view>
+    <view class="option-grid">
+      <view
+        wx:for="{{targets}}"
+        wx:key="value"
+        class="option-item {{selectedTarget === item.value ? 'selected' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="selectTarget"
+      >
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 回复风格 -->
+  <view class="card">
+    <view class="section-title">✨ 回复风格</view>
+    <view class="option-grid">
+      <view
+        wx:for="{{styles}}"
+        wx:key="value"
+        class="option-item {{selectedStyle === item.value ? 'selected' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="selectStyle"
+      >
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <button class="btn-gradient save-btn" bindtap="saveContact">保存联系人</button>
+</view>

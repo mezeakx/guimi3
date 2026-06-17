@@ -1,0 +1,51 @@
+﻿<!--pages/profile/profile.wxml-->
+<view class="container">
+  <!-- 用户信息卡片 -->
+  <view class="user-card">
+    <image class="user-avatar" src="/assets/images/default-avatar.png" mode="aspectFill"/>
+    <view class="user-stats">
+      <view class="stat-item">
+        <text class="stat-value">{{usedToday}}</text>
+        <text class="stat-label">今日已用</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{remaining}}</text>
+        <text class="stat-label">剩余免费</text>
+      </view>
+      <view class="stat-item" bindtap="goToAdReward">
+        <text class="stat-icon">🎁</text>
+        <text class="stat-label">广告奖励</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 服务 -->
+  <view class="menu-section mt-24">
+    <view
+      wx:for="{{menuItems}}"
+      wx:key="title"
+      class="menu-item"
+      data-url="{{item.url}}"
+      bindtap="onMenuTap"
+    >
+      <text class="menu-icon">{{item.icon}}</text>
+      <text class="menu-title">{{item.title}}</text>
+      <text class="menu-arrow">></text>
+    </view>
+  </view>
+
+  <!-- 管理 -->
+  <view class="menu-section mt-24">
+    <view
+      wx:for="{{manageItems}}"
+      wx:key="title"
+      class="menu-item"
+      data-url="{{item.url}}"
+      bindtap="onMenuTap"
+    >
+      <text class="menu-icon">{{item.icon}}</text>
+      <text class="menu-title">{{item.title}}</text>
+      <text class="menu-arrow">></text>
+    </view>
+  </view>
+</view>

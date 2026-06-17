@@ -1,0 +1,41 @@
+﻿<!--pages/result/result.wxml-->
+<view class="container">
+  <view class="card">
+    <!-- 推荐回复 -->
+    <view class="reply-item" wx:if="{{replyA}}">
+      <view class="reply-label">推荐回复 1</view>
+      <view class="reply-content">{{replyA}}</view>
+      <button class="copy-btn" data-type="A" bindtap="copyReply">复制</button>
+    </view>
+    <view class="reply-item" wx:if="{{replyB}}">
+      <view class="reply-label">推荐回复 2</view>
+      <view class="reply-content">{{replyB}}</view>
+      <button class="copy-btn" data-type="B" bindtap="copyReply">复制</button>
+    </view>
+    <view class="reply-item" wx:if="{{replyC}}">
+      <view class="reply-label">推荐回复 3</view>
+      <view class="reply-content">{{replyC}}</view>
+      <button class="copy-btn" data-type="C" bindtap="copyReply">复制</button>
+    </view>
+  </view>
+
+  <!-- 男生意图 -->
+  <view class="card" wx:if="{{boyIntent}}">
+    <view class="section-title">💡 男生意图</view>
+    <text class="intent-text">{{boyIntent}}</text>
+  </view>
+
+  <!-- 风险提醒 -->
+  <view class="card" wx:if="{{riskWarning}}">
+    <view class="section-title">⚠️ 风险提醒</view>
+    <text class="warning-text">{{riskWarning}}</text>
+  </view>
+
+  <!-- 分享按钮 -->
+  <button class="btn-gradient share-btn" bindtap="sharePoster">
+    <text>💕 分享给闺蜜</text>
+  </button>
+
+  <!-- 底部提示 -->
+  <view class="footer-tip">以上内容由 AI 生成，仅供参考。<br/>请结合实际情况自主判断。</view>
+</view>

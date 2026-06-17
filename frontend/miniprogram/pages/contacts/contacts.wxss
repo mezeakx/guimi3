@@ -1,0 +1,82 @@
+﻿/* pages/contacts/contacts.wxss */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 120rpx;
+}
+
+.empty-icon {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 32rpx;
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 12rpx;
+}
+
+.empty-desc {
+  font-size: 24rpx;
+  color: #999999;
+  margin-bottom: 40rpx;
+}
+
+.add-first-btn {
+  padding: 24rpx 60rpx;
+  font-size: 30rpx;
+}
+
+.contact-list {
+  padding: 24rpx;
+}
+
+.contact-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.contact-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.contact-info {
+  flex: 1;
+}
+
+.contact-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.contact-tag {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+.delete-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-left: 16rpx;
+  opacity: 0.4;
+}
+
+.delete-icon:active {
+  opacity: 0.8;
+}

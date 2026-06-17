@@ -1,0 +1,13 @@
+﻿<view class="container">
+  <view class="title">使用说明</view>
+  <view class="steps">
+    <view class="step" wx:for="{{steps}}" wx:key="index">
+      <text class="step-icon">{{item.icon}}</text>
+      <view class="step-info">
+        <text class="step-title">{{item.title}}</text>
+        <text class="step-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+  <view class="tip">内容仅供参考，请结合实际情况判断</view>
+</view>

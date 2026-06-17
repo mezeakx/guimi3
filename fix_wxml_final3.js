@@ -1,0 +1,24 @@
+﻿const fs = require('fs');
+const f = 'D:\\\\codex\\\\guimi3\\\\frontend\\\\miniprogram\\\\pages\\\\disclaimer\\\\disclaimer.wxml';
+const q = String.fromCharCode(34);
+const crlf = String.fromCharCode(13, 10);
+const lines = [];
+function add(line) { lines.push(line); }
+add('<!--pages/disclaimer/disclaimer.wxml-->');
+add('<view class=' + q + 'modal-mask' + q + ' wx:if=' + q + '{{show}}' + q + ' bindtap=' + q + 'accept' + q + '>');
+add('  <view class=' + q + 'modal-content' + q + ' catchtap=' + q + 'noop>' + q + '>');
+add('    <view class=' + q + 'modal-title' + q + '>免责声明</view>');
+add('    <view class=' + q + 'modal-body' + q + '>');
+add('      <text>闺蜜代回复提供聊天建议和表达参考。</text>');
+add('      <text>生成内容仅供用户自主判断和参考。</text>');
+add('      <text>本产品不保证任何关系结果，</text>');
+add('      <text>亦不对用户实际沟通行为产生的后果负责。</text>');
+add('      <text>请理性使用，并结合实际情况进行判断。</text>');
+add('    </view>');
+add('    <button class=' + q + 'btn-gradient modal-btn' + q + ' bindtap=' + q + 'accept' + q + '>我知道啦</button>');
+add('  </view>');
+add('</view>');
+const content = lines.join(crlf) + crlf;
+const buf = Buffer.from(content, 'utf8');
+fs.writeFileSync(f, buf);
+console.log('Done');

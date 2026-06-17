@@ -1,0 +1,20 @@
+﻿<!--pages/contacts/contacts.wxml-->
+<view class="container">
+  <view class="empty-state" wx:if="{{contacts.length === 0}}">
+    <image class="empty-icon" src="/assets/images/empty-contact.png" mode="aspectFit"/>
+    <text class="empty-title">还没有联系人哦</text>
+    <text class="empty-desc">添加联系人，为Ta定制专属的回复建议</text>
+    <button class="btn-gradient add-first-btn" bindtap="goToCreate">+ 添加第一个联系人</button>
+  </view>
+
+  <view class="contact-list" wx:else>
+    <view class="contact-card" wx:for="{{contacts}}" wx:key="id">
+      <image class="contact-avatar" src="{{item.avatar || '/assets/images/default-avatar.png'}}" mode="aspectFill"/>
+      <view class="contact-info">
+        <text class="contact-name">{{item.nickname}}</text>
+        <text class="contact-tag">{{item.identity_label}}</text>
+      </view>
+      <image class="delete-icon" src="/assets/images/icon-delete.svg" bindtap="deleteContact" data-id="{{item.id}}"/>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,66 @@
+﻿/* pages/result/result.wxss */
+.reply-item {
+  margin-bottom: 24rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 2rpx solid #EEEEEE;
+}
+
+.reply-item:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.reply-label {
+  font-size: 24rpx;
+  color: #FF69B4;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.reply-content {
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.8;
+  padding: 16rpx;
+  background: #FFF5F8;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.copy-btn {
+  display: inline-block;
+  padding: 8rpx 24rpx;
+  font-size: 24rpx;
+  color: #FF69B4;
+  background: #FFFFFF;
+  border: 2rpx solid #FF69B4;
+  border-radius: 20rpx;
+}
+
+.intent-text {
+  font-size: 28rpx;
+  color: #666666;
+  line-height: 1.8;
+}
+
+.warning-text {
+  font-size: 28rpx;
+  color: #E67E22;
+  line-height: 1.8;
+}
+
+.share-btn {
+  width: 100%;
+  margin-top: 24rpx;
+  padding: 24rpx 0;
+  font-size: 30rpx;
+}
+
+.footer-tip {
+  text-align: center;
+  font-size: 20rpx;
+  color: #999999;
+  margin-top: 32rpx;
+  line-height: 1.6;
+}

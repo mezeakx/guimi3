@@ -1,0 +1,52 @@
+{
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json",
+  "pages": [
+    "pages/index/index",
+    "pages/result/result",
+    "pages/contacts/contacts",
+    "pages/contact-create/contact-create",
+    "pages/profile/profile",
+    "pages/feedback/feedback",
+    "pages/agreement/agreement",
+    "pages/privacy/privacy",
+    "pages/disclaimer/disclaimer",
+    "pages/about/about",
+    "pages/usage/usage"
+  ],
+  "tabBar": {
+    "color": "#999999",
+    "custom": false,
+    "backgroundColor": "#FFFFFF",
+    "selectedColor": "#FF69B4",
+    "list": [
+      {
+        "selectedIconPath": "assets/icons/home-active.png",
+        "iconPath": "assets/icons/home.png",
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "selectedIconPath": "assets/icons/contacts-active.png",
+        "iconPath": "assets/icons/contacts.png",
+        "pagePath": "pages/contacts/contacts",
+        "text": "联系人"
+      },
+      {
+        "selectedIconPath": "assets/icons/profile-active.png",
+        "iconPath": "assets/icons/profile.png",
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ],
+    "borderStyle": "black"
+  },
+  "style": "v2",
+  "window": {
+    "navigationBarTitleText": "闺蜜帮你回",
+    "navigationBarBackgroundColor": "#FF69B4",
+    "backgroundColor": "#FFF5F8",
+    "backgroundTextStyle": "light",
+    "navigationBarTextStyle": "white"
+  }
+}

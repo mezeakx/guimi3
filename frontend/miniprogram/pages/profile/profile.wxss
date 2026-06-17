@@ -1,0 +1,88 @@
+﻿/* pages/profile/profile.wxss */
+.user-card {
+  background: linear-gradient(135deg, #FF69B4, #9B59B6);
+  border-radius: 16rpx;
+  padding: 40rpx 24rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.user-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 6rpx solid rgba(255, 255, 255, 0.5);
+  margin-bottom: 24rpx;
+}
+
+.user-stats {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16rpx;
+  padding: 20rpx 0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #FF69B4;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: #666666;
+  margin-top: 4rpx;
+}
+
+.stat-icon {
+  font-size: 32rpx;
+}
+
+.menu-section {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  border-bottom: 2rpx solid #F5F5F5;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:active {
+  background: #FFF5F8;
+}
+
+.menu-icon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+}
+
+.menu-title {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.menu-arrow {
+  font-size: 24rpx;
+  color: #CCCCCC;
+}

@@ -1,0 +1,6 @@
+﻿.container { padding: 40rpx; text-align: center; }
+.logo-section { margin-bottom: 40rpx; }
+.logo { width: 120rpx; height: 120rpx; border-radius: 24rpx; }
+.app-name { font-size: 36rpx; font-weight: bold; color: #333; display: block; margin-top: 16rpx; }
+.version { font-size: 24rpx; color: #999; display: block; margin-top: 8rpx; }
+.content { font-size: 28rpx; color: #666; line-height: 1.8; white-space: pre-line; }

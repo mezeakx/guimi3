@@ -1,0 +1,47 @@
+﻿// backend/prisma/schema.prisma
+
+generator client {
+  provider = \"prisma-client-js\"
+}
+
+datasource db {
+  provider = \"mysql\"
+  url      = env(\"DATABASE_URL\")
+}
+
+model User {
+  id                    BigInt       @id @default(autoincrement()) @map(\"id\")
+  openid                String       @unique @map(\"openid\") @db.VarChar(64)
+  freeCount             Int          @default(3) @map(\"free_count\")
+  rewardCount           Int          @default(0) @map(\"reward_count\")
+  disclaimerAccepted    Boolean      @default(false) @map(\"disclaimer_accepted\")
+  createdAt             DateTime     @default(now()) @map(\"created_at\")
+  updatedAt             DateTime     @updatedAt @map(\"updated_at\")
+
+  contacts              Contact[]
+  feedbacks             Feedback[]
+}
+
+model Contact {
+  id                    BigInt       @id @default(autoincrement()) @map(\"id\")
+  openid                String       @map(\"openid\") @db.VarChar(64)
+  nickname              String       @map(\"nickname\") @db.VarChar(20)
+  avatar                String?      @map(\"avatar\") @db.VarChar(255)
+  identity              String       @map(\"identity\") @db.VarChar(20)
+  target                String       @map(\"target\") @db.VarChar(20)
+  style                 String       @map(\"style\") @db.VarChar(20)
+  createdAt             DateTime     @default(now()) @map(\"created_at\")
+  updatedAt             DateTime     @updatedAt @map(\"updated_at\")
+
+  user                  User         @relation(fields: [openid], references: [openid])
+}
+
+model Feedback {
+  id                    BigInt       @id @default(autoincrement()) @map(\"id\")
+  openid                String       @map(\"openid\") @db.VarChar(64)
+  content               String       @map(\"content\") @db.Text
+  images                Json?        @map(\"images\")
+  createdAt             DateTime     @default(now()) @map(\"created_at\")
+
+  user                  User         @relation(fields: [openid], references: [openid])
+}
