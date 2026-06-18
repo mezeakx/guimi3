@@ -6,7 +6,7 @@
 }
 
 .header-title {
-  font-size: 44rpx;
+  font-size: 56rpx;
   font-weight: bold;
   color: #333333;
   display: block;
@@ -61,15 +61,25 @@
   margin-bottom: 12rpx;
 }
 
-.dot {
-  width: 16rpx;
-  height: 16rpx;
-  border-radius: 50%;
-  margin-right: 8rpx;
+.section-header.pink .section-title::before {
+  background: linear-gradient(135deg, #FF69B4, #9B59B6);
 }
 
-.dot-pink { background: #FF69B4; }
-.dot-purple { background: #9B59B6; }
+.section-title::before {
+  content: "";
+  display: inline-block;
+  width: 8rpx;
+  height: 32rpx;
+  border-radius: 4rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+  vertical-align: middle;
+  background: #FF69B4;
+}
+
+.section-header.purple .section-title::before {
+  background: #9B59B6;
+}
 
 .section-title {
   font-size: 28rpx;
@@ -166,61 +176,174 @@
   color: #999999;
 }
 
-.recent-scroll {
-  white-space: nowrap;
+/* ========== 已选联系人标签区域 ========== */
+.selected-tags-section {
+  margin-bottom: 24rpx;
+}
+
+.clear-all-link {
+  font-size: 24rpx;
+  color: #FF69B4;
+  margin-left: 16rpx;
+}
+
+.selected-tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.selected-tag {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8rpx 16rpx;
+  background: linear-gradient(135deg, #FFF0F5, #FFE4F0);
+  border-radius: 32rpx;
+  border: 2rpx solid #FF69B4;
+}
+
+.tag-name {
+  font-size: 24rpx;
+  color: #FF69B4;
+  font-weight: bold;
+  margin-right: 8rpx;
+}
+
+.tag-close {
+  font-size: 28rpx;
+  color: #FF69B4;
+  font-weight: bold;
+  line-height: 1;
+  padding: 0 4rpx;
+}
+
+.tag-close:active {
+  opacity: 0.6;
+}
+
+/* ========== 最近联系人卡片 ========== */
+.recent-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16rpx;
   margin-top: 16rpx;
 }
 
-.recent-list {
-  display: flex;
-  flex-direction: row;
-}
-
-.contact-card {
-  display: inline-flex;
+.recent-grid .contact-card {
+  width: calc((100% - 32rpx) / 3);
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  width: 160rpx;
-  padding: 16rpx;
-  margin-right: 16rpx;
+  padding: 20rpx 8rpx;
   background: #FFFFFF;
   border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  position: relative;
 }
 
-.add-contact {
+.recent-grid .contact-card:active {
+  opacity: 0.7;
+}
+
+/* 选中状态 */
+.recent-grid .contact-card.contact-selected {
+  background: linear-gradient(135deg, #FFF0F5, #FFE4F0);
+  border: 3rpx solid #FF69B4;
+  box-shadow: 0 4rpx 16rpx rgba(255, 105, 180, 0.25);
+}
+
+.recent-grid .add-contact {
   justify-content: center;
+  background: linear-gradient(135deg, #FFF0F5, #FFFFFF);
 }
 
-.add-avatar {
-  width: 80rpx;
-  height: 80rpx;
+.recent-grid .add-avatar {
+  width: 56rpx;
+  height: 56rpx;
   border-radius: 50%;
   background: linear-gradient(135deg, #FF69B4, #FFB6C1);
   color: #FFFFFF;
-  font-size: 48rpx;
+  font-size: 36rpx;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 8rpx;
+  flex-shrink: 0;
 }
 
-.contact-avatar {
-  width: 80rpx;
-  height: 80rpx;
+.recent-grid .add-contact text {
+  font-size: 22rpx;
+  color: #FF69B4;
+  font-weight: bold;
+}
+
+.recent-grid .contact-avatar {
+  width: 56rpx;
+  height: 56rpx;
   border-radius: 50%;
   margin-bottom: 8rpx;
+  flex-shrink: 0;
+  border: 2rpx solid #FFE4F0;
 }
 
-.contact-name {
+/* 选中状态下的头像边框 */
+.recent-grid .contact-card.contact-selected .contact-avatar {
+  border: 3rpx solid #FF69B4;
+}
+
+/* 选中指示器（右上角对勾） */
+.select-indicator {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  width: 36rpx;
+  height: 36rpx;
+  background: linear-gradient(135deg, #FF69B4, #9B59B6);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2rpx 8rpx rgba(255, 105, 180, 0.4);
+}
+
+.check-icon {
+  font-size: 20rpx;
+  color: #FFFFFF;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.recent-grid .contact-name {
   font-size: 24rpx;
   font-weight: bold;
   color: #333333;
-  margin-bottom: 4rpx;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  text-align: center;
 }
 
-.contact-tag {
+/* 选中状态下名字变粉色 */
+.recent-grid .contact-card.contact-selected .contact-name {
+  color: #FF69B4;
+}
+
+.recent-grid .contact-tag {
   font-size: 20rpx;
   color: #999999;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  text-align: center;
+  margin-top: 4rpx;
 }
 
 /* 推广横幅 */

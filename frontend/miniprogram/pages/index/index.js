@@ -1,7 +1,7 @@
 // pages/index/index.js
 const api = require('../../utils/http')
 const config = require('../../config/index')
-const { countChars, showToast, showLoading, hideLoading, isEmpty } = require('../../utils/helpers')
+const { countChars, showLoading, hideLoading, isEmpty } = require('../../utils/helpers')
 
 Page({
   data: {
@@ -23,7 +23,6 @@ Page({
   },
 
   onShow() {
-    // 每次切回首页时刷新最近联系人
     this.loadRecentContacts()
   },
 
@@ -57,15 +56,54 @@ Page({
   },
 
   loadRecentContacts() {
-    const contacts = wx.getStorageSync('recent_contacts') || []
-    this.setData({ recentContacts: contacts.slice(0, 4) })
+    const contacts = wx.getStorageSync('contacts') || []
+    const selectedId = wx.getStorageSync('selected_contact_id') || ''
+    const processed = contacts.map(function(item) {
+      let labels = []
+      if (item.identity_labels && Array.isArray(item.identity_labels)) {
+        labels = item.identity_labels
+      } else if (item.identity_label) {
+        labels = [item.identity_label]
+      }
+      item.identity_label_display = labels.join(', ')
+      item._contactId = String(item.id)
+      item._isSelected = String(item.id) === String(selectedId)
+      return item
+    })
+    this.setData({ recentContacts: processed })
   },
 
-  onContactSelect(e) {
-    const contact = e.currentTarget.dataset.contact
-    this.setData({ message: '', context: '' })
-    wx.setStorageSync('last_contact', JSON.stringify(contact))
-    showToast('已选择 ' + contact.nickname)
+  toggleContactSelect(e) {
+    const id = String(e.currentTarget.dataset.id)
+    const isSelected = this.data.recentContacts.find(function(c) {
+      return String(c.id) === id
+    })._isSelected
+    
+    if (isSelected) {
+      // 点击已选中的名片，取消选中
+      wx.setStorageSync('selected_contact_id', '')
+      const recentContacts = this.data.recentContacts.map(function(item) {
+        item._isSelected = false
+        return item
+      })
+      this.setData({ recentContacts: recentContacts })
+    } else {
+      // 点击未选中的名片，选中它（单选）
+      wx.setStorageSync('selected_contact_id', id)
+      
+      // 更新所有联系人的选中状态
+      const recentContacts = this.data.recentContacts.map(function(item) {
+        item._isSelected = String(item.id) === id
+        return item
+      })
+      this.setData({ recentContacts: recentContacts })
+    }
+  },
+
+  goToContacts() {
+    wx.switchTab({
+      url: '/pages/contacts/contacts'
+    })
   },
 
   uploadImage() {
@@ -102,16 +140,25 @@ Page({
     showLoading('分析中...')
 
     try {
-      const lastContact = wx.getStorageSync('last_contact')
-      const contact = lastContact ? JSON.parse(lastContact) : {}
+      const selectedId = wx.getStorageSync('selected_contact_id')
+      let contactInfo = {}
+      if (selectedId) {
+        const contacts = wx.getStorageSync('contacts') || []
+        const contact = contacts.find(function(c) {
+          return String(c.id) === String(selectedId)
+        })
+        if (contact) {
+          contactInfo = contact
+        }
+      }
 
       const result = await api.post('/analysis/generate', {
         message: this.data.message,
         context: this.data.context,
-        contact_id: contact.id || null,
-        identity: contact.identity || '',
-        target: contact.target || '',
-        style: contact.style || ''
+        contact_id: contactInfo.id || null,
+        identity: contactInfo.identity || '',
+        target: contactInfo.target || '',
+        style: contactInfo.style || ''
       })
 
       hideLoading()

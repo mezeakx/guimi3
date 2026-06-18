@@ -23,7 +23,6 @@
     <!-- 他的消息 -->
     <view class="section">
       <view class="section-header">
-        <view class="dot dot-pink"></view>
         <text class="section-title">他的消息</text>
       </view>
       <textarea
@@ -39,8 +38,7 @@
 
     <!-- 前情提要 -->
     <view class="section mt-24">
-      <view class="section-header">
-        <view class="dot dot-purple"></view>
+      <view class="section-header purple">
         <text class="section-title">前情提要 <text class="subtitle">（选填）</text></text>
         <text class="help-icon">?</text>
       </view>
@@ -77,29 +75,30 @@
   <view class="recent-section mt-24">
     <view class="section-header flex-between">
       <text class="section-title">最近联系人</text>
-      <navigator url="/pages/contacts/contacts" class="manage-link">管理 ></navigator>
+      <text class="manage-link" bindtap="goToContacts">管理 ></text>
     </view>
-    <scroll-view class="recent-scroll" scroll-x="true">
-      <view class="recent-list">
-        <!-- 新增联系人 -->
-        <navigator url="/pages/contact-create/contact-create" class="contact-card add-contact">
-          <view class="add-avatar">+</view>
-          <text>新增联系人</text>
-        </navigator>
-        <!-- 已有联系人 -->
-        <view
-          wx:for="{{recentContacts}}"
-          wx:key="id"
-          class="contact-card"
-          data-contact="{{item}}"
-          bindtap="onContactSelect"
-        >
-          <image class="contact-avatar" src="{{item.avatar || '/assets/images/default-avatar.png'}}" mode="aspectFill"/>
-          <text class="contact-name">{{item.nickname}}</text>
-          <text class="contact-tag">{{item.identity_label}}</text>
+    <view class="recent-grid">
+      <!-- 新增联系人 -->
+      <navigator url="/pages/contact-create/contact-create" class="contact-card add-contact">
+        <view class="add-avatar">+</view>
+        <text>新增</text>
+      </navigator>
+      <!-- 已有联系人 -->
+      <view
+        wx:for="{{recentContacts}}"
+        wx:key="_contactId"
+        class="contact-card {{item._isSelected ? 'contact-selected' : ''}}"
+        data-id="{{item._contactId}}"
+        bindtap="toggleContactSelect"
+      >
+        <image class="contact-avatar" src="{{item.avatar || '/assets/images/default-avatar.png'}}" mode="aspectFill"/>
+        <view class="select-indicator" wx:if="{{item._isSelected}}">
+          <text class="check-icon">✓</text>
         </view>
+        <text class="contact-name">{{item.nickname}}</text>
+        <text class="contact-tag">{{item.identity_label_display}}</text>
       </view>
-    </scroll-view>
+    </view>
   </view>
 
   <!-- 推广横幅 -->

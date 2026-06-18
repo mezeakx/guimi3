@@ -1,10 +1,14 @@
-<!--pages/contact-create/contact-create.wxml-->
+﻿<!--pages/contact-create/contact-create.wxml-->
 <view class="container">
   <!-- 联系人昵称 -->
   <view class="card">
     <view class="section-header">
-      <view class="section-icon-wrap icon-chat"></view>
-      <text class="section-title">联系人昵称</text>
+      <view class="section-title-wrapper">
+        <view class="section-icon">
+          <text class="section-icon-text">👤</text>
+        </view>
+        <text class="section-title">联系人昵称</text>
+      </view>
       <text class="char-count">{{nickname.length}}/20</text>
     </view>
     <input
@@ -19,14 +23,19 @@
   <!-- 他的身份 -->
   <view class="card">
     <view class="section-header">
-      <view class="section-icon-wrap icon-user"></view>
-      <text class="section-title">他的身份</text>
+      <view class="section-title-wrapper">
+        <view class="section-icon">
+          <text class="section-icon-text">👥</text>
+        </view>
+        <text class="section-title">他的身份</text>
+      </view>
+      <text class="identity-count">{{selectedIdentities.length}}/{{maxIdentities}}</text>
     </view>
     <view class="option-grid">
       <view
         wx:for="{{identities}}"
         wx:key="value"
-        class="option-item {{selectedIdentity === item.value ? 'selected' : ''}}"
+        class="option-item {{selectedIdentityMap[item.value] ? 'selected' : ''}}"
         data-value="{{item.value}}"
         bindtap="selectIdentity"
       >
@@ -39,14 +48,19 @@
   <!-- 回复目标 -->
   <view class="card">
     <view class="section-header">
-      <view class="section-icon-wrap icon-target"></view>
-      <text class="section-title">回复目标</text>
+      <view class="section-title-wrapper">
+        <view class="section-icon">
+          <text class="section-icon-text">🎯</text>
+        </view>
+        <text class="section-title">回复目标</text>
+      </view>
+      <text class="target-count">{{selectedTargets.length}}/{{maxTargets}}</text>
     </view>
     <view class="option-grid">
       <view
         wx:for="{{targets}}"
         wx:key="value"
-        class="option-item {{selectedTarget === item.value ? 'selected' : ''}}"
+        class="option-item {{selectedTargetMap[item.value] ? 'selected' : ''}}"
         data-value="{{item.value}}"
         bindtap="selectTarget"
       >
@@ -59,14 +73,19 @@
   <!-- 回复风格 -->
   <view class="card">
     <view class="section-header">
-      <view class="section-icon-wrap icon-style"></view>
-      <text class="section-title">回复风格</text>
+      <view class="section-title-wrapper">
+        <view class="section-icon">
+          <text class="section-icon-text">✨</text>
+        </view>
+        <text class="section-title">回复风格</text>
+      </view>
+      <text class="style-count">{{selectedStyles.length}}/{{maxStyles}}</text>
     </view>
     <view class="option-grid">
       <view
         wx:for="{{styles}}"
         wx:key="value"
-        class="option-item {{selectedStyle === item.value ? 'selected' : ''}}"
+        class="option-item {{selectedStyleMap[item.value] ? 'selected' : ''}}"
         data-value="{{item.value}}"
         bindtap="selectStyle"
       >

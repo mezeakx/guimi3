@@ -9,7 +9,7 @@ Page({
       identity_label: ''
     },
     // FAB 拖拽相关
-    fabLeft: 0,
+    fabRight: 38,
     fabBottom: 0,
     fabDragging: false,
     fabInitialRight: 38,
@@ -21,7 +21,7 @@ Page({
     this.setData({ statusBarHeight: sysInfo.statusBarHeight || 20 });
     // 初始化 FAB 位置为右下角
     this.setData({
-      fabLeft: 0,
+      fabRight: 38,
       fabBottom: 128
     });
   },
@@ -32,7 +32,18 @@ Page({
 
   loadContacts() {
     const contacts = wx.getStorageSync('contacts') || [];
-    this.setData({ contacts });
+    // 兼容旧数据并格式化身份标签
+    const processed = contacts.map(function(item) {
+      let labels = []
+      if (item.identity_labels && Array.isArray(item.identity_labels)) {
+        labels = item.identity_labels
+      } else if (item.identity_label) {
+        labels = [item.identity_label]
+      }
+      item.identity_label_display = labels.join(', ')
+      return item
+    })
+    this.setData({ contacts: processed });
   },
 
   // ========== 抽屉功能 ==========
@@ -143,7 +154,7 @@ Page({
     this._fabTouchStartX = touch.clientX;
     this._fabTouchStartY = touch.clientY;
     // 记录 FAB 初始位置（相对于右下角）
-    this._fabStartLeft = this.data.fabLeft;
+    this._fabStartRight = this.data.fabRight;
     this._fabStartBottom = this.data.fabBottom;
   },
 
@@ -158,7 +169,7 @@ Page({
     const deltaY = touch.clientY - this._fabTouchStartY;
 
     // 计算新位置
-    let newLeft = this._fabStartLeft + deltaX;
+    let newRight = this._fabStartRight + deltaX;
     let newBottom = this._fabStartBottom - deltaY;
 
     // 获取屏幕尺寸，限制 FAB 不超出边界
@@ -168,12 +179,12 @@ Page({
     const fabSize = 48; // FAB 半径约 48px = 96rpx / 2
 
     // 限制水平范围：0 ~ 屏幕宽度 - FAB尺寸
-    newLeft = Math.max(0, Math.min(newLeft, screenWidth - fabSize * 2));
+    newRight = Math.max(0, Math.min(newRight, screenWidth - fabSize * 2));
     // 限制垂直范围：0 ~ 屏幕高度 - FAB尺寸
     newBottom = Math.max(0, Math.min(newBottom, screenHeight - fabSize * 2));
 
     this.setData({
-      fabLeft: newLeft,
+      fabRight: newRight,
       fabBottom: newBottom
     });
   },

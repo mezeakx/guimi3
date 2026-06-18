@@ -1,6 +1,6 @@
 /* pages/contacts/contacts.wxss */
 
-/* ========== 页面容器 ========== */
+/* ========== 椤甸潰瀹瑰櫒 ========== */
 .phone-container {
   min-height: 100vh;
   background: #FFF5F8;
@@ -10,7 +10,7 @@
   width: 100%;
 }
 
-/* ========== 顶部标题区域 ========== */
+/* ========== 椤堕儴鏍囬鍖哄煙 ========== */
 .header-section {
   display: flex;
   flex-direction: row;
@@ -28,7 +28,7 @@
 }
 
 .header-title {
-  font-size: 48rpx;
+  font-size: 56rpx;
   font-weight: bold;
   color: #333333;
   display: block;
@@ -65,7 +65,7 @@
   height: 100%;
 }
 
-/* ========== 白色圆角卡片面板 ========== */
+/* ========== 鐧借壊鍦嗚鍗＄墖闈㈡澘 ========== */
 .card-panel {
   background: #FFFFFF;
   border-radius: 32rpx 32rpx 0 0;
@@ -76,7 +76,7 @@
   z-index: 1;
 }
 
-/* ========== 联系人列表 ========== */
+/* ========== 鑱旂郴浜哄垪琛?========== */
 .contact-list {
   padding: 24rpx;
   box-sizing: border-box;
@@ -150,7 +150,7 @@
   opacity: 0.8;
 }
 
-/* ========== 浮动添加按钮 (FAB) ========== */
+/* ========== 娴姩娣诲姞鎸夐挳 (FAB) ========== */
 .fab-container {
   position: fixed;
   right: 38rpx;
@@ -186,7 +186,7 @@
   line-height: 1;
 }
 
-/* ========== 空状态 ========== */
+/* ========== 绌虹姸鎬?========== */
 .empty-content {
   display: flex;
   flex-direction: column;
@@ -252,7 +252,7 @@
   font-size: 30rpx;
 }
 
-/* ========== 抽屉 ========== */
+/* ========== 鎶藉眽 ========== */
 .drawer-overlay {
   position: fixed;
   top: 0;

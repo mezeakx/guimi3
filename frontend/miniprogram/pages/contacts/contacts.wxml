@@ -37,7 +37,7 @@
         <image class="contact-avatar" src="{{item.avatar || '/assets/images/default-avatar.png'}}" mode="aspectFill"/>
         <view class="contact-info">
           <text class="contact-name">{{item.nickname}}</text>
-          <text class="contact-tag">{{item.identity_label}}</text>
+          <text class="contact-tag">{{item.identity_label_display}}</text>
         </view>
         <image class="arrow-icon" src="/assets/icons/arrow-right.svg" mode="aspectFit"/>
         <!-- 删除按钮 -->
@@ -54,7 +54,7 @@
       bindtouchstart="onFabTouchStart"
       bindtouchmove="onFabTouchMove"
       bindtouchend="onFabTouchEnd"
-      bindtap="toggleDrawer">
+      bindtap="goToCreate">
       <text class="fab-plus">+</text>
     </view>
   </view>
