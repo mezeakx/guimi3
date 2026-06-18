@@ -1,38 +1,85 @@
-﻿/* pages/contacts/contacts.wxss */
-.empty-state {
+/* pages/contacts/contacts.wxss */
+
+/* ========== 页面容器 ========== */
+.phone-container {
+  min-height: 100vh;
+  background: #FFF5F8;
+}
+
+.status-bar {
+  width: 100%;
+}
+
+/* ========== 顶部标题区域 ========== */
+.header-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5rpx 32rpx 12rpx;
+  transform: translateY(-15rpx);
+}
+
+.header-text {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-top: 120rpx;
+  align-items: flex-start;
 }
 
-.empty-icon {
-  width: 200rpx;
-  height: 200rpx;
-  margin-bottom: 32rpx;
-  opacity: 0.6;
-}
-
-.empty-title {
-  font-size: 32rpx;
+.header-title {
+  font-size: 48rpx;
   font-weight: bold;
   color: #333333;
-  margin-bottom: 12rpx;
+  display: block;
+  line-height: 1.3;
+  letter-spacing: 1rpx;
 }
 
-.empty-desc {
+.header-heart {
   font-size: 24rpx;
+  display: block;
+  margin-top: 2rpx;
+  margin-bottom: 6rpx;
+  line-height: 1;
+}
+
+.header-desc {
+  font-size: 26rpx;
   color: #999999;
-  margin-bottom: 40rpx;
+  display: block;
+  line-height: 1.5;
 }
 
-.add-first-btn {
-  padding: 24rpx 60rpx;
-  font-size: 30rpx;
+.header-decor {
+  width: 200rpx;
+  height: 200rpx;
+  margin-left: 12rpx;
+  flex-shrink: 0;
+  transform: rotate(15deg);
+  filter: drop-shadow(0 4rpx 8rpx rgba(255, 105, 180, 0.2));
 }
 
+.decor-icon {
+  width: 100%;
+  height: 100%;
+}
+
+/* ========== 白色圆角卡片面板 ========== */
+.card-panel {
+  background: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 0;
+  min-height: 400rpx;
+  margin-top: -16rpx;
+  position: relative;
+  z-index: 1;
+}
+
+/* ========== 联系人列表 ========== */
 .contact-list {
   padding: 24rpx;
+  box-sizing: border-box;
 }
 
 .contact-card {
@@ -41,20 +88,22 @@
   align-items: center;
   background: #FFFFFF;
   border-radius: 16rpx;
-  padding: 24rpx;
+  padding: 20rpx 24rpx;
   margin-bottom: 16rpx;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
 .contact-avatar {
-  width: 100rpx;
-  height: 100rpx;
+  width: 88rpx;
+  height: 88rpx;
   border-radius: 50%;
   margin-right: 20rpx;
+  flex-shrink: 0;
 }
 
 .contact-info {
   flex: 1;
+  min-width: 0;
 }
 
 .contact-name {
@@ -62,21 +111,221 @@
   font-weight: bold;
   color: #333333;
   display: block;
-  margin-bottom: 8rpx;
+  margin-bottom: 6rpx;
+  line-height: 1.3;
 }
 
 .contact-tag {
   font-size: 22rpx;
   color: #999999;
+  display: block;
+  line-height: 1.3;
+}
+
+.arrow-icon {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
+  margin-left: 8rpx;
+  opacity: 0.35;
+}
+
+.delete-btn {
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 12rpx;
 }
 
 .delete-icon {
-  width: 40rpx;
-  height: 40rpx;
-  margin-left: 16rpx;
+  width: 36rpx;
+  height: 36rpx;
   opacity: 0.4;
 }
 
 .delete-icon:active {
   opacity: 0.8;
+}
+
+/* ========== 浮动添加按钮 (FAB) ========== */
+.fab-container {
+  position: fixed;
+  right: 38rpx;
+  bottom: 128rpx;
+  width: 96rpx;
+  height: 96rpx;
+  z-index: 100;
+}
+
+.fab-btn {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 32rpx rgba(255, 105, 180, 0.4);
+}
+
+.fab-normal {
+  background: linear-gradient(135deg, #FF69B4, #FF85C8);
+}
+
+.fab-dragging {
+  background: linear-gradient(135deg, #FF85C8, #FFA0D8);
+  opacity: 0.85;
+}
+
+.fab-plus {
+  font-size: 56rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+/* ========== 空状态 ========== */
+.empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 80rpx;
+  padding-bottom: 80rpx;
+}
+
+.empty-illustration {
+  margin-bottom: 32rpx;
+}
+
+.empty-svg {
+  width: 240rpx;
+  height: 240rpx;
+}
+
+.empty-heading {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 12rpx;
+}
+
+.empty-sub {
+  font-size: 24rpx;
+  color: #999999;
+  margin-bottom: 48rpx;
+  text-align: center;
+}
+
+.empty-bounce {
+  font-size: 36rpx;
+  animation: bounce 1.5s ease infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10rpx); }
+}
+
+.btn-add-first {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FF69B4, #9B59B6);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 48rpx;
+  padding: 24rpx 48rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  box-shadow: 0 8rpx 24rpx rgba(255, 105, 180, 0.3);
+}
+
+.btn-plus {
+  font-size: 36rpx;
+  margin-right: 8rpx;
+}
+
+.btn-text {
+  font-size: 30rpx;
+}
+
+/* ========== 抽屉 ========== */
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 200;
+}
+
+.drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx;
+  z-index: 201;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.drawer-handle {
+  width: 80rpx;
+  height: 8rpx;
+  background: #E0E0E0;
+  border-radius: 4rpx;
+  margin: 0 auto 24rpx;
+}
+
+.drawer-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.drawer-form {
+  padding: 0 8rpx;
+}
+
+.form-item {
+  margin-bottom: 32rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 28rpx;
+  color: #666666;
+  margin-bottom: 16rpx;
+}
+
+.optional {
+  font-size: 24rpx;
+  color: #CCCCCC;
+  margin-left: 8rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 88rpx;
+  background: #F5F5F5;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #333333;
+  box-sizing: border-box;
+}
+
+.drawer-submit {
+  margin-top: 48rpx;
+  width: 100%;
 }

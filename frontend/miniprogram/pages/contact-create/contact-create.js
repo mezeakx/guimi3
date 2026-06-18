@@ -1,46 +1,47 @@
 // pages/contact-create/contact-create.js
 const { showToast, isEmpty } = require('../../utils/helpers')
 
-// 联系人身份选项
+// 联系人身份选项 - 添加 emoji 图标
 const identities = [
-  { label: '暗恋对象', value: 'crush' },
-  { label: '男神', value: 'god' },
-  { label: '暧昧对象', value: 'ambiguous' },
-  { label: '追求者', value: 'pursuer' },
-  { label: '相亲对象', value: 'blind_date' },
-  { label: '普通朋友', value: 'friend' },
-  { label: '同学', value: 'classmate' },
-  { label: '同事', value: 'colleague' },
-  { label: '上司', value: 'boss' },
-  { label: '客户', value: 'client' },
-  { label: '甲方', value: 'party_a' },
-  { label: '前任', value: 'ex' },
-  { label: '网友', value: 'netizen' },
-  { label: '游戏搭子', value: 'game_partner' },
-  { label: '想拒绝的人', value: 'unwanted' },
-  { label: '年上', value: 'older' },
-  { label: '年下', value: 'younger' }
+  { label: '暗恋对象', value: 'crush', icon: '💕' },
+  { label: '男神', value: 'god', icon: '✨' },
+  { label: '暧昧对象', value: 'ambiguous', icon: '💭' },
+  { label: '追求者', value: 'pursuer', icon: '🌹' },
+  { label: '相亲对象', value: 'blind_date', icon: '🤝' },
+  { label: '普通朋友', value: 'friend', icon: '😊' },
+  { label: '同学', value: 'classmate', icon: '📚' },
+  { label: '同事', value: 'colleague', icon: '💼' },
+  { label: '上司', value: 'boss', icon: '👔' },
+  { label: '客户', value: 'client', icon: '📋' },
+  { label: '甲方', value: 'party_a', icon: '🏢' },
+  { label: '前任', value: 'ex', icon: '💔' },
+  { label: '网友', value: 'netizen', icon: '💻' },
+  { label: '游戏搭子', value: 'game_partner', icon: '🎮' },
+  { label: '想拒绝的人', value: 'unwanted', icon: '🚫' },
+  { label: '饭搭子', value: 'meal_partner', icon: '🍜' },
+  { label: '年上', value: 'older', icon: '🧑‍🦳' },
+  { label: '年下', value: 'younger', icon: '🧒' }
 ]
 
 const targets = [
-  { label: '先了解他', value: '了解' },
-  { label: '提升好感', value: 'flirt' },
-  { label: '保持暧昧', value: 'ambiguous' },
-  { label: '让他主动', value: 'proactive' },
-  { label: '保持朋友', value: 'friend' },
-  { label: '委婉拒绝', value: 'reject' }
+  { label: '先了解他', value: '了解', icon: '🔍' },
+  { label: '提升好感', value: 'flirt', icon: '💖' },
+  { label: '保持暧昧', value: 'ambiguous', icon: '💫' },
+  { label: '让他主动', value: 'proactive', icon: '🎯' },
+  { label: '保持朋友', value: 'friend', icon: '🤗' },
+  { label: '委婉拒绝', value: 'reject', icon: '🙅' }
 ]
 
 const styles = [
-  { label: '温柔', value: 'gentle' },
-  { label: '幽默', value: 'humor' },
-  { label: '高冷', value: 'cold' },
-  { label: '可爱', value: 'cute' },
-  { label: '成熟姐姐', value: 'mature' },
-  { label: '理性', value: 'rational' },
-  { label: '自然随性', value: 'casual' },
-  { label: '撩人', value: 'flirt' },
-  { label: '傲娇', value: 'tsundere' }
+  { label: '温柔', value: 'gentle', icon: '🌸' },
+  { label: '幽默', value: 'humor', icon: '😄' },
+  { label: '高冷', value: 'cold', icon: '❄️' },
+  { label: '可爱', value: 'cute', icon: '🐰' },
+  { label: '成熟姐姐', value: 'mature', icon: '👩' },
+  { label: '理性', value: 'rational', icon: '🧠' },
+  { label: '自然随性', value: 'casual', icon: '🍃' },
+  { label: '撩人', value: 'flirt', icon: '🔥' },
+  { label: '傲娇', value: 'tsundere', icon: '😤' }
 ]
 
 Page({

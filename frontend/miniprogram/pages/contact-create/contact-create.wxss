@@ -1,58 +1,298 @@
-﻿/* pages/contact-create/contact-create.wxss */
-.section-header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 16rpx;
+/* pages/contact-create/contact-create.wxss */
+
+/* ========== 容器 ========== */
+.container {
+  min-height: 100vh;
+  background: #FFF6F7;
+  padding: 32rpx 32rpx 200rpx;
+  box-sizing: border-box;
 }
 
-.section-icon {
-  font-size: 32rpx;
-  margin-right: 8rpx;
+/* ========== 卡片 ========== */
+.card {
+  background: #ffffff;
+  border-radius: 40rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 40rpx rgba(244, 63, 94, 0.06);
+}
+
+/* ========== 区块头部 ========== */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+/* 粉色圆形容器 */
+.section-icon-wrap {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: #FF4E8D;
+  flex-shrink: 0;
+  margin-right: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(255, 78, 141, 0.2);
+  position: relative;
+}
+
+/* ===== 聊天气泡图标 ===== */
+.icon-chat::before {
+  content: '';
+  width: 36rpx;
+  height: 26rpx;
+  background-color: #ffffff;
+  border-radius: 6rpx;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.icon-chat::after {
+  content: '';
+  width: 24rpx;
+  height: 4rpx;
+  background-color: #FF4E8D;
+  border-radius: 2rpx;
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ===== 用户图标 ===== */
+.icon-user::before {
+  content: '';
+  width: 20rpx;
+  height: 20rpx;
+  background-color: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 32%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.icon-user::after {
+  content: '';
+  width: 32rpx;
+  height: 20rpx;
+  background-color: #ffffff;
+  border-radius: 16rpx 16rpx 0 0;
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ===== 靶心图标 ===== */
+.icon-target::before {
+  content: '';
+  width: 32rpx;
+  height: 32rpx;
+  border: 4rpx solid #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.icon-target::after {
+  content: '';
+  width: 12rpx;
+  height: 12rpx;
+  background-color: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ===== 调色板图标（风格） ===== */
+.icon-style::before {
+  content: '';
+  width: 32rpx;
+  height: 32rpx;
+  background-color: #ffffff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.icon-style::after {
+  content: '';
+  width: 10rpx;
+  height: 10rpx;
+  background-color: #FF4E8D;
+  border-radius: 50%;
+  position: absolute;
+  top: 28%;
+  left: 62%;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1f2937;
+  flex: 1;
 }
 
 .char-count {
-  margin-left: auto;
   font-size: 22rpx;
-  color: #999999;
+  color: #d1d5db;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+  flex-shrink: 0;
+  margin-left: 16rpx;
 }
 
+/* ========== 输入框 ========== */
+.input-field {
+  width: 100%;
+  height: 88rpx;
+  background: #f9fafb;
+  border-radius: 20rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #1f2937;
+  box-sizing: border-box;
+  border: 2rpx solid transparent;
+  transition: border-color 0.2s;
+}
+
+.input-field:focus {
+  border-color: #ff4e8d;
+  background: #fff;
+}
+
+.input-field::placeholder {
+  color: #d1d5db;
+  font-size: 26rpx;
+}
+
+/* ========== 选项网格 ========== */
 .option-grid {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 16rpx;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+  margin-top: 8rpx;
 }
 
+/* ========== 单个选项按钮 ========== */
 .option-item {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  width: calc(25% - 12rpx);
-  height: 80rpx;
-  margin-right: 12rpx;
-  margin-bottom: 12rpx;
-  background: #FFFFFF;
-  border: 2rpx solid #EEEEEE;
-  border-radius: 12rpx;
-  font-size: 24rpx;
-  color: #666666;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 20rpx 16rpx;
+  border-radius: 24rpx;
+  border: 2rpx solid #f2f2f5;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.option-item:active {
+  transform: scale(0.96);
+}
+
+/* 选项 emoji 图标 */
+.option-emoji {
+  font-size: 40rpx;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* 选项文字 */
+.option-label {
+  font-size: 22rpx;
+  font-weight: 500;
+  color: #4a4a4a;
+  text-align: center;
+  line-height: 1.2;
+  transition: color 0.2s;
+}
+
+/* ========== 选中状态 ========== */
 .option-item.selected {
-  background: #FFF0F5;
-  border-color: #FF69B4;
-  color: #FF69B4;
-  font-weight: bold;
+  background: #ffebf1;
+  border-color: #ff4e8d;
 }
 
-.save-btn {
-  width: calc(100vw - 48rpx);
+.option-item.selected .option-label {
+  color: #ff4e8d;
+  font-weight: 600;
+}
+
+/* ========== 底部保存按钮 ========== */
+.save-area {
   position: fixed;
-  bottom: 120rpx;
-  left: 24rpx;
-  padding: 20rpx 0;
-  font-size: 32rpx;
-  font-weight: bold;
-  border-radius: 40rpx;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, #FFF6F7 60%, transparent);
+  padding: 48rpx 32rpx 64rpx;
   z-index: 10;
+}
+
+.btn-gradient {
+  width: 100%;
+  background: linear-gradient(135deg, #FF4E8D, #B35DFF);
+  border-radius: 48rpx;
+  padding: 32rpx 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  box-shadow: 0 8rpx 32rpx rgba(255, 78, 141, 0.2);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.btn-gradient:active {
+  transform: scale(0.98);
+}
+
+/* 保存图标 */
+.btn-icon-save {
+  width: 28rpx;
+  height: 24rpx;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.btn-icon-save::before {
+  content: '';
+  position: absolute;
+  top: 4rpx;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ffffff;
+  border-radius: 3rpx;
+}
+
+.btn-icon-save::after {
+  content: '';
+  position: absolute;
+  top: -4rpx;
+  left: 4rpx;
+  width: 16rpx;
+  height: 8rpx;
+  background-color: #ffffff;
+  border-radius: 3rpx 3rpx 0 0;
+}
+
+.btn-text {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #ffffff;
 }

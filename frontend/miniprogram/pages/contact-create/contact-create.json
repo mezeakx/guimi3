@@ -1,3 +1,7 @@
 {
-  "usingComponents": {}
+  "usingComponents": {},
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTitleText": "新建联系人",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#FFF6F7"
 }

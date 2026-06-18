@@ -1,26 +1,27 @@
-﻿<!--pages/contact-create/contact-create.wxml-->
+<!--pages/contact-create/contact-create.wxml-->
 <view class="container">
+  <!-- 联系人昵称 -->
   <view class="card">
-    <!-- 联系人昵称 -->
-    <view class="section">
-      <view class="section-header">
-        <text class="section-icon">💬</text>
-        <text class="section-title">联系人昵称</text>
-        <text class="char-count">{{nickname.length}}/20</text>
-      </view>
-      <input
-        class="input-field"
-        placeholder="请输入联系人昵称"
-        value="{{nickname}}"
-        maxlength="20"
-        bindinput="onNicknameInput"
-      />
+    <view class="section-header">
+      <view class="section-icon-wrap icon-chat"></view>
+      <text class="section-title">联系人昵称</text>
+      <text class="char-count">{{nickname.length}}/20</text>
     </view>
+    <input
+      class="input-field"
+      placeholder="请输入联系人昵称"
+      value="{{nickname}}"
+      maxlength="20"
+      bindinput="onNicknameInput"
+    />
   </view>
 
   <!-- 他的身份 -->
   <view class="card">
-    <view class="section-title">👤 他的身份</view>
+    <view class="section-header">
+      <view class="section-icon-wrap icon-user"></view>
+      <text class="section-title">他的身份</text>
+    </view>
     <view class="option-grid">
       <view
         wx:for="{{identities}}"
@@ -29,14 +30,18 @@
         data-value="{{item.value}}"
         bindtap="selectIdentity"
       >
-        <text>{{item.label}}</text>
+        <text class="option-emoji">{{item.icon}}</text>
+        <text class="option-label">{{item.label}}</text>
       </view>
     </view>
   </view>
 
   <!-- 回复目标 -->
   <view class="card">
-    <view class="section-title">🎯 回复目标</view>
+    <view class="section-header">
+      <view class="section-icon-wrap icon-target"></view>
+      <text class="section-title">回复目标</text>
+    </view>
     <view class="option-grid">
       <view
         wx:for="{{targets}}"
@@ -45,14 +50,18 @@
         data-value="{{item.value}}"
         bindtap="selectTarget"
       >
-        <text>{{item.label}}</text>
+        <text class="option-emoji">{{item.icon}}</text>
+        <text class="option-label">{{item.label}}</text>
       </view>
     </view>
   </view>
 
   <!-- 回复风格 -->
   <view class="card">
-    <view class="section-title">✨ 回复风格</view>
+    <view class="section-header">
+      <view class="section-icon-wrap icon-style"></view>
+      <text class="section-title">回复风格</text>
+    </view>
     <view class="option-grid">
       <view
         wx:for="{{styles}}"
@@ -61,11 +70,17 @@
         data-value="{{item.value}}"
         bindtap="selectStyle"
       >
-        <text>{{item.label}}</text>
+        <text class="option-emoji">{{item.icon}}</text>
+        <text class="option-label">{{item.label}}</text>
       </view>
     </view>
   </view>
+</view>
 
-  <!-- 保存按钮 -->
-  <button class="btn-gradient save-btn" bindtap="saveContact">保存联系人</button>
+<!-- 底部悬浮保存按钮 -->
+<view class="save-area">
+  <view class="btn-gradient" bindtap="saveContact">
+    <view class="btn-icon-save"></view>
+    <text class="btn-text">保存联系人</text>
+  </view>
 </view>
