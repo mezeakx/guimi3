@@ -1,12 +1,10 @@
-﻿<!--pages/contact-create/contact-create.wxml-->
+<!--pages/contact-create/contact-create.wxml-->
 <view class="container">
   <!-- 联系人昵称 -->
   <view class="card">
     <view class="section-header">
       <view class="section-title-wrapper">
-        <view class="section-icon">
-          <text class="section-icon-text">👤</text>
-        </view>
+        <view class="section-icon"><image class="section-icon-img" src="/assets/icons/section/user.svg" mode="aspectFit" /></view>
         <text class="section-title">联系人昵称</text>
       </view>
       <text class="char-count">{{nickname.length}}/20</text>
@@ -24,9 +22,7 @@
   <view class="card">
     <view class="section-header">
       <view class="section-title-wrapper">
-        <view class="section-icon">
-          <text class="section-icon-text">👥</text>
-        </view>
+        <view class="section-icon"><image class="section-icon-img" src="/assets/icons/section/chat.svg" mode="aspectFit" /></view>
         <text class="section-title">他的身份</text>
       </view>
       <text class="identity-count">{{selectedIdentities.length}}/{{maxIdentities}}</text>

@@ -1,5 +1,6 @@
 // pages/index/index.js
 const api = require('../../utils/http')
+const { processContactsAvatars } = require('../../utils/identity-avatar')
 const config = require('../../config/index')
 const { countChars, showLoading, hideLoading, isEmpty } = require('../../utils/helpers')
 
@@ -70,6 +71,9 @@ Page({
       item._isSelected = String(item.id) === String(selectedId)
       return item
     })
+    // 批量处理头像，并写回 storage 固化
+    processContactsAvatars(processed)
+    wx.setStorageSync('contacts', processed)
     this.setData({ recentContacts: processed })
   },
 

@@ -1,4 +1,6 @@
 // pages/contacts/contacts.js
+const { processContactsAvatars } = require('../../utils/identity-avatar')
+
 Page({
   data: {
     contacts: [],
@@ -43,6 +45,9 @@ Page({
       item.identity_label_display = labels.join(', ')
       return item
     })
+    // 批量处理头像，并写回 storage 固化
+    processContactsAvatars(processed)
+    wx.setStorageSync('contacts', processed)
     this.setData({ contacts: processed });
   },
 
@@ -104,7 +109,22 @@ Page({
 
   goToDetail(e) {
     const id = e.currentTarget.dataset.id;
-    wx.navigateTo({ url: `/pages/contact-detail/contact-detail?id=${id}` });
+    wx.navigateTo({ url: `/pages/contact-create/contact-create?id=${id}` });
+  },
+
+  // ========== 点击箭头进入编辑页面 ==========
+  goToEdit(e) {
+    const id = e.currentTarget.dataset.id;
+    console.log('goToEdit called, id:', id);
+    
+    if (!id) {
+      wx.showToast({ title: '联系人ID不存在', icon: 'none' });
+      return;
+    }
+    
+    wx.navigateTo({ 
+      url: `/pages/contact-create/contact-create?id=${id}`
+    });
   },
 
   // ========== 删除联系人 ==========

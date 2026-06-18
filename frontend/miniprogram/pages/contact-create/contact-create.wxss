@@ -1,4 +1,4 @@
-﻿/* pages/contact-create/contact-create.wxss */
+/* pages/contact-create/contact-create.wxss */
 
 /* ========== 容器 ========== */
 .container {
@@ -46,6 +46,12 @@
   line-height: 1;
 }
 
+/* SVG图标样式 */
+.section-icon-img {
+  width: 24rpx;
+  height: 24rpx;
+}
+
 .section-title {
   font-size: 32rpx;
   font-weight: 600;
@@ -81,32 +87,32 @@
 .option-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  gap: 14rpx;
 }
 
 .option-item {
-  flex: 0 0 calc(33.33% - 11rpx);
+  flex: 0 0 calc(33.33% - 10rpx);
   background: #ffffff;
   border: 4rpx solid #f0f0f0;
-  border-radius: 24rpx;
-  padding: 24rpx 12rpx;
+  border-radius: 20rpx;
+  padding: 19rpx 10rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10rpx;
+  gap: 8rpx;
   transition: all 0.3s ease;
   box-sizing: border-box;
   min-width: 0;
 }
 
 .option-emoji {
-  font-size: 44rpx;
+  font-size: 38rpx;
   line-height: 1;
 }
 
 .option-label {
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: #666666;
   text-align: center;
   line-height: 1.4;
@@ -117,7 +123,7 @@
 .option-item.selected {
   background: #fff9fc;
   border: 4rpx solid #FF69B4;
-  border-radius: 24rpx;
+  border-radius: 20rpx;
   box-shadow: 0 4rpx 16rpx rgba(255, 105, 180, 0.15);
 }
 
@@ -132,8 +138,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20rpx 30rpx;
-  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  padding: 18rpx 30rpx;
+  padding-bottom: calc(18rpx + env(safe-area-inset-bottom));
   background: #ffffff;
   box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
   z-index: 100;
@@ -141,17 +147,17 @@
 
 .btn-gradient {
   width: 100%;
-  height: 96rpx;
+  height: 87rpx;
   background: linear-gradient(135deg, #FF69B4, #9B59B6);
-  border-radius: 48rpx;
+  border-radius: 44rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
+  gap: 10rpx;
 }
 
 .btn-text {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 600;
   color: #ffffff;
 }

@@ -7,7 +7,7 @@
   <view class="header-section">
     <view class="header-text">
       <text class="header-title">我的联系人</text>
-      <text class="header-heart">💘</text>
+      <text class="header-heart">💕</text>
       <text class="header-desc">管理你的聊天对象，获取专属回复建议</text>
     </view>
     <view class="header-decor">
@@ -23,8 +23,8 @@
         <image class="empty-svg" src="/assets/images/empty-contact-center.png" mode="aspectFit"/>
       </view>
       <text class="empty-heading">还没有联系人哦</text>
-      <text class="empty-sub">添加联系人，为Ta定制专属的回复建议</text>
-      <text class="empty-bounce">💕</text>
+      <text class="empty-sub">添加联系人，为TA定制专属的回复建议</text>
+      <text class="empty-bounce">🎀</text>
       <button class="btn-add-first" bindtap="goToCreate">
         <text class="btn-plus">+</text>
         <text class="btn-text">添加第一个联系人</text>
@@ -39,7 +39,8 @@
           <text class="contact-name">{{item.nickname}}</text>
           <text class="contact-tag">{{item.identity_label_display}}</text>
         </view>
-        <image class="arrow-icon" src="/assets/icons/arrow-right.svg" mode="aspectFit"/>
+        <!-- 箭头 - 使用 catchtap 阻止冒泡 -->
+        <image class="arrow-icon" src="/assets/icons/arrow-right.svg" mode="aspectFit" data-id="{{item.id}}" catchtap="goToEdit"/>
         <!-- 删除按钮 -->
         <view class="delete-btn" catchtap="deleteContact" data-id="{{item.id}}">
           <image class="delete-icon" src="/assets/icons/delete.svg" mode="aspectFit"/>
@@ -69,13 +70,13 @@
 
     <view class="drawer-form">
       <view class="form-item">
-        <text class="form-label">联系人姓名/昵称</text>
+        <text class="form-label">联系人姓名 昵称</text>
         <input class="form-input" placeholder="例如：小美" value="{{newContact.nickname}}" bindinput="onNicknameInput" maxlength="20"/>
       </view>
 
       <view class="form-item">
         <text class="form-label">与你的关系</text><text class="optional">(选填)</text>
-        <input class="form-input" placeholder="例如：朋友、合作伙伴、暗恋对象" value="{{newContact.identity_label}}" bindinput="onIdentityInput" maxlength="30"/>
+        <input class="form-input" placeholder="例如：朋友、合作伙伴、暧昧对象" value="{{newContact.identity_label}}" bindinput="onIdentityInput" maxlength="30"/>
       </view>
 
       <button class="btn-gradient drawer-submit" bindtap="submitContact">确认添加</button>

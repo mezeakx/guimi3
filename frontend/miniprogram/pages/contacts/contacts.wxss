@@ -1,6 +1,6 @@
 /* pages/contacts/contacts.wxss */
 
-/* ========== 椤甸潰瀹瑰櫒 ========== */
+/* ========== 妞ょ敻娼扮€圭懓娅?========== */
 .phone-container {
   min-height: 100vh;
   background: #FFF5F8;
@@ -10,7 +10,7 @@
   width: 100%;
 }
 
-/* ========== 椤堕儴鏍囬鍖哄煙 ========== */
+/* ========== 妞ゅ爼鍎撮弽鍥暯閸栧搫鐓?========== */
 .header-section {
   display: flex;
   flex-direction: row;
@@ -65,7 +65,7 @@
   height: 100%;
 }
 
-/* ========== 鐧借壊鍦嗚鍗＄墖闈㈡澘 ========== */
+/* ========== 閻у€熷閸﹀棜顫楅崡锛勫闂堛垺婢?========== */
 .card-panel {
   background: #FFFFFF;
   border-radius: 32rpx 32rpx 0 0;
@@ -76,7 +76,7 @@
   z-index: 1;
 }
 
-/* ========== 鑱旂郴浜哄垪琛?========== */
+/* ========== 閼辨梻閮存禍鍝勫灙鐞?========== */
 .contact-list {
   padding: 24rpx;
   box-sizing: border-box;
@@ -87,17 +87,17 @@
   flex-direction: row;
   align-items: center;
   background: #FFFFFF;
-  border-radius: 16rpx;
-  padding: 20rpx 24rpx;
-  margin-bottom: 16rpx;
+  border-radius: 18rpx;
+  padding: 22rpx 26rpx;
+  margin-bottom: 18rpx;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
 .contact-avatar {
-  width: 88rpx;
-  height: 88rpx;
+  width: 100rpx;
+  height: 100rpx;
   border-radius: 50%;
-  margin-right: 20rpx;
+  margin-right: 24rpx;
   flex-shrink: 0;
 }
 
@@ -107,7 +107,7 @@
 }
 
 .contact-name {
-  font-size: 30rpx;
+  font-size: 32rpx;
   font-weight: bold;
   color: #333333;
   display: block;
@@ -116,41 +116,40 @@
 }
 
 .contact-tag {
-  font-size: 22rpx;
+  font-size: 26rpx;
   color: #999999;
   display: block;
   line-height: 1.3;
 }
 
 .arrow-icon {
-  width: 32rpx;
-  height: 32rpx;
+  width: 36rpx;
+  height: 36rpx;
   flex-shrink: 0;
-  margin-left: 8rpx;
+  margin-left: 10rpx;
   opacity: 0.35;
 }
 
 .delete-btn {
-  width: 44rpx;
-  height: 44rpx;
+  width: 50rpx;
+  height: 50rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-left: 12rpx;
+  margin-left: 14rpx;
 }
 
 .delete-icon {
-  width: 36rpx;
-  height: 36rpx;
+  width: 42rpx;
+  height: 42rpx;
   opacity: 0.4;
 }
 
 .delete-icon:active {
   opacity: 0.8;
 }
-
-/* ========== 娴姩娣诲姞鎸夐挳 (FAB) ========== */
+/* ========== 濞搭喖濮╁ǎ璇插閹稿鎸?(FAB) ========== */
 .fab-container {
   position: fixed;
   right: 38rpx;
@@ -186,46 +185,44 @@
   line-height: 1;
 }
 
-/* ========== 绌虹姸鎬?========== */
+/* ========== 缁岃櫣濮搁幀?========== */
 .empty-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 80rpx;
-  padding-bottom: 80rpx;
-}
-
-.empty-illustration {
-  margin-bottom: 32rpx;
+  padding-top: 100rpx;
+  padding-bottom: 100rpx;
+  transform: scale(1.20);
+  transform-origin: center center;
 }
 
 .empty-svg {
-  width: 240rpx;
-  height: 240rpx;
+  width: 270rpx;
+  height: 270rpx;
 }
 
 .empty-heading {
-  font-size: 32rpx;
+  font-size: 36rpx;
   font-weight: bold;
   color: #333333;
-  margin-bottom: 12rpx;
+  margin-bottom: 16rpx;
 }
 
 .empty-sub {
-  font-size: 24rpx;
+  font-size: 27rpx;
   color: #999999;
-  margin-bottom: 48rpx;
+  margin-bottom: 50rpx;
   text-align: center;
 }
 
 .empty-bounce {
-  font-size: 36rpx;
+  font-size: 42rpx;
   animation: bounce 1.5s ease infinite;
 }
 
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10rpx); }
+  50% { transform: translateY(-12rpx); }
 }
 
 .btn-add-first {
@@ -237,22 +234,21 @@
   color: #FFFFFF;
   border: none;
   border-radius: 48rpx;
-  padding: 24rpx 48rpx;
+  padding: 18rpx 36rpx;
   font-size: 30rpx;
   font-weight: bold;
-  box-shadow: 0 8rpx 24rpx rgba(255, 105, 180, 0.3);
+  box-shadow: 0 6rpx 18rpx rgba(255, 105, 180, 0.3);
 }
 
 .btn-plus {
-  font-size: 36rpx;
-  margin-right: 8rpx;
+  font-size: 34rpx;
+  margin-right: 6rpx;
 }
 
 .btn-text {
   font-size: 30rpx;
 }
-
-/* ========== 鎶藉眽 ========== */
+/* ========== 閹惰棄鐪?========== */
 .drawer-overlay {
   position: fixed;
   top: 0;

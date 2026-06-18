@@ -1,4 +1,5 @@
-﻿// pages/contact-create/contact-create.js
+const { getIdentityAvatarPath } = require('../../utils/identity-avatar')
+// pages/contact-create/contact-create.js
 const { showToast, isEmpty } = require('../../utils/helpers')
 
 // 联系人身份选项 - 添加 emoji 图标
@@ -55,6 +56,7 @@ const styles = [
 
 Page({
   data: {
+    editId: null,
     nickname: '',
     selectedIdentities: [],
     selectedIdentityMap: {},
@@ -199,6 +201,101 @@ Page({
     })
   },
 
+  onLoad(options) {
+
+    if (options.id) {
+      const contacts = wx.getStorageSync('contacts') || [];
+      const contact = contacts.find(c => String(c.id) === String(options.id));
+      if (!contact) {
+        wx.showToast({ title: '联系人不存在', icon: 'none' });
+        wx.navigateBack();
+        return;
+      }
+      const selectedIdentities = contact.identities || (contact.identity_label ? [contact.identity_label] : []);
+      const selectedTargets = contact.target || [];
+      const selectedStyles = contact.style || [];
+      const identityMap = {};
+      selectedIdentities.forEach(function(v) { identityMap[v] = true; });
+      const targetMap = {};
+      selectedTargets.forEach(function(v) { targetMap[v] = true; });
+      const styleMap = {};
+      selectedStyles.forEach(function(v) { styleMap[v] = true; });
+      this.setData({
+        editId: contact.id,
+        nickname: contact.nickname || '',
+        selectedIdentities: selectedIdentities,
+        selectedIdentityMap: identityMap,
+        selectedTargets: selectedTargets,
+        selectedTargetMap: targetMap,
+        selectedStyles: selectedStyles,
+        selectedStyleMap: styleMap
+      });
+    }
+  },
+
+
+  onShow() {
+    // 获取当前页面的参数 - 简化版本
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    const options = currentPage.options || {};
+    
+    console.log('onShow called, options:', options);
+    
+    // 如果有ID参数，加载联系人数据进行编辑
+    if (options && options.id) {
+      try {
+        const contacts = wx.getStorageSync('contacts') || [];
+        console.log('Loaded contacts from storage:', contacts.length);
+        
+        const contact = contacts.find(c => String(c.id) === String(options.id));
+        console.log('Found contact:', contact);
+        
+        if (contact) {
+          // 提取身份信息
+          let selectedIdentities = [];
+          if (contact.identities && Array.isArray(contact.identities)) {
+            selectedIdentities = contact.identities;
+          } else if (contact.identity_label) {
+            selectedIdentities = [contact.identity_label];
+          }
+          
+          // 提取目标和风格
+          const selectedTargets = contact.target || [];
+          const selectedStyles = contact.style || [];
+          
+          // 创建映射对象
+          const identityMap = {};
+          selectedIdentities.forEach(function(v) { identityMap[v] = true; });
+          
+          const targetMap = {};
+          selectedTargets.forEach(function(v) { targetMap[v] = true; });
+          
+          const styleMap = {};
+          selectedStyles.forEach(function(v) { styleMap[v] = true; });
+          
+          // 更新页面数据
+          this.setData({
+            editId: contact.id,
+            nickname: contact.nickname || '',
+            selectedIdentities: selectedIdentities,
+            selectedIdentityMap: identityMap,
+            selectedTargets: selectedTargets,
+            selectedTargetMap: targetMap,
+            selectedStyles: selectedStyles,
+            selectedStyleMap: styleMap
+          });
+          
+          console.log('Contact data loaded successfully for editing');
+        } else {
+          console.warn('Contact not found for ID:', options.id);
+        }
+      } catch (error) {
+        console.error('Error loading contact data:', error);
+      }
+    }
+  },
+
   saveContact() {
     const { nickname, selectedIdentities, selectedTargets, selectedStyles } = this.data
 
@@ -225,7 +322,7 @@ Page({
 
     // 校验昵称重复
     const contacts = wx.getStorageSync('contacts') || []
-    const existIndex = contacts.findIndex(c => c.nickname === nickname)
+    const existIndex = contacts.findIndex(c => c.nickname === nickname && String(c.id) !== String(this.data.editId))
     if (existIndex >= 0) {
       showToast('该联系人已存在')
       return
@@ -249,8 +346,7 @@ Page({
       return item ? item.label : v
     })
 
-    const contact = {
-      id: String(Date.now()),
+    const contactData = {
       nickname,
       identities: selectedIdentities,
       identity_labels: labels,
@@ -258,21 +354,36 @@ Page({
       target_labels: targetLabels,
       style: selectedStyles,
       style_labels: styleLabels,
-      avatar: ''
+      avatar: getIdentityAvatarPath(selectedIdentities)
     }
 
-    // 保存到本地
-    contacts.push(contact)
-    wx.setStorageSync('contacts', contacts)
+    if (this.data.editId) {
+      const existIndex = contacts.findIndex(c => String(c.id) === String(this.data.editId))
+      if (existIndex >= 0) {
+        contacts[existIndex] = Object.assign({}, contacts[existIndex], contactData)
+        wx.setStorageSync('contacts', contacts)
 
-    // 更新最近联系人
-    const recent = wx.getStorageSync('recent_contacts') || []
-    const existRecentIndex = recent.findIndex(c => String(c.id) === String(contact.id))
-    if (existRecentIndex >= 0) recent.splice(existRecentIndex, 1)
-    recent.unshift(contact)
-    wx.setStorageSync('recent_contacts', recent.slice(0, 4))
+        const recent = wx.getStorageSync('recent_contacts') || []
+        const existRecentIndex = recent.findIndex(c => String(c.id) === String(this.data.editId))
+        if (existRecentIndex >= 0) recent.splice(existRecentIndex, 1)
+        recent.unshift(contacts[existIndex])
+        wx.setStorageSync('recent_contacts', recent.slice(0, 4))
 
-    showToast('联系人保存成功')
+        showToast('修改成功')
+      }
+    } else {
+      const newContact = Object.assign({ id: String(Date.now()) }, contactData)
+      contacts.unshift(newContact)
+      wx.setStorageSync('contacts', contacts)
+
+      const recent = wx.getStorageSync('recent_contacts') || []
+      const existRecentIndex = recent.findIndex(c => String(c.id) === String(newContact.id))
+      if (existRecentIndex >= 0) recent.splice(existRecentIndex, 1)
+      recent.unshift(newContact)
+      wx.setStorageSync('recent_contacts', recent.slice(0, 4))
+
+      showToast('联系人保存成功')
+    }
     setTimeout(() => {
       wx.navigateBack()
     }, 1500)
