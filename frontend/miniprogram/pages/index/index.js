@@ -15,7 +15,24 @@ Page({
     maxContext: config.maxContextLength,
     remainingCount: 3,
     recentContacts: [],
-    generating: false
+    generating: false,
+    selectedRelationships: [],
+    relationshipOptions: [
+      { label: '暧昧中', value: '暧昧中', group: 'neutral', selected: false },
+      { label: '刚认识', value: '刚认识', group: 'neutral', selected: false },
+      { label: '恋爱中', value: '恋爱中', group: 'neutral', selected: false },
+      { label: '冷战中', value: '冷战中', group: 'neutral', selected: false },
+      { label: '刚吵架', value: '刚吵架', group: 'mutually_exclusive_1', selected: false },
+      { label: '刚和好', value: '刚和好', group: 'mutually_exclusive_1', selected: false },
+      { label: '异地', value: '异地', group: 'neutral', selected: false },
+      { label: '刚约会完', value: '刚约会完', group: 'neutral', selected: false },
+      { label: '我主动较多', value: '我主动较多', group: 'mutually_exclusive_2', selected: false },
+      { label: '他主动较多', value: '他主动较多', group: 'mutually_exclusive_2', selected: false }
+    ],
+    exclusiveGroups: {
+      'mutually_exclusive_1': ['刚吵架', '刚和好'],
+      'mutually_exclusive_2': ['我主动较多', '他主动较多']
+    }
   },
 
   onLoad() {
@@ -46,6 +63,59 @@ Page({
     if (count <= this.data.maxContext) {
       this.setData({ context: value, contextCount: count })
     }
+  },
+
+  selectRelationship(e) {
+    const value = e.currentTarget.dataset.value
+    const optionIndex = this.data.relationshipOptions.findIndex(function(item) {
+      return item.value === value
+    })
+    if (optionIndex === -1) return
+    const option = this.data.relationshipOptions[optionIndex]
+
+    // 查找已选中的值
+    let selected = []
+    this.data.relationshipOptions.forEach(function(item) {
+      if (item.selected) {
+        selected.push(item.value)
+      }
+    })
+
+    if (option.group && option.group.startsWith('mutually_exclusive')) {
+      const groupKey = option.group
+      const groupValues = this.data.exclusiveGroups[groupKey]
+
+      if (option.selected) {
+        // 已选中，取消选中
+        selected = selected.filter(function(v) {
+          return v !== value
+        })
+      } else {
+        // 未选中，移除同组的选项
+        selected = selected.filter(function(v) {
+          return groupValues.indexOf(v) === -1
+        })
+        selected.push(value)
+      }
+    } else {
+      if (option.selected) {
+        selected = selected.filter(function(v) {
+          return v !== value
+        })
+      } else {
+        selected.push(value)
+      }
+    }
+
+    // 更新所有选项的 selected 状态
+    const updatedOptions = this.data.relationshipOptions.map(function(item) {
+      item.selected = selected.indexOf(item.value) !== -1
+      return item
+    })
+
+    this.setData({
+      relationshipOptions: updatedOptions
+    })
   },
 
   loadRemainingCount() {
@@ -156,9 +226,26 @@ Page({
         }
       }
 
+      // 构建前情提要和关系状态
+      let fullContext = this.data.context
+      const selectedValues = []
+      this.data.relationshipOptions.forEach(function(item) {
+        if (item.selected) {
+          selectedValues.push(item.value)
+        }
+      })
+      if (selectedValues.length > 0) {
+        const relText = selectedValues.join('，')
+        if (fullContext) {
+          fullContext = '[' + relText + '，' + fullContext + ']'
+        } else {
+          fullContext = '当前关系状态：' + relText
+        }
+      }
+
       const result = await api.post('/analysis/generate', {
         message: this.data.message,
-        context: this.data.context,
+        context: fullContext,
         contact_id: contactInfo.id || null,
         identity: contactInfo.identity || '',
         target: contactInfo.target || '',

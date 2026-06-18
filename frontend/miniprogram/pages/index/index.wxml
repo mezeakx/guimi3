@@ -42,6 +42,20 @@
         <text class="section-title">前情提要 <text class="subtitle">（选填）</text></text>
         <text class="help-icon">?</text>
       </view>
+
+      <!-- 关系状态选项 -->
+      <view class="relationship-tags">
+        <view
+          wx:for="{{relationshipOptions}}"
+          wx:key="value"
+          class="rel-tag {{item.selected ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="selectRelationship"
+        >
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+
       <textarea
         class="input-field context-input"
         placeholder="比如：你们刚认识一周，他平时比较主动..."
