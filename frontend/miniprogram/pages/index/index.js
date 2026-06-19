@@ -6,7 +6,7 @@ const { countChars, showLoading, hideLoading, isEmpty } = require('../../utils/h
 
 Page({
   data: {
-    inputMode: 'text',
+    inputMode: 'image',
     message: '',
     context: '',
     charCount: 0,
