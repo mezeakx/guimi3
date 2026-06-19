@@ -382,7 +382,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20rpx 8rpx;
+  padding: 16rpx 8rpx 12rpx;
   background: #FFFFFF;
   border-radius: 16rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
@@ -426,10 +426,10 @@
 }
 
 .recent-grid .contact-avatar {
-  width: 56rpx;
-  height: 56rpx;
+  width: 80rpx;
+  height: 80rpx;
   border-radius: 50%;
-  margin-bottom: 8rpx;
+  margin-bottom: 10rpx;
   flex-shrink: 0;
   border: 2rpx solid #FFE4F0;
 }
@@ -462,7 +462,7 @@
 }
 
 .recent-grid .contact-name {
-  font-size: 24rpx;
+  font-size: 30rpx;
   font-weight: bold;
   color: #333333;
   display: block;
@@ -479,7 +479,7 @@
 }
 
 .recent-grid .contact-tag {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: #999999;
   display: block;
   overflow: hidden;
@@ -487,7 +487,7 @@
   white-space: nowrap;
   width: 100%;
   text-align: center;
-  margin-top: 4rpx;
+  margin-top: 6rpx;
 }
 
 /* 推广横幅 */
