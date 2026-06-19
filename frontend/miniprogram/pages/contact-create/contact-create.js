@@ -51,7 +51,10 @@ const styles = [
   { label: '理性', value: 'rational', icon: '🧠' },
   { label: '自然随性', value: 'casual', icon: '🍃' },
   { label: '撩人', value: 'flirt', icon: '🔥' },
-  { label: '傲娇', value: 'tsundere', icon: '😤' }
+  { label: '傲娇', value: 'tsundere', icon: '😤' },
+  { label: '友善', value: 'friendly', icon: '🤝' },
+  { label: '夸夸', value: 'praise', icon: '👏' },
+  { label: '吐槽', value: 'roast', icon: '😏' }
 ]
 
 Page({

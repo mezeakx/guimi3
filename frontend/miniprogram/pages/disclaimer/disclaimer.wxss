@@ -1,4 +1,4 @@
-﻿/* pages/disclaimer/disclaimer.wxss */
+/* pages/disclaimer/disclaimer.wxss */
 .modal-mask {
   position: fixed;
   top: 0;

@@ -1,4 +1,4 @@
-﻿// pages/profile/profile.js
+// pages/profile/profile.js
 Page({
   data: {
     usedToday: 0,

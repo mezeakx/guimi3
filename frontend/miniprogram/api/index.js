@@ -1,4 +1,4 @@
-﻿// API 请求封装
+// API 请求封装
 const http = require('../utils/http')
 
 // 认证相关

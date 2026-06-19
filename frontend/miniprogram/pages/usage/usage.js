@@ -1,4 +1,4 @@
-﻿Page({
+Page({
   data: {
     steps: [
       { icon: '📝', title: '输入消息', desc: '复制他的消息或上传聊天截图' },

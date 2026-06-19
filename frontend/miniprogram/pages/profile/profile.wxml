@@ -1,4 +1,4 @@
-﻿<!--pages/profile/profile.wxml-->
+<!--pages/profile/profile.wxml-->
 <view class="container">
   <!-- 用户信息卡片 -->
   <view class="user-card">

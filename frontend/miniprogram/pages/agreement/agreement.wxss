@@ -1,2 +1,2 @@
-﻿.container { padding: 24rpx; }
+.container { padding: 24rpx; }
 .content { font-size: 28rpx; color: #333; line-height: 1.8; }

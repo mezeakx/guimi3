@@ -1,4 +1,4 @@
-﻿<!--pages/result/result.wxml-->
+<!--pages/result/result.wxml-->
 <view class="container">
   <view class="card">
     <!-- 推荐回复 -->

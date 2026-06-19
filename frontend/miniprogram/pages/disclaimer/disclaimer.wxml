@@ -1,4 +1,4 @@
-﻿<!--pages/disclaimer/disclaimer.wxml-->
+<!--pages/disclaimer/disclaimer.wxml-->
 <view class="modal-mask" wx:if="{{show}}" bindtap="accept">
   <view class="modal-content" catchtap="noop">
     <view class="modal-title">免责声明</view>

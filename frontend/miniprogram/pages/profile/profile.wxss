@@ -1,4 +1,4 @@
-﻿/* pages/profile/profile.wxss */
+/* pages/profile/profile.wxss */
 .user-card {
   background: linear-gradient(135deg, #FF69B4, #9B59B6);
   border-radius: 16rpx;

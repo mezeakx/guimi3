@@ -1,4 +1,4 @@
-﻿const { feedbackApi } = require('../../api/index')
+const { feedbackApi } = require('../../api/index')
 const { showToast, showLoading, hideLoading } = require('../../utils/helpers')
 
 Page({

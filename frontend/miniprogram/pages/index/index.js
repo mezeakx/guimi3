@@ -14,7 +14,7 @@ Page({
     maxMessage: config.maxMessageLength,
     maxContext: config.maxContextLength,
     // 聊天节奏
-    paceValue: 50,
+    paceValue: 25,
     paceLevels: [
       { value: 0, name: '直球模式', features: '有话直说，不绕弯', example: '好啊\n你想吃什么？' },
       { value: 25, name: '自然模式', features: '真实表达，不刻意设计', example: '哈哈可以呀\n你有什么推荐吗？' },
@@ -112,10 +112,29 @@ Page({
     this.loadRemainingCount()
     this.loadRecentContacts()
     this._initCurrentOptions('affection')
+    this._initPaceInfo()
   },
 
   onShow() {
     this.loadRecentContacts()
+  },
+
+
+  // 初始化 paceInfo（页面加载时调用）
+  _initPaceInfo() {
+    const value = this.data.paceValue
+    const level = this.data.paceLevels.find(function(item) {
+      return item.value === value
+    })
+    if (level) {
+      this.setData({
+        paceInfo: {
+          name: level.name,
+          features: level.features,
+          example: level.example
+        }
+      })
+    }
   },
 
   // 选择聊天节奏挡位

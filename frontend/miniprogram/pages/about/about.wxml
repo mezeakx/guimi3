@@ -1,4 +1,4 @@
-﻿<view class="container">
+<view class="container">
   <view class="logo-section">
     <image class="logo" src="/assets/images/logo.png" mode="aspectFit" />
     <text class="app-name">闺蜜代回复</text>

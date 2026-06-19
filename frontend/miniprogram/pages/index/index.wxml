@@ -116,7 +116,7 @@
     <!-- 聊天节奏模块 -->
     <view class="section pace-section">
       <view class="section-header blue">
-        <text class="section-title">聊天节奏 <text class="subtitle">（选填）</text></text>
+        <text class="section-title">聊天节奏 <text class="subtitle">（默认25%）</text></text>
         <text class="help-icon">?</text>
       </view>
 

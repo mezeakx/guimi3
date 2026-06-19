@@ -1,4 +1,4 @@
-﻿// API 请求封装
+// API 请求封装
 const config = require('../config/index')
 
 function request(apiUrl, method = 'GET', data = {}) {

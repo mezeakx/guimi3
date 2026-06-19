@@ -1,4 +1,4 @@
-﻿// pages/result/result.js
+// pages/result/result.js
 const { copyToClipboard, showToast } = require('../../utils/helpers')
 
 Page({

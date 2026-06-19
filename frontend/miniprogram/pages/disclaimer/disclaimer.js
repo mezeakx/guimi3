@@ -1,4 +1,4 @@
-﻿// pages/disclaimer/disclaimer.js
+// pages/disclaimer/disclaimer.js
 Page({
   data: {
     show: false

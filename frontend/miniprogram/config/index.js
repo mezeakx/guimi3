@@ -1,4 +1,4 @@
-﻿// 配置文件
+// 配置文件
 module.exports = {
   // API 基础地址（生产环境替换）
   baseUrl: 'https://your-api-domain.com/api',

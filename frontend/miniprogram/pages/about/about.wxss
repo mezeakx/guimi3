@@ -1,4 +1,4 @@
-﻿.container { padding: 40rpx; text-align: center; }
+.container { padding: 40rpx; text-align: center; }
 .logo-section { margin-bottom: 40rpx; }
 .logo { width: 120rpx; height: 120rpx; border-radius: 24rpx; }
 .app-name { font-size: 36rpx; font-weight: bold; color: #333; display: block; margin-top: 16rpx; }

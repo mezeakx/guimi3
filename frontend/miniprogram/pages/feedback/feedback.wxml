@@ -1,4 +1,4 @@
-﻿<view class="container">
+<view class="container">
   <view class="section">
     <text class="label">反馈内容 *</text>
     <textarea class="textarea" placeholder="请描述你的问题或建议..." value="{{content}}" bindinput="onContentInput" maxlength="500" />
