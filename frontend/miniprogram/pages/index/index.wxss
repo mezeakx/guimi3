@@ -203,6 +203,87 @@
   color: #999999;
 }
 
+
+/* ========== 我的想法模块 ========== */
+.my-thoughts-section {
+  margin-bottom: 24rpx;
+}
+
+.thought-tabs {
+  display: flex;
+  white-space: nowrap;
+  margin-bottom: 20rpx;
+  padding-bottom: 8rpx;
+}
+
+.thought-tab {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10rpx 24rpx;
+  margin-right: 16rpx;
+  background: #F5F5F5;
+  border-radius: 32rpx;
+  font-size: 24rpx;
+  color: #666666;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.thought-tab:active {
+  opacity: 0.7;
+}
+
+.thought-tab.active {
+  background: linear-gradient(135deg, #FF69B4, #9B59B6);
+  color: #FFFFFF;
+  font-weight: bold;
+  box-shadow: 0 4rpx 12rpx rgba(255, 105, 180, 0.3);
+}
+
+.thought-tab text {
+  font-size: 24rpx;
+}
+
+.thought-options-wrapper {
+  margin-bottom: 16rpx;
+}
+
+.thought-options {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.thought-option {
+  padding: 12rpx 28rpx;
+  background: #F5F5F5;
+  border-radius: 32rpx;
+  font-size: 24rpx;
+  color: #666666;
+  transition: all 0.2s ease;
+}
+
+.thought-option:active {
+  opacity: 0.7;
+}
+
+.thought-option.active {
+  background: linear-gradient(135deg, #FF69B4, #9B59B6);
+  color: #FFFFFF;
+  font-weight: bold;
+  box-shadow: 0 4rpx 12rpx rgba(255, 105, 180, 0.3);
+}
+
+.thought-custom-input {
+  min-height: 100rpx;
+  max-height: 200rpx;
+  background: #FAFAFA;
+  border-radius: 16rpx;
+  padding: 0 20rpx;
+  margin-top: 8rpx;
+}
 .recent-section {
   margin-top: 32rpx;
 }

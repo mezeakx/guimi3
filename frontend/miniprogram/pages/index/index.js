@@ -32,12 +32,77 @@ Page({
     exclusiveGroups: {
       'mutually_exclusive_1': ['刚吵架', '刚和好'],
       'mutually_exclusive_2': ['我主动较多', '他主动较多']
-    }
+    },
+
+    // ========== 我的想法模块 ==========
+    activeThoughtCategory: 'affection',
+    thoughtCategories: [
+      { key: 'affection', name: '好感升温', icon: '💗' },
+      { key: 'emotion', name: '我的情绪', icon: '😊' },
+      { key: 'distance', name: '保持距离', icon: '🧊' },
+      { key: 'observe', name: '观察试探', icon: '🔍' },
+      { key: 'expression', name: '表达方式', icon: '💬' },
+      { key: 'complex', name: '复合场景', icon: '🔄' }
+    ],
+    thoughtOptions: {
+      affection: [
+        { label: '想让他主动', value: '想让他主动', selected: false },
+        { label: '想约他出来', value: '想约他出来', selected: false },
+        { label: '想暗示有好感', value: '想暗示有好感', selected: false },
+        { label: '想表达欣赏', value: '想表达欣赏', selected: false },
+        { label: '想表达想念', value: '想表达想念', selected: false },
+        { label: '想让他反思一下', value: '想让他反思一下', selected: false },
+        { label: '想让他哄我', value: '想让他哄我', selected: false },
+        { label: '想表达感谢', value: '想表达感谢', selected: false }
+      ],
+      emotion: [
+        { label: '有点委屈', value: '有点委屈', selected: false },
+        { label: '有点吃醋', value: '有点吃醋', selected: false },
+        { label: '有点生气', value: '有点生气', selected: false },
+        { label: '有点失落', value: '有点失落', selected: false },
+        { label: '有点不耐烦', value: '有点不耐烦', selected: false }
+      ],
+      distance: [
+        { label: '想委婉拒绝', value: '想委婉拒绝', selected: false },
+        { label: '想表达不满', value: '想表达不满', selected: false },
+        { label: '想保持朋友关系', value: '想保持朋友关系', selected: false },
+        { label: '不想见面', value: '不想见面', selected: false },
+        { label: '想结束话题', value: '想结束话题', selected: false },
+        { label: '想委婉拒绝邀约', value: '想委婉拒绝邀约', selected: false },
+        { label: '想慢慢疏远', value: '想慢慢疏远', selected: false }
+      ],
+      observe: [
+        { label: '想试探他的想法', value: '想试探他的想法', selected: false },
+        { label: '想看看他会不会主动', value: '想看看他会不会主动', selected: false },
+        { label: '想确认关系进展', value: '想确认关系进展', selected: false },
+        { label: '想测试他的诚意', value: '想测试他的诚意', selected: false }
+      ],
+      expression: [
+        { label: '不想显得太主动', value: '不想显得太主动', selected: false },
+        { label: '想保持神秘感', value: '想保持神秘感', selected: false },
+        { label: '想表现得成熟一点', value: '想表现得成熟一点', selected: false },
+        { label: '想显得有边界感', value: '想显得有边界感', selected: false },
+        { label: '想自然一点', value: '想自然一点', selected: false },
+        { label: '不想秒答应', value: '不想秒答应', selected: false },
+        { label: '想留点余地', value: '想留点余地', selected: false }
+      ],
+      complex: [
+        { label: '还没完全放下', value: '还没完全放下', selected: false },
+        { label: '想重新了解他', value: '想重新了解他', selected: false },
+        { label: '想给一次机会', value: '想给一次机会', selected: false },
+        { label: '想拒绝复合', value: '想拒绝复合', selected: false },
+        { label: '不想重蹈覆辙', value: '不想重蹈覆辙', selected: false }
+      ]
+    },
+    thoughtCustom: '',
+    thoughtCustomCount: 0,
+    currentThoughtOptions: [],
   },
 
   onLoad() {
     this.loadRemainingCount()
     this.loadRecentContacts()
+    this._initCurrentOptions('affection')
   },
 
   onShow() {
@@ -63,6 +128,57 @@ Page({
     if (count <= this.data.maxContext) {
       this.setData({ context: value, contextCount: count })
     }
+  },
+
+  // 初始化当前分类选项
+  _initCurrentOptions(category) {
+    const opts = (this.data.thoughtOptions[category] || []).map(function(item) {
+      return { label: item.label, value: item.value, selected: item.selected || false }
+    })
+    this.setData({ currentThoughtOptions: opts })
+  },
+
+  // 切换子分类 Tab
+  switchThoughtCategory(e) {
+    const key = e.currentTarget.dataset.key
+    this.setData({ activeThoughtCategory: key })
+    this._initCurrentOptions(key)
+  },
+
+  // 选择想法选项
+  selectThoughtOption(e) {
+    const value = e.currentTarget.dataset.value
+    const category = this.data.activeThoughtCategory
+    const options = this.data.currentThoughtOptions.map(function(item) {
+      if (item.value === value) {
+        item.selected = !item.selected
+      }
+      return item
+    })
+
+    // 同时更新底层 thoughtOptions
+    const thoughtOptions = Object.assign({}, this.data.thoughtOptions)
+    thoughtOptions[category] = this.data.thoughtOptions[category].map(function(item) {
+      if (item.value === value) {
+        item.selected = !item.selected
+      }
+      return item
+    })
+
+    this.setData({
+      currentThoughtOptions: options,
+      thoughtOptions: thoughtOptions
+    })
+  },
+
+  // 自定义输入
+  onThoughtCustomInput(e) {
+    const value = e.detail.value
+    const count = value.length
+    this.setData({
+      thoughtCustom: value,
+      thoughtCustomCount: count
+    })
   },
 
   selectRelationship(e) {
@@ -240,6 +356,35 @@ Page({
           fullContext = '[' + relText + '，' + fullContext + ']'
         } else {
           fullContext = '当前关系状态：' + relText
+        }
+      }
+
+      // 构建我的想法数据
+      const selectedThoughts = []
+      Object.keys(this.data.thoughtOptions).forEach(function(category) {
+        const opts = this.data.thoughtOptions[category]
+        if (Array.isArray(opts)) {
+          opts.forEach(function(item) {
+            if (item.selected) {
+              selectedThoughts.push(item.value)
+            }
+          })
+        }
+      }.bind(this))
+      if (selectedThoughts.length > 0) {
+        const thoughtText = '我的想法：' + selectedThoughts.join('，')
+        if (fullContext) {
+          fullContext = thoughtText + '，' + fullContext
+        } else {
+          fullContext = thoughtText
+        }
+      }
+      if (this.data.thoughtCustom) {
+        const customText = '自定义：' + this.data.thoughtCustom
+        if (fullContext) {
+          fullContext = fullContext + '，' + customText
+        } else {
+          fullContext = customText
         }
       }
 

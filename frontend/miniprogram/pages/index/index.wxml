@@ -36,6 +36,51 @@
       <view class="char-count">{{charCount}}/{{maxMessage}}</view>
     </view>
 
+    <!-- 我的想法 -->
+    <view class="section my-thoughts-section">
+      <view class="section-header pink">
+        <text class="section-title">我的想法 <text class="subtitle">（选填）</text></text>
+      </view>
+
+      <!-- 子分类 Tab 栏 -->
+      <scroll-view scroll-x class="thought-tabs" enable-flex>
+        <view
+          wx:for="{{thoughtCategories}}"
+          wx:key="key"
+          class="thought-tab {{activeThoughtCategory === item.key ? 'active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="switchThoughtCategory"
+        >
+          <text>{{item.icon}} {{item.name}}</text>
+        </view>
+      </scroll-view>
+
+      <!-- 子分类选项 -->
+      <view class="thought-options-wrapper">
+        <view class="thought-options">
+          <view
+            wx:for="{{currentThoughtOptions}}"
+            wx:key="value"
+            class="thought-option {{item.selected ? 'active' : ''}}"
+            data-value="{{item.value}}"
+            bindtap="selectThoughtOption"
+          >
+            <text>{{item.label}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 自定义输入 -->
+      <textarea
+        class="input-field thought-custom-input"
+        placeholder="还有其他想法？在这里补充..."
+        value="{{thoughtCustom}}"
+        maxlength="200"
+        auto-height
+        bindinput="onThoughtCustomInput"
+      />
+      <view class="char-count">{{thoughtCustomCount}}/200</view>
+    </view>
     <!-- 前情提要 -->
     <view class="section mt-24">
       <view class="section-header purple">
