@@ -107,12 +107,18 @@
 }
 
 .message-input {
-  min-height: 200rpx;
+  min-height: 160rpx;
   max-height: 400rpx;
+  background: #FAFAFA;
+  border-radius: 16rpx;
+  padding: 0 20rpx;
 }
 
 .context-input {
-  min-height: 120rpx;
+  min-height: 80rpx;
+  background: #FAFAFA;
+  border-radius: 16rpx;
+  padding: 0 20rpx;
 }
 
 .char-count {
@@ -213,7 +219,28 @@
   display: flex;
   white-space: nowrap;
   margin-bottom: 20rpx;
-  padding-bottom: 8rpx;
+  padding-bottom: 12rpx;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 原生滚动条美化 - 浅粉色 */
+.thought-tabs::-webkit-scrollbar {
+  height: 12rpx;
+}
+
+.thought-tabs::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-radius: 3rpx;
+}
+
+.thought-tabs::-webkit-scrollbar-thumb {
+  background: #CCCCCC;
+  border-radius: 3rpx;
+}
+
+.thought-tabs::-webkit-scrollbar-thumb:active {
+  background: #AAAAAA;
 }
 
 .thought-tab {
@@ -277,7 +304,7 @@
 }
 
 .thought-custom-input {
-  min-height: 100rpx;
+  min-height: 80rpx;
   max-height: 200rpx;
   background: #FAFAFA;
   border-radius: 16rpx;

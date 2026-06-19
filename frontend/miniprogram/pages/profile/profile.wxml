@@ -12,7 +12,7 @@
         <text class="stat-value">{{remaining}}</text>
         <text class="stat-label">剩余免费</text>
       </view>
-      <view class="stat-item" bindtap="goToAdReward">
+      <view class="stat-item stat-item--ad" bindtap="goToAdReward">
         <text class="stat-icon">🎁</text>
         <text class="stat-label">广告奖励</text>
       </view>

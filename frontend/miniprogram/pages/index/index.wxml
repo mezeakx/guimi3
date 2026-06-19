@@ -43,7 +43,7 @@
       </view>
 
       <!-- 子分类 Tab 栏 -->
-      <scroll-view scroll-x class="thought-tabs" enable-flex>
+      <view class="thought-tabs">
         <view
           wx:for="{{thoughtCategories}}"
           wx:key="key"
@@ -53,7 +53,7 @@
         >
           <text>{{item.icon}} {{item.name}}</text>
         </view>
-      </scroll-view>
+      </view>
 
       <!-- 子分类选项 -->
       <view class="thought-options-wrapper">
