@@ -112,6 +112,47 @@
       <view class="char-count">{{contextCount}}/{{maxContext}}</view>
     </view>
 
+
+    <!-- 聊天节奏模块 -->
+    <view class="section pace-section">
+      <view class="section-header blue">
+        <text class="section-title">聊天节奏 <text class="subtitle">（选填）</text></text>
+        <text class="help-icon">?</text>
+      </view>
+
+      <!-- 挡位选择按钮 -->
+      <view class="pace-levels-container">
+        <view
+          wx:for="{{paceLevels}}"
+          wx:key="value"
+          class="pace-level-btn {{paceValue === item.value ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="selectPaceLevel"
+        >
+          <text class="pace-level-percent">{{item.value}}%</text>
+          <text class="pace-level-name">{{item.name}}</text>
+        </view>
+      </view>
+
+      <!-- 当前挡位解释区 -->
+      <view class="pace-explanation">
+        <view class="pace-current-badge">
+          <text class="pace-badge-percent">{{paceValue}}%</text>
+          <text class="pace-badge-name">{{paceInfo.name}}</text>
+        </view>
+        <view class="pace-detail">
+          <view class="pace-detail-item">
+            <text class="pace-detail-label">💡 特点：</text>
+            <text class="pace-detail-text">{{paceInfo.features}}</text>
+          </view>
+          <view class="pace-detail-item" wx:if="{{paceInfo.example}}">
+            <text class="pace-detail-label">📝 例如：</text>
+            <text class="pace-detail-example">{{paceInfo.example}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
     <!-- 生成按钮 -->
     <button class="btn-gradient submit-btn" bindtap="generateReply" disabled="{{generating}}">
       <text wx:if="{{!generating}}">✨ 生成回复建议</text>

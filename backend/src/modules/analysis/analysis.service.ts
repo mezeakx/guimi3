@@ -45,9 +45,15 @@ export class AnalysisService {
         },
       );
 
-      // 清洗 Markdown
+      // 清洗 Markdown 代码块标记
       let content = response.data.choices[0].message.content;
-      content = content.replace(/`json/g, '').replace(/`/g, '').trim();
+      content = content.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
+
+      // 提取第一个合法的 JSON 对象
+      const jsonMatch = content.match(/\{[\s\S]*?\}/);
+      if (jsonMatch) {
+        content = jsonMatch[0];
+      }
 
       // 解析 JSON
       try {

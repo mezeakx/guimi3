@@ -504,3 +504,114 @@
   font-size: 32rpx;
   color: #FF69B4;
 }
+/* ========== 聊天节奏挡位选择 ========== */
+.pace-section {
+  margin-bottom: 24rpx;
+}
+
+.pace-levels-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.pace-level-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 8rpx;
+  background: #F5F5F5;
+  border-radius: 16rpx;
+  transition: all 0.2s ease;
+}
+
+.pace-level-btn:active {
+  opacity: 0.7;
+}
+
+.pace-level-btn.active {
+  background: linear-gradient(135deg, #FF69B4, #9B59B6);
+  box-shadow: 0 4rpx 16rpx rgba(255, 105, 180, 0.35);
+}
+
+.pace-level-percent {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #666666;
+  margin-bottom: 4rpx;
+}
+
+.pace-level-btn.active .pace-level-percent {
+  color: #FFFFFF;
+}
+
+.pace-level-name {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+.pace-level-btn.active .pace-level-name {
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.pace-explanation {
+  padding: 20rpx;
+  background: #FFF5F8;
+  border-radius: 16rpx;
+}
+
+.pace-current-badge {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.pace-badge-percent {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #FF69B4;
+  margin-right: 12rpx;
+}
+
+.pace-badge-name {
+  font-size: 26rpx;
+  color: #9B59B6;
+  font-weight: bold;
+}
+
+.pace-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.pace-detail-item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.pace-detail-label {
+  font-size: 24rpx;
+  color: #666666;
+  margin-right: 8rpx;
+  white-space: nowrap;
+}
+
+.pace-detail-text {
+  font-size: 24rpx;
+  color: #333333;
+  flex: 1;
+}
+
+.pace-detail-example {
+  font-size: 24rpx;
+  color: #FF69B4;
+  flex: 1;
+}

@@ -13,6 +13,15 @@ Page({
     contextCount: 0,
     maxMessage: config.maxMessageLength,
     maxContext: config.maxContextLength,
+    // 聊天节奏
+    paceValue: 50,
+    paceLevels: [
+      { value: 0, name: '直球模式', features: '有话直说，不绕弯', example: '好啊\n你想吃什么？' },
+      { value: 25, name: '自然模式', features: '真实表达，不刻意设计', example: '哈哈可以呀\n你有什么推荐吗？' },
+      { value: 50, name: '慢热模式', features: '表达但保留空间', example: '最近有点忙，\n看看时间怎么安排~' },
+      { value: 75, name: '暧昧模式', features: '不说透，让对方接话', example: '这么突然约我呀' },
+      { value: 100, name: '拉扯模式', features: '制造猜测，保留神秘感', example: '你猜我会怎么想~' }
+    ],
     remainingCount: 3,
     recentContacts: [],
     generating: false,
@@ -109,7 +118,23 @@ Page({
     this.loadRecentContacts()
   },
 
-  switchInputMode(e) {
+  // 选择聊天节奏挡位
+  selectPaceLevel(e) {
+    const value = parseInt(e.currentTarget.dataset.value)
+    const level = this.data.paceLevels.find(function(item) {
+      return item.value === value
+    })
+    this.setData({
+      paceValue: value,
+      paceInfo: level ? {
+        name: level.name,
+        features: level.features,
+        example: level.example
+      } : this.data.paceInfo
+    })
+  },
+
+    switchInputMode(e) {
     const mode = e.currentTarget.dataset.mode
     this.setData({ inputMode: mode })
   },
@@ -394,7 +419,9 @@ Page({
         contact_id: contactInfo.id || null,
         identity: contactInfo.identity || '',
         target: contactInfo.target || '',
-        style: contactInfo.style || ''
+        style: contactInfo.style || '',
+        pace: this.data.paceValue,
+        pace_name: this.data.paceLevels.find(function(item) { return item.value === this.data.paceValue; }).name
       })
 
       hideLoading()
