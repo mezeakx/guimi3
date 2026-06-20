@@ -22,11 +22,18 @@ const IDENTITY_LABEL_MAP = {
   'unwanted': '想拒绝的人',
   'meal_partner': '饭搭子',
   'older': '年上',
-  'younger': '年下'
+  'younger': '年下',
+  'reality_couple': '现实情侣',
+  'online_lover': '网恋对象',
+  'dating': '约会对象',
+  'family_introduce': '家里介绍',
+  'good_friend': '好朋友',
+  'senior': '前辈'
 }
 
 // 默认头像路径
 const DEFAULT_AVATAR = '/assets/images/default-avatar.png'
+
 // 身份头像目录
 const IDENTITY_DIR = '/assets/images/identities/'
 
@@ -55,7 +62,6 @@ function getIdentityAvatarPath(identityValue) {
       return IDENTITY_DIR + label + '.jpg'
     }
   }
-
   return DEFAULT_AVATAR
 }
 
@@ -99,7 +105,6 @@ function processContactAvatar(contact) {
   else {
     contact.avatar = DEFAULT_AVATAR
   }
-
   return contact
 }
 
@@ -114,7 +119,6 @@ function findIdentityValueByLabel(labels) {
   Object.keys(IDENTITY_LABEL_MAP).forEach(function(key) {
     reverseMap[IDENTITY_LABEL_MAP[key]] = key
   })
-
   for (const label of labels) {
     if (reverseMap[label]) {
       return reverseMap[label]

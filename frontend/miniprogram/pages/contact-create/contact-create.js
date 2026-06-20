@@ -21,7 +21,13 @@ const identities = [
   { label: '想拒绝的人', value: 'unwanted', icon: '🚫' },
   { label: '饭搭子', value: 'meal_partner', icon: '🍜' },
   { label: '年上', value: 'older', icon: '🤵' },
-  { label: '年下', value: 'younger', icon: '🧒' }
+  { label: '年下', value: 'younger', icon: '🧒' },
+  { label: '网恋对象', value: 'online_lover', icon: '🌐' },
+  { label: '约会对象', value: 'dating', icon: '☕' },
+  { label: '现实情侣', value: 'reality_couple', icon: '💑' },
+  { label: '好朋友', value: 'good_friend', icon: '👫' },
+  { label: '家里介绍', value: 'family_introduce', icon: '🏠' },
+  { label: '大佬', value: 'senior', icon: '🌟' }
 ]
 
 // 年上和年下是互斥组
@@ -107,6 +113,11 @@ Page({
             newMap[v] = true
           }
         })
+        // 检查数量上限
+        if (newSelected.length >= MAX_IDENTITIES) {
+          showToast('最多选择4个身份')
+          return
+        }
         newSelected.push(value)
         newMap[value] = true
         this.setData({
