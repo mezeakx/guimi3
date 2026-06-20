@@ -33,7 +33,7 @@ export class AnalysisService {
           model: 'deepseek-chat',
           messages: [
             { role: 'system', content: systemPrompt },
-            { role: 'user', content: data.message },
+            { role: 'user', content: safe(data.message) },
           ],
           response_format: { type: 'json_object' },
         },
@@ -70,15 +70,28 @@ export class AnalysisService {
     }
   }
 
+
+  private escapeTemplateValue(value: string | undefined): string {
+    if (!value) return "";
+    return value
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\"')
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(/\t/g, '\\t')
+  };
   private buildSystemPrompt(data: any): string {
+    const safe = (v: string | undefined) => this.escapeTemplateValue(v) || "未指定";
+    const safeCtx = (v: string | undefined) => this.escapeTemplateValue(v) || "无";
+
     return `你是一位成熟理性的女性聊天军师。
 
 请根据以下信息提供回复建议：
-1. 男生身份：${data.identity || '未指定'}
-2. 回复目标：${data.target || '未指定'}
-3. 回复风格：${data.style || '未指定'}
-4. 聊天内容：${data.message}
-5. 前情提要：${data.context || '无'}
+1. 男生身份：${safe(data.identity)}
+2. 回复目标：${safe(data.target)}
+3. 回复风格：${safe(data.style)}
+4. 聊天内容：${safe(data.message)}
+5. 前情提要：${safeCtx(data.context)}
 
 输出要求：
 - 3 条回复建议

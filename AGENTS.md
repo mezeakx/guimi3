@@ -150,7 +150,7 @@ guimi3/
 4. 确保代码符合编码规范和隐私安全要求
 
 
-## AI 调用规范
+﻿## AI 调用规范
 
 ### 核心规则：所有 AI 请求必须通过统一网关
 
@@ -160,7 +160,7 @@ guimi3/
 
 严禁对对象使用 JSON.stringify 后再传入 SDK 参数。
 
-```typescript
+\`\`\`typescript
 // 错误：value 被转成了字符串
 extra_body: {
   custom_param: JSON.stringify({ key: "value" })
@@ -170,38 +170,43 @@ extra_body: {
 extra_body: {
   custom_param: { key: "value" }
 }
-```
+\`\`\`
 
 ### 2. messages.content 必须是字符串
 
-```typescript
+\`\`\`typescript
 // 正确：content 是字符串
 messages: [{ role: "user", content: "你好" }]
 
 // 错误：content 是对象
 messages: [{ role: "user", content: { text: "你好" } }]
-```
+\`\`\`
+﻿
+### 3. 提示词中嵌入用户输入时必须转义（高频出错点）
 
-### 3. 模板字符串拼接用户输入时必须转义
+**根本原因：** 错误 Expecting property name enclosed in double quotes 发生在 axios 序列化请求体时，不是 AI 模型解析提示词时。
 
-构建系统提示词时，用户输入可能包含引号、换行等破坏 JSON 格式的字符：
+当 buildSystemPrompt 用模板字符串拼接用户输入（如 data.message、data.context）时，如果用户输入包含双引号、反斜杠、换行符等，这些字符会污染外层 JSON 请求体，导致序列化后的 JSON 非法。
 
-```typescript
+**必须使用 escapeTemplateValue 方法对用户输入进行转义：**
+
+\`\`\`typescript
 private escapeTemplateValue(value: string | undefined): string {
   if (!value) return "";
   return value
-    .replace(/\/g, "\\")
-    .replace(/"/g, "\"")
-    .replace(/
-/g, "\n")
-    .replace(//g, "\r")
-    .replace(/	/g, "\t");
+    .replace(/\\/g, '\\\\');
+    .replace(/"/g, '\"');
+    .replace(/\n/g, '\n');
+    .replace(/\r/g, '\r');
+    .replace(/\t/g, '\t');
 }
-```
+\`\`\`
 
+**关键理解：** 这里的转义是为了让 JSON.stringify(requestBody) 生成合法的 JSON，不是为了让 AI 看懂。用户输入中的双引号如果不转义，会变成额外的引号，直接破坏 JSON 结构。
+﻿
 ### 4. 从数据库/缓存读取的 JSON 字符串必须先 parse
 
-```typescript
+\`\`\`typescript
 // 错误：Redis 取出的字符串直接传入
 const cachedData = await this.redis.get(key);
 messages.push({ role: "user", content: cachedData });
@@ -209,11 +214,11 @@ messages.push({ role: "user", content: cachedData });
 // 正确：先 parse 再使用
 const cachedData = JSON.parse(await this.redis.get(key));
 messages.push({ role: "user", content: String(cachedData) });
-```
+\`\`\`
 
 ### 5. 发送前验证请求体合法性
 
-```typescript
+\`\`\`typescript
 const requestBody = { model, messages, ...params };
 JSON.stringify(requestBody);
 messages.forEach(m => {
@@ -221,11 +226,11 @@ messages.forEach(m => {
     m.content = String(m.content);
   }
 });
-```
+\`\`\`
 
 ### 6. 使用 TypeScript 类型约束
 
-```typescript
+\`\`\`typescript
 interface AiMessage {
   role: "system" | "user" | "assistant";
   content: string;
@@ -237,11 +242,11 @@ interface AiRequest {
   temperature?: number;
   max_tokens?: number;
 }
-```
+\`\`\`
 
 ### 7. 错误处理与日志
 
-```typescript
+\`\`\`typescript
 try {
   const response = await axios.post(url, requestBody, config);
   return response.data;
@@ -251,7 +256,14 @@ try {
   }
   return this.getFallbackResult();
 }
-```
+\`\`\`
+
+### 8. 提示词设计最佳实践
+
+- 固定格式部分用硬编码，变量部分用 escapeTemplateValue 转义后拼接
+- 给 AI 的输出指令要简洁明确，例如明确要求只返回合法 JSON，不要 Markdown 代码块
+- 不要在提示词模板中用 JSON.stringify 拼接变量，必须用 escapeTemplateValue 逐字符转义
+- system prompt 中的 JSON 示例保持固定，不要在其中嵌入用户输入
 
 ### 快速自查清单
 
@@ -261,3 +273,39 @@ try {
 - [ ] 检查 NestJS 拦截器是否对响应做了额外的序列化
 - [ ] 使用 typeof 确认传入 SDK 的参数类型正确
 - [ ] 开启 TypeScript 严格模式，利用类型系统提前发现问题
+- [ ] 所有拼入提示词模板的用户输入都经过了 escapeTemplateValue 转义
+
+
+## 脚本编写规范
+
+### ⚠️ 字符处理脚本优先使用 Python，避免使用 PowerShell
+
+**原则：** 在进行文本处理、文件读写、数据转换等脚本任务时，优先使用 Python 编写和运行脚本，不要使用 PowerShell。
+
+**原因：**
+- Python 的字符串处理能力更强，代码更简洁易读
+- PowerShell 在处理复杂文本时容易遇到编码问题（如 BOM、换行符等）
+- Python 跨平台兼容性更好，语法更统一
+
+**示例对比：**
+
+`python
+# 推荐：Python 方式
+with open('file.txt', 'r', encoding='utf-8') as f:
+    content = f.read()
+    processed = content.replace('old', 'new')
+    with open('output.txt', 'w', encoding='utf-8') as out:
+        out.write(processed)
+`
+
+`powershell
+# 不推荐：PowerShell 方式
+ = Get-Content file.txt -Encoding UTF8
+ =  -replace 'old', 'new'
+Set-Content output.txt -Value  -Encoding UTF8
+`
+
+**注意事项：**
+- 使用 Python 处理文本时，始终显式指定 encoding='utf-8'
+- 避免使用 PowerShell 进行复杂的字符串替换、编码转换等操作
+- 对于简单的文件操作（如 ls、cd），可以使用 PowerShell，但文本处理应使用 Python

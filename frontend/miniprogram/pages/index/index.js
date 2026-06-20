@@ -2,7 +2,7 @@
 const api = require('../../utils/http')
 const { processContactsAvatars } = require('../../utils/identity-avatar')
 const config = require('../../config/index')
-const { countChars, showLoading, hideLoading, isEmpty } = require('../../utils/helpers')
+const { countChars, showLoading, hideLoading, isEmpty, showToast } = require('../../utils/helpers')
 
 Page({
   data: {
@@ -375,6 +375,20 @@ Page({
   },
 
   async generateReply() {
+    // 校验输入：文字模式需要 message，图片模式需要 imageUrl
+    if (this.data.inputMode === 'image') {
+      if (!this.data.imageUrl) {
+        showToast('请提交截图或文字后再生成回复')
+        return
+      }
+    } else {
+      if (isEmpty(this.data.message)) {
+        showToast('请提交截图或文字后再生成回复')
+        return
+      }
+    }
+
+
     // 如果是图片模式，先静默执行 OCR 识别
     if (this.data.inputMode === "image" && this.data.imageUrl) {
       showLoading("识别中...")
