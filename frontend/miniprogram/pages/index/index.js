@@ -25,6 +25,7 @@ Page({
     remainingCount: 3,
     recentContacts: [],
     generating: false,
+    imageUrl: "",
     selectedRelationships: [],
     relationshipOptions: [
       { label: '暧昧中', value: '暧昧中', group: 'neutral', selected: false },
@@ -352,14 +353,37 @@ Page({
   },
 
   handleOCR(filePath) {
-    showLoading('识别中...')
-    setTimeout(() => {
-      hideLoading()
-      showToast('OCR 功能待接入')
-    }, 1000)
+    // 仅显示截图缩略图
+    this.setData({
+      imageUrl: filePath
+    })
+  },
+  previewImage() {
+    if (!this.data.imageUrl) return
+    wx.previewImage({
+      current: this.data.imageUrl,
+      urls: [this.data.imageUrl]
+    })
+  },
+
+  /** 移除截图 */
+  removeImage() {
+    this.setData({
+      imageUrl: "",
+      message: ''
+    })
   },
 
   async generateReply() {
+    // 如果是图片模式，先静默执行 OCR 识别
+    if (this.data.inputMode === "image" && this.data.imageUrl) {
+      showLoading("识别中...")
+      // TODO: 调用后端 OCR API
+      setTimeout(() => {
+        hideLoading()
+        showToast("OCR 功能待接入")
+      }, 500)
+    }
     if (isEmpty(this.data.message)) {
       showToast('请输入他的消息')
       return

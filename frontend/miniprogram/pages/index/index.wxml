@@ -39,7 +39,7 @@
     <!-- 我的想法 -->
     <view class="section my-thoughts-section">
       <view class="section-header pink">
-        <text class="section-title">我的想法 <text class="subtitle">（选填）</text></text>
+        <text class="section-title">我的想法 </text><text class="subtitle">（选填）</text>
         <text class="help-icon">?</text>
       </view>
 
@@ -85,7 +85,7 @@
     <!-- 前情提要 -->
     <view class="section mt-24">
       <view class="section-header purple">
-        <text class="section-title">前情提要 <text class="subtitle">（选填）</text></text>
+        <text class="section-title">前情提要 </text><text class="subtitle">（选填）</text>
         <text class="help-icon">?</text>
       </view>
 
@@ -117,7 +117,7 @@
     <!-- 聊天节奏模块 -->
     <view class="section pace-section">
       <view class="section-header blue">
-        <text class="section-title">聊天节奏 <text class="subtitle">（默认25%）</text></text>
+        <text class="section-title">聊天节奏 </text><text class="subtitle">（默认25%）</text>
         <text class="help-icon">?</text>
       </view>
 
@@ -166,16 +166,21 @@
   <!-- 上传截图模式 -->
   <view class="card" wx:if="{{inputMode === 'image'}}">
     <!-- 截图上传区域 -->
-    <view class="upload-area" bindtap="uploadImage">
-      <text class="upload-icon">📷</text>
-      <text class="upload-text">点击上传聊天截图</text>
-      <text class="upload-hint">支持聊天截图转文字识别，单图最大 2MB</text>
+    <view class="upload-area {{imageUrl ? 'has-image' : ''}}" bindtap="uploadImage">
+      <block wx:if="{{imageUrl}}">
+        <image class="preview-image" src="{{imageUrl}}" mode="aspectFit" />
+        <view class="remove-btn" catchtap="removeImage">×</view>
+      </block>
+      <block wx:else>
+        <text class="upload-icon">📷</text>
+        <text class="upload-text">点击上传聊天截图</text>
+        <text class="upload-hint">支持聊天截图转文字识别，单图最大 2MB</text>
+      </block>
     </view>
-
     <!-- 我的想法 -->
     <view class="section my-thoughts-section">
       <view class="section-header pink">
-        <text class="section-title">我的想法 <text class="subtitle">（选填）</text></text>
+        <text class="section-title">我的想法 </text><text class="subtitle">（选填）</text>
         <text class="help-icon">?</text>
       </view>
 
@@ -222,7 +227,7 @@
     <!-- 前情提要 -->
     <view class="section mt-24">
       <view class="section-header purple">
-        <text class="section-title">前情提要 <text class="subtitle">（选填）</text></text>
+        <text class="section-title">前情提要 </text><text class="subtitle">（选填）</text>
         <text class="help-icon">?</text>
       </view>
 
@@ -253,7 +258,7 @@
     <!-- 聊天节奏模块 -->
     <view class="section pace-section">
       <view class="section-header blue">
-        <text class="section-title">聊天节奏 <text class="subtitle">（默认25%）</text></text>
+        <text class="section-title">聊天节奏 </text><text class="subtitle">（默认25%）</text>
         <text class="help-icon">?</text>
       </view>
 
