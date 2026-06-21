@@ -196,18 +196,20 @@ Page({
   // 切换关系标签
   selectRelationship(e) {
     const value = e.currentTarget.dataset.value
-    const option = this.data.relationshipOptions.find(function(item) {
+    const optionIndex = this.data.relationshipOptions.findIndex(function(item) {
       return item.value === value
     })
-    if (!option) return
+    if (optionIndex === -1) return
 
-    option.selected = !option.selected
+    // 收集当前已选中的值
     let selected = []
     this.data.relationshipOptions.forEach(function(item) {
       if (item.selected) {
         selected.push(item.value)
       }
     })
+
+    const option = this.data.relationshipOptions[optionIndex]
 
     if (option.group && option.group.startsWith('mutually_exclusive')) {
       const groupKey = option.group

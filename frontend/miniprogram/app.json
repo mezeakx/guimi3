@@ -45,7 +45,7 @@
   "window": {
     "navigationBarTitleText": "闺蜜帮你回",
     "navigationBarBackgroundColor": "#FF69B4",
-    "backgroundColor": "#FFF5F8",
+    "backgroundColor": "#FFFFFF",
     "backgroundTextStyle": "light",
     "navigationBarTextStyle": "white"
   }
