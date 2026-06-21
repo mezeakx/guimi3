@@ -558,9 +558,14 @@
   margin-top: 32rpx;
 }
 
+.recent-section .section-header {
+  justify-content: flex-start;
+}
+
 .manage-link {
   font-size: 24rpx;
   color: #CCCCCC;
+  margin-left: auto;
 }
 
 .selected-tags-section {
@@ -627,7 +632,8 @@
   padding: 20rpx 8rpx 16rpx;
   background: #FFFFFF;
   border-radius: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04), 0 1rpx 4rpx rgba(0, 0, 0, 0.06);
+  border: 1rpx solid #EEEEEE;
   box-sizing: border-box;
   position: relative;
   transition: transform 0.25s ease;
