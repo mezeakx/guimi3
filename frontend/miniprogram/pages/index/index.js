@@ -110,6 +110,15 @@ Page({
 
     // 未选择联系人弹窗
     showContactModal: false,
+
+    // 我的想法帮助弹窗
+    showThoughtHelpModal: false,
+
+    // 前情提要帮助弹窗
+    showContextHelpModal: false,
+
+    // 聊天节奏帮助弹窗
+    showPaceHelpModal: false,
   },
 
   onLoad() {
@@ -371,7 +380,27 @@ Page({
   },
 
   showThoughtHelp() {
-    wx.navigateTo({ url: '/pages/usage/usage' })
+    this.setData({ showThoughtHelpModal: true })
+  },
+
+  closeThoughtHelpModal() {
+    this.setData({ showThoughtHelpModal: false })
+  },
+
+  showContextHelp() {
+    this.setData({ showContextHelpModal: true })
+  },
+
+  closeContextHelpModal() {
+    this.setData({ showContextHelpModal: false })
+  },
+
+  showPaceHelp() {
+    this.setData({ showPaceHelpModal: true })
+  },
+
+  closePaceHelpModal() {
+    this.setData({ showPaceHelpModal: false })
   },
 
   // ========== 未选择联系人弹窗 ==========

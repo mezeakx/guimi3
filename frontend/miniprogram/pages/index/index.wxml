@@ -102,7 +102,7 @@
         <view class="section-bar"></view>
         <text class="section-title">前情提要</text>
         <text class="section-subtitle">（选填）</text>
-        <text class="help-icon">?</text>
+        <text class="help-icon" bindtap="showContextHelp">?</text>
       </view>
 
       <!-- 关系状态选项 -->
@@ -135,7 +135,7 @@
         <view class="section-bar"></view>
         <text class="section-title">聊天节奏</text>
         <text class="section-subtitle">（默认25%）</text>
-        <text class="help-icon">?</text>
+        <text class="help-icon" bindtap="showPaceHelp">?</text>
       </view>
 
       <!-- 挡位选择按钮 -->
@@ -249,7 +249,7 @@
         <view class="section-bar"></view>
         <text class="section-title">前情提要</text>
         <text class="section-subtitle">（选填）</text>
-        <text class="help-icon">?</text>
+        <text class="help-icon" bindtap="showContextHelp">?</text>
       </view>
 
       <!-- 关系状态选项 -->
@@ -282,7 +282,7 @@
         <view class="section-bar"></view>
         <text class="section-title">聊天节奏</text>
         <text class="section-subtitle">（默认25%）</text>
-        <text class="help-icon">?</text>
+        <text class="help-icon" bindtap="showPaceHelp">?</text>
       </view>
 
       <!-- 挡位选择按钮 -->
@@ -383,6 +383,53 @@
         </view>
         <view class="modal-action-btn modal-action-primary" bindtap="skipContactAndGenerate">
           <text class="modal-action-text modal-action-primary-text">不选择联系人，直接生成</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 我的想法帮助弹窗 -->
+  <view class="modal-mask" wx:if="{{showThoughtHelpModal}}" bindtap="closeThoughtHelpModal">
+    <view class="modal-content thought-help-modal" catchtap>
+      <view class="modal-title">帮助说明</view>
+      <view class="thought-help-content">
+        <text>告诉闺蜜你的真实想法，帮你换成更自然舒服的表达。</text>
+        <text>左右拖动选择模块，选择具体情况来告诉我吧。</text>
+        <text>也可以打字补充哦~</text>
+      </view>
+      <view class="modal-actions">
+        <view class="modal-action-btn modal-action-primary" bindtap="closeThoughtHelpModal">
+          <text class="modal-action-text modal-action-primary-text">我知道了</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 前情提要帮助弹窗 -->
+  <view class="modal-mask" wx:if="{{showContextHelpModal}}" bindtap="closeContextHelpModal">
+    <view class="modal-content thought-help-modal" catchtap>
+      <view class="modal-title">帮助说明</view>
+      <view class="thought-help-content">
+        <text>补充你们的当前状态，让闺蜜的回复更贴合实际情况~</text>
+      </view>
+      <view class="modal-actions">
+        <view class="modal-action-btn modal-action-primary" bindtap="closeContextHelpModal">
+          <text class="modal-action-text modal-action-primary-text">我知道了</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 聊天节奏帮助弹窗 -->
+  <view class="modal-mask" wx:if="{{showPaceHelpModal}}" bindtap="closePaceHelpModal">
+    <view class="modal-content thought-help-modal" catchtap>
+      <view class="modal-title">帮助说明</view>
+      <view class="thought-help-content">
+        <text>控制聊天推进速度，选择直接、自然或慢热的交流方式~</text>
+      </view>
+      <view class="modal-actions">
+        <view class="modal-action-btn modal-action-primary" bindtap="closePaceHelpModal">
+          <text class="modal-action-text modal-action-primary-text">我知道了</text>
         </view>
       </view>
     </view>

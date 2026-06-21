@@ -883,3 +883,23 @@
   color: #333333;
   font-weight: 500;
 }
+
+/* ========== 我的想法帮助弹窗 ========== */
+.thought-help-modal {
+  width: 560rpx;
+}
+
+.thought-help-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-bottom: 40rpx;
+  padding: 0 8rpx;
+}
+
+.thought-help-content text {
+  font-size: 28rpx;
+  color: #555555;
+  line-height: 1.6;
+}
