@@ -1,5 +1,4 @@
 // pages/index/index.js
-const api = require('../../utils/http')
 const { processContactsAvatars } = require('../../utils/identity-avatar')
 const config = require('../../config/index')
 const { countChars, showLoading, hideLoading, isEmpty, showToast } = require('../../utils/helpers')
@@ -15,6 +14,7 @@ Page({
     maxContext: config.maxContextLength,
     // 聊天节奏
     paceValue: 25,
+    paceInfo: {},
     paceLevels: [
       { value: 0, name: '直球模式', features: '有话直说，不绕弯', example: '好啊\n你想吃什么？' },
       { value: 25, name: '自然模式', features: '真实表达，不刻意设计', example: '哈哈可以呀\n你有什么推荐吗？' },
@@ -47,12 +47,12 @@ Page({
     // ========== 我的想法模块 ==========
     activeThoughtCategory: 'affection',
     thoughtCategories: [
-      { key: 'affection', name: '好感升温', icon: '💗' },
+      { key: 'affection', name: '好感升温', icon: '🩷' },
       { key: 'emotion', name: '我的情绪', icon: '😊' },
       { key: 'distance', name: '保持距离', icon: '🧊' },
       { key: 'observe', name: '观察试探', icon: '🔍' },
-      { key: 'expression', name: '表达方式', icon: '💬' },
-      { key: 'complex', name: '复合场景', icon: '🔄' }
+      { key: 'expression', name: '表达方式', icon: '📞' },
+      { key: 'complex', name: '复合场景', icon: '🖇' }
     ],
     thoughtOptions: {
       affection: [
@@ -107,6 +107,9 @@ Page({
     thoughtCustom: '',
     thoughtCustomCount: 0,
     currentThoughtOptions: [],
+
+    // 未选择联系人弹窗
+    showContactModal: false,
   },
 
   onLoad() {
@@ -138,7 +141,7 @@ Page({
     }
   },
 
-  // 选择聊天节奏挡位
+  // 选择聊天节奏档位
   selectPaceLevel(e) {
     const value = parseInt(e.currentTarget.dataset.value)
     const level = this.data.paceLevels.find(function(item) {
@@ -157,21 +160,8 @@ Page({
     switchInputMode(e) {
     const mode = e.currentTarget.dataset.mode
     this.setData({ inputMode: mode })
-  },
-
-  onMessageInput(e) {
-    const value = e.detail.value
-    const count = countChars(value)
-    if (count <= this.data.maxMessage) {
-      this.setData({ message: value, charCount: count })
-    }
-  },
-
-  onContextInput(e) {
-    const value = e.detail.value
-    const count = countChars(value)
-    if (count <= this.data.maxContext) {
-      this.setData({ context: value, contextCount: count })
+    if (mode === 'image') {
+      this.uploadImage()
     }
   },
 
@@ -200,41 +190,18 @@ Page({
       }
       return item
     })
-
-    // 同时更新底层 thoughtOptions
-    const thoughtOptions = Object.assign({}, this.data.thoughtOptions)
-    thoughtOptions[category] = this.data.thoughtOptions[category].map(function(item) {
-      if (item.value === value) {
-        item.selected = !item.selected
-      }
-      return item
-    })
-
-    this.setData({
-      currentThoughtOptions: options,
-      thoughtOptions: thoughtOptions
-    })
+    this.setData({ currentThoughtOptions: options })
   },
 
-  // 自定义输入
-  onThoughtCustomInput(e) {
-    const value = e.detail.value
-    const count = value.length
-    this.setData({
-      thoughtCustom: value,
-      thoughtCustomCount: count
-    })
-  },
-
+  // 切换关系标签
   selectRelationship(e) {
     const value = e.currentTarget.dataset.value
-    const optionIndex = this.data.relationshipOptions.findIndex(function(item) {
+    const option = this.data.relationshipOptions.find(function(item) {
       return item.value === value
     })
-    if (optionIndex === -1) return
-    const option = this.data.relationshipOptions[optionIndex]
+    if (!option) return
 
-    // 查找已选中的值
+    option.selected = !option.selected
     let selected = []
     this.data.relationshipOptions.forEach(function(item) {
       if (item.selected) {
@@ -310,9 +277,12 @@ Page({
 
   toggleContactSelect(e) {
     const id = String(e.currentTarget.dataset.id)
-    const isSelected = this.data.recentContacts.find(function(c) {
+    const contact = this.data.recentContacts.find(function(c) {
       return String(c.id) === id
-    })._isSelected
+    })
+    if (!contact) return
+    
+    const isSelected = contact._isSelected
     
     if (isSelected) {
       // 点击已选中的名片，取消选中
@@ -374,6 +344,87 @@ Page({
     })
   },
 
+  onMessageInput(e) {
+    const value = e.detail.value
+    this.setData({
+      message: value,
+      charCount: countChars(value)
+    })
+  },
+
+  onContextInput(e) {
+    const value = e.detail.value
+    this.setData({
+      context: value,
+      contextCount: countChars(value)
+    })
+  },
+
+  onThoughtCustomInput(e) {
+    const value = e.detail.value
+    this.setData({
+      thoughtCustom: value,
+      thoughtCustomCount: countChars(value)
+    })
+  },
+
+  showThoughtHelp() {
+    wx.navigateTo({ url: '/pages/usage/usage' })
+  },
+
+  // ========== 未选择联系人弹窗 ==========
+  checkContactSelection() {
+    const selectedId = wx.getStorageSync('selected_contact_id') || ''
+    const hasSelected = this.data.recentContacts.some(function(c) {
+      return c._isSelected
+    })
+    return !!(selectedId || hasSelected)
+  },
+
+  showContactModal() {
+    this.setData({ showContactModal: true })
+  },
+
+  closeContactModal() {
+    this.setData({ showContactModal: false })
+  },
+
+  goToAddContact() {
+    this.closeContactModal()
+    wx.navigateTo({ url: '/pages/contact-create/contact-create' })
+  },
+
+  chooseExistingContact() {
+    this.closeContactModal()
+    // 回到首页（switchTab 会触发 onShow，loadRecentContacts 会刷新联系人列表）
+    wx.switchTab({
+      url: '/pages/index/index',
+      success: () => {
+        // 等待页面渲染完成后滚动到最近联系人区域
+        setTimeout(() => {
+          const query = wx.createSelectorQuery().in(this)
+          query.select('#recentContactsSection').boundingClientRect()
+          query.select('.container').boundingClientRect()
+          query.exec((res) => {
+            if (res && res[0] && res[1]) {
+              const top = res[0].top - res[1].top
+              wx.pageScrollTo({
+                scrollTop: top,
+                duration: 300
+              })
+            }
+          })
+        }, 300)
+      }
+    })
+  },
+
+  skipContactAndGenerate() {
+    this.closeContactModal()
+    // 直接执行生成逻辑
+    this.proceedGenerate()
+  },
+
   async generateReply() {
     // 校验输入：文字模式需要 message，图片模式需要 imageUrl
     if (this.data.inputMode === 'image') {
@@ -382,26 +433,18 @@ Page({
         return
       }
     } else {
-      if (isEmpty(this.data.message)) {
+      if (this.data.inputMode === "text" && isEmpty(this.data.message)) {
         showToast('请提交截图或文字后再生成回复')
         return
       }
     }
 
-
-    // 如果是图片模式，先静默执行 OCR 识别
-    if (this.data.inputMode === "image" && this.data.imageUrl) {
-      showLoading("识别中...")
-      // TODO: 调用后端 OCR API
-      setTimeout(() => {
-        hideLoading()
-        showToast("OCR 功能待接入")
-      }, 500)
-    }
-    if (isEmpty(this.data.message)) {
-      showToast('请输入他的消息')
+    // 检查是否选择了联系人
+    if (!this.checkContactSelection()) {
+      this.showContactModal()
       return
     }
+
     if (this.data.remainingCount <= 0) {
       showToast('今日次数已用完，观看广告获取更多')
       return
@@ -409,92 +452,47 @@ Page({
     if (this.data.generating) return
 
     this.setData({ generating: true })
-    showLoading('分析中...')
+    showLoading('分析中..')
 
-    try {
-      const selectedId = wx.getStorageSync('selected_contact_id')
-      let contactInfo = {}
-      if (selectedId) {
-        const contacts = wx.getStorageSync('contacts') || []
-        const contact = contacts.find(function(c) {
-          return String(c.id) === String(selectedId)
-        })
-        if (contact) {
-          contactInfo = contact
-        }
-      }
+    this.proceedWithGeneration()
+  },
 
-      // 构建前情提要和关系状态
-      let fullContext = this.data.context
-      const selectedValues = []
-      this.data.relationshipOptions.forEach(function(item) {
-        if (item.selected) {
-          selectedValues.push(item.value)
-        }
-      })
-      if (selectedValues.length > 0) {
-        const relText = selectedValues.join('，')
-        if (fullContext) {
-          fullContext = '[' + relText + '，' + fullContext + ']'
-        } else {
-          fullContext = '当前关系状态：' + relText
-        }
-      }
-
-      // 构建我的想法数据
-      const selectedThoughts = []
-      Object.keys(this.data.thoughtOptions).forEach(function(category) {
-        const opts = this.data.thoughtOptions[category]
-        if (Array.isArray(opts)) {
-          opts.forEach(function(item) {
-            if (item.selected) {
-              selectedThoughts.push(item.value)
-            }
-          })
-        }
-      }.bind(this))
-      if (selectedThoughts.length > 0) {
-        const thoughtText = '我的想法：' + selectedThoughts.join('，')
-        if (fullContext) {
-          fullContext = thoughtText + '，' + fullContext
-        } else {
-          fullContext = thoughtText
-        }
-      }
-      if (this.data.thoughtCustom) {
-        const customText = '自定义：' + this.data.thoughtCustom
-        if (fullContext) {
-          fullContext = fullContext + '，' + customText
-        } else {
-          fullContext = customText
-        }
-      }
-
-      const result = await api.post('/analysis/generate', {
-        message: this.data.message,
-        context: fullContext,
-        contact_id: contactInfo.id || null,
-        identity: contactInfo.identity || '',
-        target: contactInfo.target || '',
-        style: contactInfo.style || '',
-        pace: this.data.paceValue,
-        pace_name: this.data.paceLevels.find(function(item) { return item.value === this.data.paceValue; }).name
-      })
-
+  proceedWithGeneration() {
+    // 直接使用 mock 数据，不调用后端
+    setTimeout(() => {
       hideLoading()
-
       const newCount = this.data.remainingCount - 1
-      this.setData({ remainingCount: newCount })
+      this.setData({ remainingCount: newCount, generating: false })
+
+      const mockResult = {
+        thinking: '他主动找你聊天，并持续追问你的情况，大概率希望继续推进关系。',
+        thinkingTags: ['对你有兴趣', '想继续话题', '期待你给出反馈'],
+        remind: '不建议过于主动，把节奏放慢一点，先观察他的投入程度，保持轻松自然。',
+        remindTags: ['不要立刻答应见面', '先继续聊天观察'],
+        replies: [
+          { text: '哈哈可以呀～不过我对那边不太熟，你有什么推荐吗？', style: '稳妥自然', active: 2, good: 4, rhythm: '自然' },
+          { text: '听起来还不错～有机会可以一起去看看呀～', style: '提升好感', active: 3, good: 5, rhythm: '稍快' },
+          { text: '怎么突然想约我啦～', style: '轻微拉扯', active: 1, good: 3, rhythm: '慢热' }
+        ]
+      }
 
       wx.navigateTo({
-        url: '/pages/result/result?data=' + encodeURIComponent(JSON.stringify(result.data))
+        url: '/pages/result/result?data=' + encodeURIComponent(JSON.stringify(mockResult))
       })
-    } catch (err) {
-      hideLoading()
-      showToast('系统繁忙，请稍后再试')
-      console.error('生成回复失败:', err)
-    } finally {
-      this.setData({ generating: false })
+    }, 600)
+  },
+
+  // 跳过联系人直接生成
+  proceedGenerate() {
+    if (this.data.remainingCount <= 0) {
+      showToast('今日次数已用完，观看广告获取更多')
+      return
     }
+    if (this.data.generating) return
+
+    this.setData({ generating: true })
+    showLoading('分析中..')
+
+    this.proceedWithGeneration()
   }
 })

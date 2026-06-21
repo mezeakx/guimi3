@@ -1,8 +1,10 @@
-﻿// backend/src/modules/ad/ad.controller.ts
-import { Controller, Post, Body, Req } from '@nestjs/common';
+// backend/src/modules/ad/ad.controller.ts
+import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../../common/guards/auth.guard';
 import { AdService } from './ad.service';
 
 @Controller('ad')
+@UseGuards(AuthGuard)
 export class AdController {
   constructor(private readonly adService: AdService) {}
 

@@ -26,14 +26,30 @@ export class AnalysisService {
     const systemPrompt = this.buildSystemPrompt(data);
 
     try {
-      // 调用 AI
+      
+    // 验证请求体合法性
+    const requestBody = {
+      model: 'deepseek-chat',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: data.message },
+      ],
+      response_format: { type: 'json_object' },
+    };
+    requestBody.messages.forEach((m: any) => {
+      if (typeof m.content !== 'string') {
+        m.content = String(m.content);
+      }
+    });
+    JSON.stringify(requestBody);
+// 调用 AI
       const response = await axios.post(
         `${this.aiBaseUrl}/chat/completions`,
         {
           model: 'deepseek-chat',
           messages: [
             { role: 'system', content: systemPrompt },
-            { role: 'user', content: safe(data.message) },
+            { role: 'user', content: data.message },
           ],
           response_format: { type: 'json_object' },
         },
@@ -71,14 +87,18 @@ export class AnalysisService {
   }
 
 
-  private escapeTemplateValue(value: string | undefined): string {
-    if (!value) return "";
+    private escapeTemplateValue(value: string | undefined): string {
+    if (!value) return '';
     return value
       .replace(/\\/g, '\\\\')
-      .replace(/"/g, '\"')
+      .replace(/"/g, '\\"')
       .replace(/\n/g, '\\n')
       .replace(/\r/g, '\\r')
       .replace(/\t/g, '\\t')
+      .replace(/[\x00-\x1f]/g, (c) => {
+        const hex = c.charCodeAt(0).toString(16).padStart(4, '0');
+        return '\\u' + hex;
+      })
   };
   private buildSystemPrompt(data: any): string {
     const safe = (v: string | undefined) => this.escapeTemplateValue(v) || "未指定";

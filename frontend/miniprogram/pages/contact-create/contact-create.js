@@ -31,7 +31,7 @@ const identities = [
 ]
 
 // 年上和年下是互斥组
-const MUTEX_GROUP = ['older', 'younger']
+const MUTEX_GROUP = ['good_friend', 'friend', 'older', 'younger']
 
 // 多选最大数量
 const MAX_IDENTITIES = 4

@@ -194,11 +194,11 @@ messages: [{ role: "user", content: { text: "你好" } }]
 private escapeTemplateValue(value: string | undefined): string {
   if (!value) return "";
   return value
-    .replace(/\\/g, '\\\\');
-    .replace(/"/g, '\"');
-    .replace(/\n/g, '\n');
-    .replace(/\r/g, '\r');
-    .replace(/\t/g, '\t');
+    .replace(/\\/g, '\\')
+    .replace(/"/g, '\"')
+    .replace(/\n/g, '\n')
+    .replace(/\r/g, '\r')
+    .replace(/\t/g, '\t')
 }
 \`\`\`
 
@@ -309,3 +309,86 @@ Set-Content output.txt -Value  -Encoding UTF8
 - 使用 Python 处理文本时，始终显式指定 encoding='utf-8'
 - 避免使用 PowerShell 进行复杂的字符串替换、编码转换等操作
 - 对于简单的文件操作（如 ls、cd），可以使用 PowerShell，但文本处理应使用 Python
+
+---
+
+## PowerShell 与 Node.js 交互规范
+
+### ⚠️ 禁止在 PowerShell 命令行中直接传递 JSON 参数给 Node.js
+
+**原则：** 当 Node.js 脚本需要接收 JSON 数据时，必须通过文件读取或环境变量传递，严禁在 PowerShell 命令行中使用引号/模板字符串包裹 JSON 作为参数传递。
+
+**错误原因：**
+PowerShell 对单引号、双引号、反引号（`` ` ``）、模板字符串（`${}`）的处理规则极其复杂且容易出错，会导致以下连锁问题：
+
+1. **PowerShell 转义错误** — 命令行中的 JSON 字符串引号被 PowerShell 吞掉或篡改
+2. **Node.js 收到非法 JSON** — 例如收到 `{ error: ... }`（缺少双引号），而非合法的 `{ "error": ... }`
+3. **API 调用失败** — 传递给 OpenAI 等 API 时返回 `BadRequestError: Expecting property name enclosed in double quotes`
+
+**典型错误示例：**
+
+```powershell
+# ❌ 绝对禁止 — PowerShell 会错误转义引号
+node script.js '{"key":"value"}'
+node script.js `{"key":"value"}`
+node script.js "${jsonString}"
+
+# ❌ 绝对禁止 — 模板字符串内嵌 JSON
+node script.js $("`{`"key`":`"value`"}")
+```
+
+**正确做法：**
+
+#### 方案一：创建独立的 Node.js 脚本文件（推荐）
+
+将数据直接写入 JS 文件，通过 `fs.readFileSync` 读取，完全不经过命令行参数：
+
+```javascript
+// write-config.js
+const fs = require('fs');
+const config = {
+  key: 'value',
+  nested: { foo: 'bar' }
+};
+fs.writeFileSync('config.json', JSON.stringify(config, null, 2));
+console.log('配置文件已写入');
+```
+
+```powershell
+# ✅ 安全 — 无需传递任何 JSON 参数
+node write-config.js
+```
+
+#### 方案二：使用 PowerShell Here-String
+
+```powershell
+# ✅ 安全 — Here-String 原样输出，无转义问题
+$json = @"
+{"message": "hello", "code": 200}
+"@
+node script.js $json
+```
+
+#### 方案三：在 Node.js 中增加 JSON 合法性校验
+
+无论采用哪种方式传递 JSON，在调用 API 之前都必须校验：
+
+```javascript
+// 在发送请求前加一层校验
+function validateJSON(str) {
+  try {
+    const parsed = JSON.parse(str);
+    return { valid: true, data: parsed };
+  } catch (err) {
+    console.error('❌ 无效的 JSON 数据:', err.message);
+    console.error('   原始输入:', str);
+    process.exit(1);
+  }
+}
+```
+
+**检查清单：**
+- [ ] 不在 PowerShell 命令行中用引号包裹 JSON 传给 Node.js
+- [ ] 需要传递结构化数据时，使用独立 JS 文件或 here-string
+- [ ] 所有外部输入的 JSON 在解析前都做 try/catch 校验
+- [ ] 调试 API 报错时，先打印原始字符串确认 JSON 合法性

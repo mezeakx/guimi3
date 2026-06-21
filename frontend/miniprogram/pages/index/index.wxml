@@ -40,7 +40,7 @@
     <view class="section my-thoughts-section">
       <view class="section-header pink">
         <text class="section-title">我的想法 </text><text class="subtitle">（选填）</text>
-        <text class="help-icon">?</text>
+        <text class="help-icon" bindtap="showThoughtHelp">?</text>
       </view>
 
       <!-- 子分类 Tab 栏 -->
@@ -305,7 +305,7 @@
   </view>
 
   <!-- 最近联系人 -->
-  <view class="recent-section mt-24">
+  <view class="recent-section mt-24" id="recentContactsSection">
     <view class="section-header flex-between">
       <text class="section-title">最近联系人</text>
       <text class="manage-link" bindtap="goToContacts">管理 ></text>
@@ -343,4 +343,24 @@
     </view>
     <view class="promo-arrow">></view>
   </navigator>
+
+  <!-- 未选择联系人弹窗 -->
+  <view class="modal-mask" wx:if="{{showContactModal}}" bindtap="closeContactModal">
+    <view class="modal-content" catchtap>
+      <view class="modal-title">还没有选择联系人</view>
+      <view class="modal-actions">
+        <view class="modal-action-btn modal-action-existing" bindtap="chooseExistingContact">
+          <text class="modal-action-icon modal-action-select">—</text>
+          <text class="modal-action-text">选择已有联系人</text>
+        </view>
+        <view class="modal-action-btn" bindtap="goToAddContact">
+          <text class="modal-action-icon modal-action-add">＋</text>
+          <text class="modal-action-text">去新建联系人</text>
+        </view>
+        <view class="modal-action-btn modal-action-primary" bindtap="skipContactAndGenerate">
+          <text class="modal-action-text modal-action-primary-text">不选择联系人，直接生成</text>
+        </view>
+      </view>
+    </view>
+  </view>
 </view>

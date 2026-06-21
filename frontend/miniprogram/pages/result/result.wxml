@@ -1,41 +1,188 @@
 <!--pages/result/result.wxml-->
-<view class="container">
-  <view class="card">
-    <!-- 推荐回复 -->
-    <view class="reply-item" wx:if="{{replyA}}">
-      <view class="reply-label">推荐回复 1</view>
-      <view class="reply-content">{{replyA}}</view>
-      <button class="copy-btn" data-type="A" bindtap="copyReply">复制</button>
+<view class="page">
+  <!-- 顶部标题区 -->
+  <view class="page-header">
+    <view class="header-title-area">
+      <text class="header-emoji">✨</text>
+      <text class="header-title">闺蜜分析结果</text>
+      <text class="header-emoji">💕</text>
     </view>
-    <view class="reply-item" wx:if="{{replyB}}">
-      <view class="reply-label">推荐回复 2</view>
-      <view class="reply-content">{{replyB}}</view>
-      <button class="copy-btn" data-type="B" bindtap="copyReply">复制</button>
-    </view>
-    <view class="reply-item" wx:if="{{replyC}}">
-      <view class="reply-label">推荐回复 3</view>
-      <view class="reply-content">{{replyC}}</view>
-      <button class="copy-btn" data-type="C" bindtap="copyReply">复制</button>
+    <text class="header-subtitle">根据你提供的信息，闺蜜军师为你分析并生成回复建议</text>
+  </view>
+
+  <!-- 卡片1：他可能在想 -->
+  <view class="card thought-card" wx:if="{{analysis.thinking}}">
+    <view class="card-inner">
+      <view class="card-left">
+        <view class="card-title-row">
+          <text class="card-emoji">💬</text>
+          <text class="card-title">他可能在想</text>
+        </view>
+        <text class="card-desc">{{analysis.thinking}}</text>
+        <view class="tag-row" wx:if="{{analysis.thinkingTags && analysis.thinkingTags.length}}">
+          <view class="tag tag-pink" wx:for="{{analysis.thinkingTags}}" wx:key="*this">
+            <text class="tag-dot">✔</text>
+            <text>{{item}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="card-right">
+        <text class="card-illustration">🔮</text>
+      </view>
     </view>
   </view>
 
-  <!-- 男生意图 -->
-  <view class="card" wx:if="{{boyIntent}}">
-    <view class="section-title">💡 男生意图</view>
-    <text class="intent-text">{{boyIntent}}</text>
+  <!-- 卡片2：闺蜜提醒 -->
+  <view class="card remind-card" wx:if="{{analysis.remind}}">
+    <view class="card-inner">
+      <view class="card-left">
+        <view class="card-title-row">
+          <text class="card-emoji remind-emoji">⚠️</text>
+          <text class="card-title">闺蜜提醒</text>
+        </view>
+        <text class="card-desc">{{analysis.remind}}</text>
+        <view class="tag-row" wx:if="{{analysis.remindTags && analysis.remindTags.length}}">
+          <view class="tag tag-warning" wx:for="{{analysis.remindTags}}" wx:key="*this">
+            <text class="tag-dot">✔</text>
+            <text>{{item}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="card-right">
+        <text class="card-illustration">🔔</text>
+      </view>
+    </view>
   </view>
 
-  <!-- 风险提醒 -->
-  <view class="card" wx:if="{{riskWarning}}">
-    <view class="section-title">⚠️ 风险提醒</view>
-    <text class="warning-text">{{riskWarning}}</text>
+  <!-- 推荐回复区域 -->
+  <view class="reply-section">
+    <view class="reply-section-header">
+      <text class="reply-heart">💗</text>
+      <text class="reply-title">推荐回复</text>
+      <text class="reply-subtitle">点击即可复制</text>
+    </view>
+
+    <!-- 回复 A：稳妥自然 -->
+    <view class="reply-card reply-card-default card-anim" wx:if="{{replies[0]}}">
+      <view class="reply-card-top">
+        <view class="reply-left">
+          <view class="reply-badge badge-pink">A</view>
+          <text class="reply-style style-pink">{{replies[0].style || '稳妥自然'}}</text>
+        </view>
+        <button class="copy-btn copy-btn-pink" data-reply="0" bindtap="copyReply">
+          <text class="copy-icon">📋</text>
+          <text>复制</text>
+        </button>
+      </view>
+      <text class="reply-text">{{replies[0].text}}</text>
+      <view class="reply-meta">
+        <view class="meta-chip">
+          <text class="meta-label">主动程度：</text>
+          <view class="star-row">
+            <text wx:for="{{5}}" wx:key="index" wx:for-item="i" class="star {{i < (replies[0].active || 0) ? 'filled' : 'empty'}}">★</text>
+          </view>
+        </view>
+        <view class="meta-chip">
+          <text class="meta-label">好感提升：</text>
+          <view class="star-row">
+            <text wx:for="{{5}}" wx:key="index" wx:for-item="i" class="star {{i < (replies[0].good || 0) ? 'filled' : 'empty'}}">★</text>
+          </view>
+        </view>
+        <view class="meta-chip">
+          <text class="meta-label">聊天节奏：</text>
+          <text class="meta-value">{{replies[0].rhythm || '自然'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 回复 B：提升好感 -->
+    <view class="reply-card reply-card-purple card-anim" wx:if="{{replies[1]}}">
+      <view class="reply-card-top">
+        <view class="reply-left">
+          <view class="reply-badge badge-purple">B</view>
+          <text class="reply-style style-purple">{{replies[1].style || '提升好感'}}</text>
+        </view>
+        <button class="copy-btn copy-btn-purple" data-reply="1" bindtap="copyReply">
+          <text class="copy-icon">📋</text>
+          <text>复制</text>
+        </button>
+      </view>
+      <text class="reply-text">{{replies[1].text}}</text>
+      <view class="reply-meta">
+        <view class="meta-chip">
+          <text class="meta-label">主动程度：</text>
+          <view class="star-row">
+            <text wx:for="{{5}}" wx:key="index" wx:for-item="i" class="star {{i < (replies[1].active || 0) ? 'filled' : 'empty'}}">★</text>
+          </view>
+        </view>
+        <view class="meta-chip">
+          <text class="meta-label">好感提升：</text>
+          <view class="star-row">
+            <text wx:for="{{5}}" wx:key="index" wx:for-item="i" class="star {{i < (replies[1].good || 0) ? 'filled' : 'empty'}}">★</text>
+          </view>
+        </view>
+        <view class="meta-chip">
+          <text class="meta-label">聊天节奏：</text>
+          <text class="meta-value">{{replies[1].rhythm || '稍快'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 回复 C：轻微拉扯 -->
+    <view class="reply-card reply-card-orange card-anim" wx:if="{{replies[2]}}">
+      <view class="reply-card-top">
+        <view class="reply-left">
+          <view class="reply-badge badge-orange">C</view>
+          <text class="reply-style style-orange">{{replies[2].style || '轻微拉扯'}}</text>
+        </view>
+        <button class="copy-btn copy-btn-orange" data-reply="2" bindtap="copyReply">
+          <text class="copy-icon">📋</text>
+          <text>复制</text>
+        </button>
+      </view>
+      <text class="reply-text">{{replies[2].text}}</text>
+      <view class="reply-meta">
+        <view class="meta-chip">
+          <text class="meta-label">主动程度：</text>
+          <view class="star-row">
+            <text wx:for="{{5}}" wx:key="index" wx:for-item="i" class="star {{i < (replies[2].active || 0) ? 'filled' : 'empty'}}">★</text>
+          </view>
+        </view>
+        <view class="meta-chip">
+          <text class="meta-label">好感提升：</text>
+          <view class="star-row">
+            <text wx:for="{{5}}" wx:key="index" wx:for-item="i" class="star {{i < (replies[2].good || 0) ? 'filled' : 'empty'}}">★</text>
+          </view>
+        </view>
+        <view class="meta-chip">
+          <text class="meta-label">聊天节奏：</text>
+          <text class="meta-value">{{replies[2].rhythm || '慢热'}}</text>
+        </view>
+      </view>
+    </view>
   </view>
 
-  <!-- 分享按钮 -->
-  <button class="btn-gradient share-btn" bindtap="sharePoster">
-    <text>💕 分享给闺蜜</text>
-  </button>
+  <!-- 想换个风格试试？ -->
+  <view class="style-switch-card" bindtap="switchStyle">
+    <view class="style-switch-left">
+      <text class="style-lightbulb">💡</text>
+      <view class="style-switch-texts">
+        <text class="style-switch-title">想换个风格试试？</text>
+        <text class="style-switch-desc">可以切换聊天节奏或修改想法，让回复更贴合你的心意</text>
+      </view>
+    </view>
+    <text class="arrow-right">></text>
+  </view>
 
-  <!-- 底部提示 -->
-  <view class="footer-tip">以上内容由 AI 生成，仅供参考。<br/>请结合实际情况自主判断。</view>
+  <!-- 底部按钮 -->
+  <view class="bottom-actions">
+    <button class="btn-replace" bindtap="replaceReply">
+      <text class="btn-replace-icon">🔄</text>
+      <text>换一种回复</text>
+    </button>
+    <button class="btn-regenerate" bindtap="regenerateReply">
+      <text class="btn-regen-emoji">✨</text>
+      <text>再生成3条</text>
+    </button>
+  </view>
 </view>

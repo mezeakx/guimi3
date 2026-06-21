@@ -1,7 +1,7 @@
 // 配置文件
 module.exports = {
   // API 基础地址（生产环境替换）
-  baseUrl: 'https://your-api-domain.com/api',
+  baseUrl: 'http://localhost:3000/api',
 
   // 微信 AppID
   appId: 'your_wechat_appid',

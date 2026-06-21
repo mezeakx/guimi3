@@ -1,8 +1,10 @@
-﻿// backend/src/modules/contact/contact.controller.ts
-import { Controller, Post, Body, Get, Delete, Req } from '@nestjs/common';
+// backend/src/modules/contact/contact.controller.ts
+import { Controller, Post, Body, Get, Delete, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../../common/guards/auth.guard';
 import { ContactService } from './contact.service';
 
 @Controller('contact')
+@UseGuards(AuthGuard)
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
