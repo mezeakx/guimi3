@@ -30,6 +30,7 @@ Page({
     relationshipOptions: [
       { label: '暧昧中', value: '暧昧中', group: 'neutral', selected: false },
       { label: '刚认识', value: '刚认识', group: 'neutral', selected: false },
+      { label: '被追求中', value: '被追求中', group: 'neutral', selected: false },
       { label: '恋爱中', value: '恋爱中', group: 'neutral', selected: false },
       { label: '冷战中', value: '冷战中', group: 'neutral', selected: false },
       { label: '刚吵架', value: '刚吵架', group: 'mutually_exclusive_1', selected: false },
