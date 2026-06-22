@@ -1,13 +1,48 @@
-<view class="container">
-  <view class="title">使用说明</view>
-  <view class="steps">
-    <view class="step" wx:for="{{steps}}" wx:key="index">
-      <text class="step-icon">{{item.icon}}</text>
-      <view class="step-info">
-        <text class="step-title">{{item.title}}</text>
-        <text class="step-desc">{{item.desc}}</text>
+<!--pages/usage/usage.wxml-->
+<view class="page-container">
+  <!-- Header -->
+  <view class="header-section">
+    <text class="header-title">使用说明</text>
+    <text class="header-subtitle">跟着这四步，轻松搞定高情商回复 🚀</text>
+  </view>
+
+  <!-- Steps Timeline -->
+  <view class="timeline-section">
+    <view class="timeline-card">
+      <view
+        class="timeline-item"
+        wx:for="{{steps}}"
+        wx:key="index"
+      >
+        <!-- Step Number -->
+        <view class="timeline-number">
+          <text class="number-text">{{index + 1}}</text>
+        </view>
+        <!-- Connector Line (skip last) -->
+        <view class="timeline-connector" wx:if="{{index < steps.length - 1}}"></view>
+        <!-- Content -->
+        <view class="timeline-content">
+          <view class="content-header">
+            <text class="content-icon">{{item.icon}}</text>
+            <text class="content-title">{{item.title}}</text>
+          </view>
+          <text class="content-desc">{{item.desc}}</text>
+        </view>
       </view>
     </view>
   </view>
-  <view class="tip">内容仅供参考，请结合实际情况判断</view>
+
+  <!-- Tips Section -->
+  <view class="tips-section">
+    <view class="section-title">
+      <text class="section-emoji">📌</text>
+      <text class="section-heading">小贴士</text>
+    </view>
+    <view class="tip-list">
+      <view class="tip-item" wx:for="{{tips}}" wx:key="icon">
+        <text class="tip-icon">{{item.icon}}</text>
+        <text class="tip-text">{{item.text}}</text>
+      </view>
+    </view>
+  </view>
 </view>

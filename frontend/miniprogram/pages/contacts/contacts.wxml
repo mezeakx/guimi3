@@ -82,4 +82,5 @@
       <button class="btn-gradient drawer-submit" bindtap="submitContact">确认添加</button>
     </view>
   </view>
+
 </view>

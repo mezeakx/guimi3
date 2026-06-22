@@ -1,14 +1,4 @@
 <!--pages/disclaimer/disclaimer.wxml-->
-<view class="modal-mask" wx:if="{{show}}" bindtap="accept">
-  <view class="modal-content" catchtap="noop">
-    <view class="modal-title">免责声明</view>
-    <view class="modal-body">
-      <text>闺蜜代回复提供聊天建议和表达参考。</text>
-      <text>生成内容仅供用户自主判断和参考。</text>
-      <text>本产品不保证任何关系结果。</text>
-      <text>亦不对用户实际沟通行为产生的后果负责。</text>
-      <text>请理性使用，并结合实际情况进行判断。</text>
-    </view>
-    <button class="btn-gradient modal-btn" bindtap="accept">我知道了</button>
-  </view>
+<view class="container">
+  <text>免责声明页面已迁移至弹窗展示，请点击"我的"页面中的"免责声明"查看。</text>
 </view>

@@ -450,11 +450,6 @@ Page({
     })
   },
 
-  skipContactAndGenerate() {
-    this.closeContactModal()
-    // 直接执行生成逻辑
-    this.proceedGenerate()
-  },
 
   async generateReply() {
     // 校验输入：文字模式需要 message，图片模式需要 imageUrl

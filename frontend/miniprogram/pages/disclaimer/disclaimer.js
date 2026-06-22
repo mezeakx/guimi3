@@ -1,26 +1,13 @@
 // pages/disclaimer/disclaimer.js
 Page({
-  data: {
-    show: false
-  },
+  data: {},
 
   onLoad() {
-    this.checkAndShow()
+    // 保留作为备用入口，实际从 profile 弹窗打开
   },
-
-  checkAndShow() {
-    const accepted = wx.getStorageSync('disclaimer_accepted')
-    if (!accepted) {
-      this.setData({ show: true })
-    }
-  },
-
-  noop() {},
 
   accept() {
     wx.setStorageSync('disclaimer_accepted', 1)
-    this.setData({ show: false })
-    // 关闭弹窗后继续
     wx.navigateBack()
   }
 })

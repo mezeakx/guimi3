@@ -381,9 +381,6 @@
           <text class="modal-action-icon modal-action-add">＋</text>
           <text class="modal-action-text">去新建联系人</text>
         </view>
-        <view class="modal-action-btn modal-action-primary" bindtap="skipContactAndGenerate">
-          <text class="modal-action-text modal-action-primary-text">不选择联系人，直接生成</text>
-        </view>
       </view>
     </view>
   </view>
@@ -434,4 +431,5 @@
       </view>
     </view>
   </view>
+
 </view>

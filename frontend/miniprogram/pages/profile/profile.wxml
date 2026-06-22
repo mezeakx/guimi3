@@ -26,6 +26,8 @@
       wx:key="title"
       class="menu-item"
       data-url="{{item.url}}"
+      data-type="{{item.type}}"
+      data-title="{{item.title}}"
       bindtap="onMenuTap"
     >
       <text class="menu-icon">{{item.icon}}</text>
@@ -41,11 +43,388 @@
       wx:key="title"
       class="menu-item"
       data-url="{{item.url}}"
+      data-type="{{item.type}}"
+      data-title="{{item.title}}"
       bindtap="onMenuTap"
     >
       <text class="menu-icon">{{item.icon}}</text>
       <text class="menu-title">{{item.title}}</text>
       <text class="menu-arrow">></text>
+    </view>
+  </view>
+
+  <!-- 免责声明弹窗 -->
+  <view class="modal-mask" wx:if="{{showDisclaimer}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-header">
+        <text class="modal-title">免责声明</text>
+      </view>
+      <scroll-view class="modal-scroll" scroll-y enhanced="true" show-scrollbar="{{false}}">
+        <view class="modal-body">
+          <view class="intro">
+            <text class="intro-text">欢迎使用「闺蜜帮你回」。 在使用本产品前，请您仔细阅读并理解以下内容。您点击"我知道啦"或继续使用本产品，即视为您已阅读、理解并同意本免责声明。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">一、</text><text class="name">产品性质说明</text></view>
+            <text class="text">「闺蜜帮你回」是一款基于人工智能技术提供聊天表达建议的辅助工具。 本产品旨在帮助用户理解聊天内容，并提供沟通表达参考，不属于情感咨询服务、心理咨询服务、婚恋介绍服务或任何形式的结果承诺服务。 本产品提供的所有内容仅供参考，不构成任何专业建议或保证。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">二、</text><text class="name">关于AI生成内容</text></view>
+            <text class="text">本产品生成的回复建议、聊天分析、意图判断、风险提示等内容均由人工智能系统自动生成。 由于人工智能技术存在局限性，生成内容可能存在：</text>
+            <view class="list"><text class="item">理解偏差</text><text class="item">信息遗漏</text><text class="item">判断不准确</text><text class="item">表达不符合实际情况</text></view>
+            <text class="text">用户应结合自身实际情况独立判断和决定是否采纳相关建议。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">三、</text><text class="name">结果不作保证</text></view>
+            <text class="text">人与人之间的沟通和关系发展受到多种复杂因素影响，包括但不限于：</text>
+            <view class="list"><text class="item">双方性格特点</text><text class="item">沟通习惯</text><text class="item">现实环境</text><text class="item">社会关系</text><text class="item">时间因素</text></view>
+            <text class="text">因此，本产品不保证：</text>
+            <view class="list"><text class="item">对方一定回复</text><text class="item">对方一定产生好感</text><text class="item">关系一定改善</text><text class="item">感情一定升温</text><text class="item">一定脱单、复合或建立恋爱关系</text></view>
+            <text class="text">任何关系结果均与用户自身行为及实际情况有关。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">四、</text><text class="name">用户责任</text></view>
+            <text class="text">用户应对自身使用本产品后的实际沟通行为承担全部责任。用户基于本产品建议所作出的任何决定、发送的任何消息以及产生的任何后果，均由用户自行承担。对于因用户使用本产品而产生的任何争议、误解、损失或其他后果，本产品不承担责任。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">五、</text><text class="name">禁止用途</text></view>
+            <text class="text">用户不得利用本产品从事以下行为：</text>
+            <view class="list"><text class="item">骚扰他人</text><text class="item">欺骗他人</text><text class="item">情感操控</text><text class="item">网络暴力</text><text class="item">恶意营销</text><text class="item">违法违规活动</text><text class="item">侵犯他人合法权益</text></view>
+            <text class="text">如发现相关行为，本产品有权限制或终止服务。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">六、</text><text class="name">隐私保护说明</text></view>
+            <text class="text">为保护用户隐私：</text>
+            <view class="list"><text class="item">聊天内容默认仅用于本次分析</text><text class="item">服务器不保存聊天原文</text><text class="item">服务器不保存聊天截图</text><text class="item">AI分析完成后相关内容将按系统策略及时清理</text><text class="item">人物卡和聊天记录默认保存在用户本地设备</text></view>
+            <text class="text">用户可随时删除本地存储的数据。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">七、</text><text class="name">服务调整与中断</text></view>
+            <text class="text">本产品可能因系统维护、技术升级、网络异常或其他原因出现服务中断、延迟或功能调整。对于因此产生的不便，本产品将尽力优化，但不承担由此产生的损失责任。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">八、</text><text class="name">免责声明更新</text></view>
+            <text class="text">本免责声明可能根据法律法规、监管要求或产品功能变化进行更新。更新后的内容将在产品内公布，并自公布之日起生效。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">九、</text><text class="name">特别提示</text></view>
+            <text class="text">请理性使用AI建议。比起"如何回复"，真实、真诚和尊重他人的沟通方式通常更重要。本产品仅提供表达参考，不替代您的独立判断。</text>
+          </view>
+
+          <view class="footer-note">
+            <text class="footer-text">继续使用本产品，即表示您已阅读并同意本免责声明全部内容。</text>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="modal-footer">
+        <button class="btn-gradient btn-accept" bindtap="acceptDisclaimer">我知道啦</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 用户协议弹窗 -->
+  <view class="modal-mask" wx:if="{{showAgreement}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-header">
+        <text class="modal-title">用户协议</text>
+      </view>
+      <scroll-view class="modal-scroll" scroll-y enhanced="true" show-scrollbar="{{false}}">
+        <view class="modal-body">
+          <view class="intro">
+            <text class="intro-text">欢迎使用「闺蜜帮你回」（以下简称"本产品"）。 在使用本产品前，请您认真阅读并充分理解本协议全部内容。您点击同意、继续使用本产品或实际使用本产品服务，即表示您已阅读、理解并接受本协议的全部内容。 如您不同意本协议的任何内容，请立即停止使用本产品。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第一条</text><text class="name">服务说明</text></view>
+            <text class="text">1.1 本产品是一款基于人工智能技术提供聊天分析、沟通建议及表达参考服务的工具类产品。</text>
+            <text class="text">1.2 本产品主要功能包括：</text>
+            <view class="list"><text class="item">聊天内容分析</text><text class="item">回复建议生成</text><text class="item">沟通风险提示</text><text class="item">联系人人物卡管理</text><text class="item">OCR截图识别</text><text class="item">其他后续上线功能</text></view>
+            <text class="text">1.3 本产品提供的所有分析结果、建议内容及参考信息均由人工智能系统自动生成，仅供用户参考，不构成专业意见或保证。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第二条</text><text class="name">用户资格</text></view>
+            <text class="text">2.1 用户应具备完全民事行为能力，或在监护人同意和指导下使用本产品。</text>
+            <text class="text">2.2 用户应确保提供的信息真实、合法，不得冒用他人身份使用本产品。</text>
+            <text class="text">2.3 用户应遵守中华人民共和国法律法规及微信平台相关规则。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第三条</text><text class="name">用户行为规范</text></view>
+            <text class="text">用户不得利用本产品从事以下行为：</text>
+            <view class="list"><text class="item">发布、传播违法违规内容</text><text class="item">发布侮辱、诽谤、骚扰、威胁他人的内容</text><text class="item">利用本产品实施诈骗、欺骗或虚假宣传</text><text class="item">利用本产品进行情感操控、恶意诱导或骚扰行为</text><text class="item">侵犯他人隐私权、名誉权、知识产权等合法权益</text><text class="item">干扰、破坏本产品正常运行</text><text class="item">违反国家法律法规及微信平台规则的其他行为</text></view>
+            <text class="text">如用户存在上述行为，本产品有权暂停或终止服务。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第四条</text><text class="name">AI服务说明</text></view>
+            <text class="text">4.1 本产品部分功能基于人工智能模型生成。</text>
+            <text class="text">4.2 AI生成内容可能存在：</text>
+            <view class="list"><text class="item">不准确</text><text class="item">不完整</text><text class="item">理解偏差</text><text class="item">时效性不足</text><text class="item">不符合个体情况</text></view>
+            <text class="text">4.3 用户应自行判断是否采纳相关建议。</text>
+            <text class="text">4.4 本产品不保证：</text>
+            <view class="list"><text class="item">对方一定回复</text><text class="item">对方一定产生好感</text><text class="item">一定成功建立或改善关系</text><text class="item">一定实现用户期待的沟通结果</text></view>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第五条</text><text class="name">使用次数与广告服务</text></view>
+            <text class="text">5.1 本产品可能向用户提供免费使用次数。</text>
+            <text class="text">5.2 用户可通过观看激励广告获得额外使用次数。</text>
+            <text class="text">5.3 如发现异常刷取、作弊、篡改广告奖励等行为，本产品有权取消相关奖励。</text>
+            <text class="text">5.4 广告内容由第三方广告平台提供，本产品不对广告内容的真实性、合法性及后续交易结果承担责任。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第六条</text><text class="name">数据存储与本地记录</text></view>
+            <text class="text">6.1 为保护用户隐私，本产品采用"本地默认存储"策略。</text>
+            <text class="text">6.2 人物卡信息默认保存在用户设备本地，并长期保留，直至用户主动删除。</text>
+            <text class="text">6.3 聊天记录及分析结果默认保存在用户设备本地，直至用户主动删除。</text>
+            <text class="text">6.4 用户可随时手动删除聊天记录、人物卡及本地缓存数据。</text>
+            <text class="text">6.5 用户卸载小程序、清理微信缓存或更换设备后，本地数据可能无法恢复。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第七条</text><text class="name">服务数据处理</text></view>
+            <text class="text">7.1 用户提交的聊天内容、截图内容仅用于完成本次分析任务。</text>
+            <text class="text">7.2 本产品不会主动向其他用户公开用户提交的聊天内容。</text>
+            <text class="text">7.3 为保障服务运行，系统可能对相关内容进行临时处理。</text>
+            <text class="text">7.4 分析完成后，服务器不长期保存聊天原文、聊天截图及AI分析内容。</text>
+            <text class="text">7.5 用户应保证其上传内容不侵犯第三方合法权益。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第八条</text><text class="name">知识产权</text></view>
+            <text class="text">8.1 本产品的软件、界面设计、商标、名称、图标及相关内容的知识产权归运营方所有。</text>
+            <text class="text">8.2 未经许可，任何个人或组织不得复制、修改、传播、出售本产品相关内容。</text>
+            <text class="text">8.3 用户对其自行输入的内容依法享有相应权利。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第九条</text><text class="name">服务变更、中断与终止</text></view>
+            <text class="text">9.1 本产品有权根据运营需要调整功能、服务规则及收费模式。</text>
+            <text class="text">9.2 因以下原因导致服务中断或无法使用的，本产品不承担责任：</text>
+            <view class="list"><text class="item">系统维护</text><text class="item">网络故障</text><text class="item">第三方服务异常</text><text class="item">不可抗力事件</text><text class="item">政策法规调整</text></view>
+            <text class="text">9.3 本产品有权根据实际情况暂停或终止部分功能。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第十条</text><text class="name">责任限制</text></view>
+            <text class="text">10.1 用户应对其使用本产品后的行为及结果自行承担责任。</text>
+            <text class="text">10.2 本产品仅提供聊天表达参考工具服务。</text>
+            <text class="text">10.3 对于因以下原因产生的损失，本产品不承担责任：</text>
+            <view class="list"><text class="item">用户采纳AI建议产生的后果</text><text class="item">用户与第三方之间发生的争议</text><text class="item">AI内容存在误差</text><text class="item">用户自行泄露个人信息</text><text class="item">不可抗力因素导致的损失</text></view>
+            <text class="text">10.4 在法律允许范围内，本产品的责任以用户实际获得的服务范围为限。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第十一条</text><text class="name">协议修改</text></view>
+            <text class="text">11.1 本产品有权根据业务发展需要对本协议进行修改。</text>
+            <text class="text">11.2 修改后的协议将在产品内公布。</text>
+            <text class="text">11.3 用户继续使用本产品的，视为接受更新后的协议内容。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第十二条</text><text class="name">法律适用与争议解决</text></view>
+            <text class="text">12.1 本协议适用中华人民共和国法律。</text>
+            <text class="text">12.2 因本协议产生的争议，双方应友好协商解决。</text>
+            <text class="text">12.3 协商不成的，任何一方可向运营方所在地有管辖权的人民法院提起诉讼。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">第十三条</text><text class="name">联系方式</text></view>
+            <text class="text">如您对本协议有任何疑问、建议或投诉，可通过产品内"用户反馈"功能与我们联系。</text>
+          </view>
+
+          <view class="footer-note">
+            <text class="footer-text">本人已阅读并理解本协议全部内容，并同意按照本协议约定使用「闺蜜代回复」相关服务。</text>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="modal-footer">
+        <button class="btn-gradient btn-accept" bindtap="acceptAgreement">我已知晓</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 隐私政策弹窗 -->
+  <view class="modal-mask" wx:if="{{showPrivacy}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-header">
+        <text class="modal-title">隐私政策</text>
+      </view>
+      <scroll-view class="modal-scroll" scroll-y enhanced="true" show-scrollbar="{{false}}">
+        <view class="modal-body">
+          <view class="intro">
+            <text class="intro-text">欢迎使用「闺蜜帮你回」（以下简称"本产品"）。 本产品非常重视用户个人信息和隐私保护。在您使用本产品前，请仔细阅读本《隐私政策》，了解我们如何收集、使用、存储和保护您的个人信息。 当您点击同意、继续使用本产品或实际使用本产品服务时，即表示您已阅读并同意本隐私政策。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">一、</text><text class="name">我们收集的信息</text></view>
+            <text class="text">为了实现产品功能并保障服务正常运行，我们可能收集以下信息。</text>
+            <text class="text">1.1 微信登录信息</text>
+            <text class="text">当您首次进入本产品时，我们将通过微信提供的登录能力获取：</text>
+            <view class="list"><text class="item">OpenID（用户唯一标识）</text></view>
+            <text class="text">用于：</text>
+            <view class="list"><text class="item">创建用户账号</text><text class="item">记录剩余使用次数</text><text class="item">广告奖励发放</text><text class="item">用户身份识别</text></view>
+            <text class="text">我们不会获取您的：</text>
+            <view class="list"><text class="item">微信密码</text><text class="item">微信聊天记录</text><text class="item">微信好友列表</text><text class="item">微信支付信息</text></view>
+            <text class="text">1.2 用户主动提交的信息</text>
+            <text class="text">当您使用聊天分析功能时，您可能主动提交：</text>
+            <view class="list"><text class="item">聊天文本内容</text><text class="item">OCR识别图片内容</text><text class="item">前情提要信息</text><text class="item">人物卡信息</text></view>
+            <text class="text">该类信息仅用于完成当前分析任务。</text>
+            <text class="text">1.3 用户反馈信息</text>
+            <text class="text">当您通过反馈功能联系我们时，我们可能收集：</text>
+            <view class="list"><text class="item">反馈内容</text><text class="item">联系方式（如您主动提供）</text><text class="item">设备信息（用于定位问题）</text></view>
+            <text class="text">1.4 广告相关信息</text>
+            <text class="text">当您观看激励广告时，我们可能记录：</text>
+            <view class="list"><text class="item">广告完成状态</text><text class="item">奖励领取状态</text><text class="item">广告时间记录</text></view>
+            <text class="text">用于防止作弊和发放奖励。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">二、</text><text class="name">我们如何使用信息</text></view>
+            <text class="text">我们收集的信息仅用于以下目的：</text>
+            <view class="list"><text class="item">提供聊天分析服务</text><text class="item">生成回复建议</text><text class="item">完成OCR识别</text><text class="item">管理用户使用次数</text><text class="item">发放广告奖励</text><text class="item">保障系统安全运行</text><text class="item">处理用户反馈</text><text class="item">优化产品体验</text></view>
+            <text class="text">未经您的授权，我们不会将您的个人信息用于其他用途。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">三、</text><text class="name">聊天内容与截图处理规则</text></view>
+            <text class="text">为了保护用户隐私，本产品采用"本地默认存储"策略。</text>
+            <text class="text">3.1 聊天内容</text>
+            <text class="text">用户提交的聊天内容仅用于完成本次分析任务。</text>
+            <text class="text">分析完成后：</text>
+            <view class="list"><text class="item">不长期保存聊天原文</text><text class="item">不建立聊天数据库</text><text class="item">不用于向其他用户展示</text></view>
+            <text class="text">3.2 聊天截图</text>
+            <text class="text">用户上传的截图仅用于OCR识别及当前分析。</text>
+            <text class="text">分析完成后：</text>
+            <view class="list"><text class="item">不保存截图文件</text><text class="item">不建立图片库</text><text class="item">不对外展示</text></view>
+            <text class="text">3.3 AI分析结果</text>
+            <text class="text">AI生成的回复建议和分析结果：</text>
+            <text class="text">默认保存在用户本地设备。</text>
+            <text class="text">服务器不长期保存相关内容。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">四、</text><text class="name">本地存储说明</text></view>
+            <text class="text">为了提升用户体验，本产品可能在您的设备本地保存以下信息：</text>
+            <text class="text">4.1 人物卡</text>
+            <text class="text">包括：</text>
+            <view class="list"><text class="item">联系人昵称</text><text class="item">男生身份</text><text class="item">回复目标</text><text class="item">回复风格</text></view>
+            <text class="text">保存期限：长期保存，直至用户主动删除。</text>
+            <text class="text">4.2 聊天记录</text>
+            <text class="text">包括：</text>
+            <view class="list"><text class="item">用户输入内容</text><text class="item">OCR识别内容</text><text class="item">AI分析结果</text></view>
+            <text class="text">保存期限：默认本地保存7天。超过7天后自动删除。</text>
+            <text class="text">4.3 最近联系人</text>
+            <text class="text">用于快捷选择联系人。保存在本地设备中。</text>
+            <text class="text">4.4 本地数据删除</text>
+            <text class="text">用户可通过：</text>
+            <text class="text">个人中心 → 清空所有数据</text>
+            <text class="text">执行：</text>
+            <view class="list"><text class="item">删除聊天记录</text><text class="item">删除人物卡</text><text class="item">清除全部本地数据</text></view>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">五、</text><text class="name">我们不会收集的信息</text></view>
+            <text class="text">除非法律法规要求，否则我们不会主动收集：</text>
+            <view class="list"><text class="item">微信聊天记录</text><text class="item">微信好友关系</text><text class="item">通讯录信息</text><text class="item">短信内容</text><text class="item">银行账户信息</text><text class="item">身份证号码</text><text class="item">面部信息</text><text class="item">指纹信息</text><text class="item">精确地理位置</text></view>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">六、</text><text class="name">第三方服务说明</text></view>
+            <text class="text">为了实现部分功能，本产品可能接入第三方服务。</text>
+            <text class="text">6.1 微信开放平台</text>
+            <text class="text">用于：</text>
+            <view class="list"><text class="item">用户登录</text><text class="item">内容安全审核</text><text class="item">广告服务</text></view>
+            <text class="text">6.2 AI服务提供商</text>
+            <text class="text">用于：</text>
+            <view class="list"><text class="item">聊天分析</text><text class="item">回复生成</text></view>
+            <text class="text">用户提交的聊天内容将在分析过程中发送至AI服务接口进行处理。</text>
+            <text class="text">6.3 OCR服务提供商</text>
+            <text class="text">用于：</text>
+            <view class="list"><text class="item">图片文字识别</text></view>
+            <text class="text">用户上传的截图可能发送至OCR服务接口完成识别。</text>
+            <text class="text">6.4 广告服务提供商</text>
+            <text class="text">用于：</text>
+            <view class="list"><text class="item">激励广告展示</text><text class="item">广告奖励统计</text></view>
+            <text class="text">第三方服务可能根据其自身隐私政策处理相关信息。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">七、</text><text class="name">信息共享与披露</text></view>
+            <text class="text">我们不会出售用户个人信息。</text>
+            <text class="text">除以下情况外，我们不会向第三方共享您的个人信息：</text>
+            <view class="list"><text class="item">获得您的明确授权</text><text class="item">法律法规要求</text><text class="item">司法机关、行政机关依法要求</text><text class="item">为保障用户或公众合法权益所必需</text><text class="item">为维护系统安全和防止违法行为所必需</text></view>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">八、</text><text class="name">信息存储与保护</text></view>
+            <text class="text">我们采取合理的技术措施保护用户信息，包括但不限于：</text>
+            <view class="list"><text class="item">HTTPS传输加密</text><text class="item">接口权限控制</text><text class="item">服务访问控制</text><text class="item">数据最小化原则</text><text class="item">安全日志监控</text></view>
+            <text class="text">尽管如此，互联网环境无法保证绝对安全，请您妥善保管个人设备及账号信息。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">九、</text><text class="name">未成年人保护</text></view>
+            <text class="text">未成年人应在监护人指导下阅读并使用本产品。</text>
+            <text class="text">如监护人认为未成年人向本产品提交了个人信息，可通过产品内反馈渠道联系我们处理。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">十、</text><text class="name">用户权利</text></view>
+            <text class="text">您有权：</text>
+            <view class="list"><text class="item">查询本政策内容</text><text class="item">删除本地聊天记录</text><text class="item">删除人物卡信息</text><text class="item">清除本地缓存数据</text><text class="item">停止使用本产品</text><text class="item">提交意见与投诉</text></view>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">十一、</text><text class="name">隐私政策更新</text></view>
+            <text class="text">本产品可能根据法律法规变化、监管要求或业务调整更新本隐私政策。</text>
+            <text class="text">更新后的版本将在产品内公布。</text>
+            <text class="text">继续使用本产品即视为接受更新后的隐私政策。</text>
+          </view>
+
+          <view class="section">
+            <view class="section-title"><text class="num">十二、</text><text class="name">联系我们</text></view>
+            <text class="text">如果您对本隐私政策有任何疑问、建议或投诉，可以通过：</text>
+            <text class="text">产品内「用户反馈」</text>
+            <text class="text">与我们联系。</text>
+            <text class="text">我们将在合理时间内进行处理。</text>
+          </view>
+
+          <view class="footer-note">
+            <text class="footer-text">感谢您对「闺蜜帮你回」的信任。 我们将持续努力保护您的个人信息和隐私安全。</text>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="modal-footer">
+        <button class="btn-gradient btn-accept" bindtap="acceptPrivacy">我已阅读</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 清空数据确认弹窗 -->
+  <view class="modal-mask" wx:if="{{showClearDataModal}}" bindtap="closeClearDataModal">
+    <view class="modal-content modal-content--small" catchtap="noop">
+      <view class="modal-header">
+        <text class="modal-title">确认清空</text>
+      </view>
+      <view class="modal-body modal-body--compact">
+        <text class="modal-desc">一键清空所有用户数据，包括人物卡和本地保存的聊天记录，并且永久无法恢复，是否同意？</text>
+      </view>
+      <view class="modal-footer modal-footer--two">
+        <button class="btn-cancel" bindtap="cancelClearData">取消，再想想</button>
+        <button class="btn-confirm-danger" bindtap="confirmClearData">同意，一键清空</button>
+      </view>
     </view>
   </view>
 </view>
