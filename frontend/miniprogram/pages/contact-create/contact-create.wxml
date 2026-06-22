@@ -67,7 +67,7 @@
   </view>
 
   <!-- 回复风格 -->
-  <view class="card">
+  <view class="card" id="styleSection">
     <view class="section-header">
       <view class="section-title-wrapper">
         <view class="section-icon">

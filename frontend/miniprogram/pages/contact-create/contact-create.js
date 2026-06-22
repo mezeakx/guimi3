@@ -216,7 +216,6 @@ Page({
   },
 
   onLoad(options) {
-
     if (options.id) {
       const contacts = wx.getStorageSync('contacts') || [];
       const contact = contacts.find(c => String(c.id) === String(options.id));
@@ -249,13 +248,22 @@ Page({
 
 
   onShow() {
+    // 如果 URL 带 scrollTo=style，页面渲染后滚动到回复风格模块
+    const pages = getCurrentPages()
+    const currentPage = pages[pages.length - 1]
+    const options = currentPage.options || {}
+    if (options.scrollTo === 'style') {
+      setTimeout(() => {
+        wx.pageScrollTo({
+          scrollTop: 1200,
+          duration: 300
+        })
+      }, 300)
+    }
+
     // 获取当前页面的参数 - 简化版本
-    const pages = getCurrentPages();
-    const currentPage = pages[pages.length - 1];
-    const options = currentPage.options || {};
-    
     console.log('onShow called, options:', options);
-    
+
     // 如果有ID参数，加载联系人数据进行编辑
     if (options && options.id) {
       try {

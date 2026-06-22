@@ -246,10 +246,11 @@ page {
 
 /* ========== 复制按钮 ========== */
 .copy-btn {
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
+  justify-content: center;
   gap: 6rpx;
-  padding: 10rpx 24rpx;
+  padding: 10rpx 20rpx;
   border-radius: 999rpx;
   font-size: 24rpx;
   font-weight: 500;
@@ -257,8 +258,13 @@ page {
   border: 2rpx solid;
   background: #fff;
   margin: 0;
-  padding: 0;
   height: auto;
+  width: auto;
+  min-width: 0;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  flex-grow: 0;
+  margin-left: auto;
 }
 
 .copy-btn::after {

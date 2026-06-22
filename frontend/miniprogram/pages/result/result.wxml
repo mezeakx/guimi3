@@ -67,7 +67,7 @@
       <view class="reply-card-top">
         <view class="reply-left">
           <view class="reply-badge badge-pink">A</view>
-          <text class="reply-style style-pink">{{replies[0].style || '稳妥自然'}}</text>
+      <text class="reply-style style-pink">{{replies[0].style}}</text>
         </view>
         <button class="copy-btn copy-btn-pink" data-reply="0" bindtap="copyReply">
           <text class="copy-icon">📋</text>
@@ -88,10 +88,6 @@
             <text wx:for="{{5}}" wx:key="index" wx:for-item="i" class="star {{i < (replies[0].good || 0) ? 'filled' : 'empty'}}">★</text>
           </view>
         </view>
-        <view class="meta-chip">
-          <text class="meta-label">聊天节奏：</text>
-          <text class="meta-value">{{replies[0].rhythm || '自然'}}</text>
-        </view>
       </view>
     </view>
 
@@ -100,7 +96,7 @@
       <view class="reply-card-top">
         <view class="reply-left">
           <view class="reply-badge badge-purple">B</view>
-          <text class="reply-style style-purple">{{replies[1].style || '提升好感'}}</text>
+          <text class="reply-style style-purple">{{replies[1].style}}</text>
         </view>
         <button class="copy-btn copy-btn-purple" data-reply="1" bindtap="copyReply">
           <text class="copy-icon">📋</text>
@@ -121,10 +117,6 @@
             <text wx:for="{{5}}" wx:key="index" wx:for-item="i" class="star {{i < (replies[1].good || 0) ? 'filled' : 'empty'}}">★</text>
           </view>
         </view>
-        <view class="meta-chip">
-          <text class="meta-label">聊天节奏：</text>
-          <text class="meta-value">{{replies[1].rhythm || '稍快'}}</text>
-        </view>
       </view>
     </view>
 
@@ -133,7 +125,7 @@
       <view class="reply-card-top">
         <view class="reply-left">
           <view class="reply-badge badge-orange">C</view>
-          <text class="reply-style style-orange">{{replies[2].style || '轻微拉扯'}}</text>
+          <text class="reply-style style-orange">{{replies[2].style}}</text>
         </view>
         <button class="copy-btn copy-btn-orange" data-reply="2" bindtap="copyReply">
           <text class="copy-icon">📋</text>
@@ -154,20 +146,16 @@
             <text wx:for="{{5}}" wx:key="index" wx:for-item="i" class="star {{i < (replies[2].good || 0) ? 'filled' : 'empty'}}">★</text>
           </view>
         </view>
-        <view class="meta-chip">
-          <text class="meta-label">聊天节奏：</text>
-          <text class="meta-value">{{replies[2].rhythm || '慢热'}}</text>
-        </view>
       </view>
     </view>
   </view>
 
   <!-- 想换个风格试试？ -->
-  <view class="style-switch-card" bindtap="switchStyle">
+  <view class="style-switch-card" bindtap="switchToIndex">
     <view class="style-switch-left">
       <text class="style-lightbulb">💡</text>
       <view class="style-switch-texts">
-        <text class="style-switch-title">想换个风格试试？</text>
+        <text class="style-switch-title">想换个内容试试？</text>
         <text class="style-switch-desc">可以切换聊天节奏或修改想法，让回复更贴合你的心意</text>
       </view>
     </view>
@@ -178,7 +166,7 @@
   <view class="bottom-actions">
     <button class="btn-replace" bindtap="replaceReply">
       <text class="btn-replace-icon">🔄</text>
-      <text>换一种回复</text>
+      <text>换一种风格</text>
     </button>
     <button class="btn-regenerate" bindtap="regenerateReply">
       <text class="btn-regen-emoji">✨</text>

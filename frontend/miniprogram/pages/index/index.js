@@ -130,7 +130,40 @@ Page({
   },
 
   onShow() {
+    // 从 storage 恢复上一次填写的表单数据
+    this._restoreFormFromStorage()
     this.loadRecentContacts()
+  },
+
+  /** 从 storage 恢复首页表单数据 */
+  _restoreFormFromStorage: function() {
+    try {
+      var saved = wx.getStorageSync('__restore_index__')
+      if (!saved) return
+
+      var obj = {}
+      if (saved.message !== undefined) {
+        obj.message = saved.message
+        obj.charCount = (saved.message || '').length
+      }
+      if (saved.context !== undefined) {
+        obj.context = saved.context
+        obj.contextCount = (saved.context || '').length
+      }
+      if (saved.pace !== undefined) {
+        var level = this.data.paceLevels.find(function(item) { return item.value === saved.pace })
+        obj.paceValue = saved.pace
+        obj.paceInfo = level ? { name: level.name, features: level.features, example: level.example } : this.data.paceInfo
+      }
+
+      if (Object.keys(obj).length) {
+        this.setData(obj)
+      }
+      // 清理缓存，避免下次误恢复
+      wx.removeStorageSync('__restore_index__')
+    } catch (e) {
+      // ignore
+    }
   },
 
 
@@ -485,22 +518,48 @@ Page({
   },
 
   proceedWithGeneration() {
-    // 直接使用 mock 数据，不调用后端
+    // 读取已选联系人的风格
+    const selectedId = wx.getStorageSync('selected_contact_id') || ''
+    const allContacts = wx.getStorageSync('contacts') || []
+    const selectedContact = allContacts.find(function(c) {
+      return String(c.id) === String(selectedId)
+    })
+    // style_labels 是风格的中文标签数组，如 ['温柔', '可爱']
+    var contactStyles = []
+    if (selectedContact && selectedContact.style_labels && Array.isArray(selectedContact.style_labels)) {
+      contactStyles = selectedContact.style_labels
+    }
+
     setTimeout(() => {
       hideLoading()
       const newCount = this.data.remainingCount - 1
       this.setData({ remainingCount: newCount, generating: false })
+
+      // 根据联系人选择的风格动态生成回复样式标签
+      var baseStyle = contactStyles[0] || '稳妥自然'
+      var styleA = baseStyle
+      var styleB = contactStyles.length >= 2 ? contactStyles[1] : baseStyle
+      var styleC = contactStyles.length >= 2
+        ? contactStyles[0] + '+' + contactStyles[1]
+        : (contactStyles[0] ? contactStyles[0] + '+自然' : '自然')
 
       const mockResult = {
         thinking: '他主动找你聊天，并持续追问你的情况，大概率希望继续推进关系。',
         thinkingTags: ['对你有兴趣', '想继续话题', '期待你给出反馈'],
         remind: '不建议过于主动，把节奏放慢一点，先观察他的投入程度，保持轻松自然。',
         remindTags: ['不要立刻答应见面', '先继续聊天观察'],
+        // 传递首页表单数据，供结果页恢复时使用
+        message: this.data.message || '',
+        context: this.data.context || '',
+        pace: this.data.paceValue || 25,
+        contact_id: wx.getStorageSync('selected_contact_id') || '',
         replies: [
-          { text: '哈哈可以呀～不过我对那边不太熟，你有什么推荐吗？', style: '稳妥自然', active: 2, good: 4, rhythm: '自然' },
-          { text: '听起来还不错～有机会可以一起去看看呀～', style: '提升好感', active: 3, good: 5, rhythm: '稍快' },
-          { text: '怎么突然想约我啦～', style: '轻微拉扯', active: 1, good: 3, rhythm: '慢热' }
-        ]
+          { text: '哈哈可以呀～不过我对那边不太熟，你有什么推荐吗？', style: styleA, active: 2, good: 4, rhythm: '自然' },
+          { text: '听起来还不错～有机会可以一起去看看呀～', style: styleB, active: 3, good: 5, rhythm: '稍快' },
+          { text: '怎么突然想约我啦～', style: styleC, active: 1, good: 3, rhythm: '慢热' }
+        ],
+        // 传递联系人的风格标签供结果页展示
+        contactStyles: contactStyles
       }
 
       wx.navigateTo({
