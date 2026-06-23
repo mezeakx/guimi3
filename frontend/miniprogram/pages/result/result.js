@@ -25,17 +25,26 @@ Page({
   },
 
   onLoad(options) {
+    // 优先从 storage 读取完整数据
+    try {
+      var cachedData = wx.getStorageSync('__result_data__')
+      if (cachedData) {
+        this._processReplyData(cachedData)
+        return
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // 兼容旧方式：从 URL 参数读取
     if (options.data) {
       try {
         const data = JSON.parse(decodeURIComponent(options.data))
-        console.log('[result] parsed data:', JSON.stringify(data))
         this._processReplyData(data)
       } catch (e) {
-        console.error('解析返回数据失败:', e)
         this._setDefaultReplies()
       }
     } else {
-      // 没有数据，显示默认占位
       this._setDefaultReplies()
     }
   },
@@ -45,10 +54,26 @@ Page({
     this._restoreContext()
   },
 
+  onHide() {
+    // 页面隐藏时清理缓存，避免影响下一次
+    try {
+      wx.removeStorageSync('__result_data__')
+    } catch (e) {
+      // ignore
+    }
+  },
+
+  onUnload() {
+    try {
+      wx.removeStorageSync('__result_data__')
+    } catch (e) {
+      // ignore
+    }
+  },
+
   /** 处理后端返回的分析数据 */
   _processReplyData(data) {
     if (!data) {
-      console.warn('_processReplyData: data is null/undefined')
       this._setDefaultReplies()
       return
     }
@@ -68,7 +93,7 @@ Page({
         })
       })
     } else if (data.reply_A || data.reply_B || data.reply_C) {
-      // 旧格式兼容：用 contactStyles 填充 style 标签
+      // 旧格式兼容
       var cs = data.contactStyles || []
       var baseStyle = cs[0] || '稳妥自然'
       var sA = baseStyle
@@ -105,9 +130,21 @@ Page({
       remindTags: Array.isArray(data.remind_tags) ? data.remind_tags : (Array.isArray(data.tags) ? data.tags.filter(function(t) { return t && t.type === 'remind'; }) : [])
     }
 
+    // 深度克隆 replies（JSON 序列化确保完全新的对象引用）
+    var finalReplies = []
+    ;(replies.length ? replies : this._getDefaultReplies()).forEach(function(r, idx) {
+      finalReplies.push({
+        text: r.text || '',
+        style: r.style || '',
+        active: Number(r.active) || 2,
+        good: Number(r.good) || 4,
+        rhythm: r.rhythm || ''
+      })
+    })
+
     this.setData({
       analysis: analysis,
-      replies: replies.length ? replies : this.data.replies,
+      replies: JSON.parse(JSON.stringify(finalReplies)),
       rawData: data,
       currentMessage: data.message || '',
       currentContext: data.context || '',
@@ -115,6 +152,22 @@ Page({
       currentContactId: data.contact_id || null,
       contactStyles: data.contactStyles || []
     })
+  },
+
+  /** 获取默认回复（当后端未返回有效 replies 时使用） */
+  _getDefaultReplies: function() {
+    var styles = this.data.contactStyles || []
+    var baseStyle = styles[0] || '稳妥自然'
+    var styleA = baseStyle
+    var styleB = styles.length >= 2 ? styles[1] : '提升好感'
+    var styleC = styles.length >= 2
+      ? (styles[0] + '+' + styles[1])
+      : '轻微拉扯'
+    return [
+      { text: '暂时无法生成，请重试', style: styleA, active: 2, good: 4, rhythm: '自然' },
+      { text: '暂时无法生成，请重试', style: styleB, active: 3, good: 5, rhythm: '稍快' },
+      { text: '暂时无法生成，请重试', style: styleC, active: 1, good: 3, rhythm: '慢热' }
+    ]
   },
 
   /** 设置默认回复占位 */

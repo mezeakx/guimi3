@@ -171,6 +171,41 @@
       </view>
     </view>
 
+    <!-- 我的人设模块 -->
+    <view class="section persona-section">
+      <view class="section-header">
+        <view class="section-bar"></view>
+        <text class="section-title">我的人设</text>
+        <text class="section-subtitle">（默认普通女生）</text>
+      </view>
+
+      <!-- 人设选项 - 网格排列 -->
+      <view class="persona-options-grid">
+        <view
+          wx:for="{{personaOptions}}"
+          wx:key="value"
+          class="persona-pill {{selectedPersona === item.value ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="selectPersona"
+        >
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+
+      <!-- 当前人设解释区 -->
+      <view class="persona-explanation">
+        <view class="persona-current-badge">
+          <text class="persona-badge-name">{{personaInfo.name}}</text>
+        </view>
+        <view class="persona-detail">
+          <view class="persona-detail-item">
+            <text class="persona-detail-label">💡 特点：</text>
+            <text class="persona-detail-text">{{personaInfo.features}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
     <!-- 生成按钮 -->
     <button class="btn-gradient submit-btn" bindtap="generateReply" disabled="{{generating}}">
       <text wx:if="{{!generating}}">✨ 生成回复建议</text>
@@ -313,6 +348,41 @@
           <view class="pace-detail-item" wx:if="{{paceInfo.example}}">
             <text class="pace-detail-label">📝 例如：</text>
             <text class="pace-detail-example">{{paceInfo.example}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 我的人设模块 -->
+    <view class="section persona-section">
+      <view class="section-header">
+        <view class="section-bar"></view>
+        <text class="section-title">我的人设</text>
+        <text class="section-subtitle">（默认普通女生）</text>
+      </view>
+
+      <!-- 人设选项 - 网格排列 -->
+      <view class="persona-options-grid">
+        <view
+          wx:for="{{personaOptions}}"
+          wx:key="value"
+          class="persona-pill {{selectedPersona === item.value ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="selectPersona"
+        >
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+
+      <!-- 当前人设解释区 -->
+      <view class="persona-explanation">
+        <view class="persona-current-badge">
+          <text class="persona-badge-name">{{personaInfo.name}}</text>
+        </view>
+        <view class="persona-detail">
+          <view class="persona-detail-item">
+            <text class="persona-detail-label">💡 特点：</text>
+            <text class="persona-detail-text">{{personaInfo.features}}</text>
           </view>
         </view>
       </view>

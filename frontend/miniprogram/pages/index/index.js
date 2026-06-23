@@ -1,4 +1,5 @@
 // pages/index/index.js
+const api = require('../../utils/http')
 const { processContactsAvatars } = require('../../utils/identity-avatar')
 const config = require('../../config/index')
 const { countChars, showLoading, hideLoading, isEmpty, showToast } = require('../../utils/helpers')
@@ -22,6 +23,23 @@ Page({
       { value: 75, name: '暧昧模式', features: '不说透，让对方接话', example: '这么突然约我呀' },
       { value: 100, name: '拉扯模式', features: '制造猜测，保留神秘感', example: '你猜我会怎么想~' }
     ],
+
+    // 我的人设
+    selectedPersona: '普通女生',
+    personaInfo: {},
+    personaOptions: [
+      { value: '普通女生', label: '普通女生', name: '普通女生', features: '喜欢自然真实地聊天\n不会刻意撩人，也不会故意高冷\n表达舒服、有礼貌，适合大多数场景', example: '哈哈可以呀\n你说的那个地方我没去过呢' },
+      { value: '纯情女大', label: '纯情女大', name: '纯情女大', features: '容易害羞，不太会主动\n喜欢慢慢熟悉，不喜欢太直接\n偶尔会嘴硬，但其实很好哄', example: '嗯……让我想想嘛\n也没有很想去啦' },
+      { value: '温柔姐姐', label: '温柔姐姐', name: '温柔姐姐', features: '喜欢用温柔、体贴的方式表达\n很少发脾气，不喜欢争吵\n不喜欢过度卖萌，更注重照顾对方感受', example: '辛苦啦~\n要不要一起吃个饭放松一下？' },
+      { value: '元气少女', label: '元气少女', name: '元气少女', features: '喜欢轻松愉快地聊天\n经常使用表情和感叹词\n热情开朗，擅长制造聊天氛围', example: '好耶！终于有空啦～\n我们快去快回！✨' },
+      { value: '甜妹', label: '甜妹', name: '甜妹', features: '喜欢可爱、软萌的表达方式\n经常使用颜文字、表情和语气词\n偶尔会撒娇，希望对方多关注自己', example: '好呀好呀 (◍•ᴗ•◍)\n你真好～' },
+      { value: '钓系御姐', label: '钓系御姐', name: '钓系御姐', features: '不会把喜欢表现得太明显\n擅长制造一点若即若离的感觉\n偶尔会撩人，但始终保持分寸感', example: '哦？是吗～\n那看你表现咯' },
+      { value: '霸气女王', label: '霸气女王', name: '霸气女王', features: '说话自信，有主见\n不喜欢讨好别人，也不会委屈自己\n喜欢平等、直接的交流方式', example: '行啊，我来定\n周六晚上七点' },
+      { value: '酷女孩', label: '酷女孩', name: '酷女孩', features: '不喜欢矫情和过度拉扯\n态度随性，偶尔耍酷\n更喜欢像朋友一样自然相处', example: '随便你啦\n不过我可不是因为想你才说的哦' },
+      { value: '成熟理性派', label: '成熟理性派', name: '成熟理性派', features: '更注重逻辑和沟通效率\n很少情绪化表达\n遇到问题喜欢直接沟通和解决', example: '我觉得我们可以好好聊聊\n说说你的想法' },
+      { value: '抽象搞笑女', label: '抽象搞笑女', name: '抽象搞笑女', features: '喜欢玩梗、接梗和整活\n聊天主打一个有趣，不喜欢太严肃\n即使表达喜欢，也会带点幽默感', example: '你这是在跟我表白吗\n那我先考虑一下要不要接受 (^_^)' }
+    ],
+
     remainingCount: 3,
     recentContacts: [],
     generating: false,
@@ -127,6 +145,7 @@ Page({
     this.loadRecentContacts()
     this._initCurrentOptions('affection')
     this._initPaceInfo()
+    this._initPersonaInfo()
   },
 
   onShow() {
@@ -154,6 +173,11 @@ Page({
         var level = this.data.paceLevels.find(function(item) { return item.value === saved.pace })
         obj.paceValue = saved.pace
         obj.paceInfo = level ? { name: level.name, features: level.features, example: level.example } : this.data.paceInfo
+      }
+      if (saved.persona !== undefined) {
+        var persona = this.data.personaOptions.find(function(item) { return item.value === saved.persona })
+        obj.selectedPersona = saved.persona
+        obj.personaInfo = persona ? { name: persona.name, features: persona.features, example: persona.example } : this.data.personaInfo
       }
 
       if (Object.keys(obj).length) {
@@ -184,6 +208,39 @@ Page({
     }
   },
 
+  // 初始化 personaInfo（页面加载时调用）
+  _initPersonaInfo() {
+    const value = this.data.selectedPersona
+    const persona = this.data.personaOptions.find(function(item) {
+      return item.value === value
+    })
+    if (persona) {
+      this.setData({
+        personaInfo: {
+          name: persona.name,
+          features: persona.features,
+          example: persona.example
+        }
+      })
+    }
+  },
+
+  // 选择人设
+  selectPersona(e) {
+    const value = e.currentTarget.dataset.value
+    const persona = this.data.personaOptions.find(function(item) {
+      return item.value === value
+    })
+    this.setData({
+      selectedPersona: value,
+      personaInfo: persona ? {
+        name: persona.name,
+        features: persona.features,
+        example: persona.example
+      } : this.data.personaInfo
+    })
+  },
+
   // 选择聊天节奏档位
   selectPaceLevel(e) {
     const value = parseInt(e.currentTarget.dataset.value)
@@ -200,7 +257,7 @@ Page({
     })
   },
 
-    switchInputMode(e) {
+  switchInputMode(e) {
     const mode = e.currentTarget.dataset.mode
     this.setData({ inputMode: mode })
     if (mode === 'image') {
@@ -505,10 +562,17 @@ Page({
       return
     }
 
-    if (this.data.remainingCount <= 0) {
-      showToast('今日次数已用完，观看广告获取更多')
-      return
+    // 确保已登录（token 就绪）
+    if (!wx.getStorageSync('token')) {
+      try {
+        await getApp().login()
+      } catch (e) {
+        console.error('自动登录失败:', e)
+        showToast('登录失败，请重试')
+        return
+      }
     }
+
     if (this.data.generating) return
 
     this.setData({ generating: true })
@@ -530,51 +594,110 @@ Page({
       contactStyles = selectedContact.style_labels
     }
 
-    setTimeout(() => {
-      hideLoading()
-      const newCount = this.data.remainingCount - 1
-      this.setData({ remainingCount: newCount, generating: false })
+    var self = this
+    var payload = {
+      message: this.data.message || '',
+      context: this.data.context || '',
+      pace: this.data.paceValue || 25,
+      contact_id: selectedId ? Number(selectedId) : null,
+      persona: this.data.selectedPersona || '普通女生',
+      thoughtCategories: [],
+      thoughtCustom: this.data.thoughtCustom || '',
+      relationshipOptions: []
+    }
 
-      // 根据联系人选择的风格动态生成回复样式标签
-      var baseStyle = contactStyles[0] || '稳妥自然'
-      var styleA = baseStyle
-      var styleB = contactStyles.length >= 2 ? contactStyles[1] : baseStyle
-      var styleC = contactStyles.length >= 2
-        ? contactStyles[0] + '+' + contactStyles[1]
-        : (contactStyles[0] ? contactStyles[0] + '+自然' : '自然')
-
-      const mockResult = {
-        thinking: '他主动找你聊天，并持续追问你的情况，大概率希望继续推进关系。',
-        thinkingTags: ['对你有兴趣', '想继续话题', '期待你给出反馈'],
-        remind: '不建议过于主动，把节奏放慢一点，先观察他的投入程度，保持轻松自然。',
-        remindTags: ['不要立刻答应见面', '先继续聊天观察'],
-        // 传递首页表单数据，供结果页恢复时使用
-        message: this.data.message || '',
-        context: this.data.context || '',
-        pace: this.data.paceValue || 25,
-        contact_id: wx.getStorageSync('selected_contact_id') || '',
-        replies: [
-          { text: '哈哈可以呀～不过我对那边不太熟，你有什么推荐吗？', style: styleA, active: 2, good: 4, rhythm: '自然' },
-          { text: '听起来还不错～有机会可以一起去看看呀～', style: styleB, active: 3, good: 5, rhythm: '稍快' },
-          { text: '怎么突然想约我啦～', style: styleC, active: 1, good: 3, rhythm: '慢热' }
-        ],
-        // 传递联系人的风格标签供结果页展示
-        contactStyles: contactStyles
+    // 收集选中的想法标签
+    this.data.currentThoughtOptions.forEach(function(opt) {
+      if (opt.selected) {
+        payload.thoughtCategories.push(opt.value)
       }
+    })
 
-      wx.navigateTo({
-        url: '/pages/result/result?data=' + encodeURIComponent(JSON.stringify(mockResult))
+    // 收集选中的关系标签
+    this.data.relationshipOptions.forEach(function(opt) {
+      if (opt.selected) {
+        payload.relationshipOptions.push(opt.value)
+      }
+    })
+
+    // 收集联系人的身份/目标/风格标签
+    if (selectedContact) {
+      if (selectedContact.identity_labels) payload.identity_labels = selectedContact.identity_labels
+      if (selectedContact.target_labels) payload.target_labels = selectedContact.target_labels
+      if (selectedContact.style_labels) payload.style_labels = selectedContact.style_labels
+    }
+
+    showLoading('分析中..')
+
+    api.post('/analysis/generate', payload)
+      .then(function(res) {
+        hideLoading()
+        self.setData({ generating: false })
+
+        // res 是 http.js resolve 的完整响应
+        if (res && res.data) {
+          var resultData = res.data
+
+          // 兼容两层 data 嵌套的情况
+          var analysisData = resultData.data || resultData
+
+          // 检查是否是错误提示
+          if (!analysisData.replies && !analysisData.thinking && !analysisData.reply_A) {
+            if (resultData.message) {
+              showToast(resultData.message)
+            } else {
+              showToast('生成失败，请稍后再试')
+            }
+            return
+          }
+
+          // 合并联系人的风格标签到回复数据
+          analysisData.contactStyles = contactStyles
+          if (res.remaining !== undefined) {
+            self.setData({ remainingCount: res.remaining })
+          }
+          // 清理旧的缓存，确保新数据被正确加载
+          try { wx.removeStorageSync('__result_data__') } catch (e) {}
+          // 通过 storage 缓存完整数据
+          try {
+            wx.setStorageSync('__result_data__', analysisData)
+          } catch (e) {
+            console.error('[index] storage write failed:', e)
+          }
+          wx.navigateTo({
+            url: '/pages/result/result'
+          })
+        } else {
+          showToast('生成失败，请稍后再试')
+          self.setData({ generating: false })
+        }
       })
-    }, 600)
+      .catch(function(err) {
+        hideLoading()
+        self.setData({ generating: false })
+        console.error('API 请求失败:', err)
+        showToast('请求失败: ' + (err.message || '请稍后再试'))
+      })
   },
 
   // 跳过联系人直接生成
-  proceedGenerate() {
+  async proceedGenerate() {
     if (this.data.remainingCount <= 0) {
       showToast('今日次数已用完，观看广告获取更多')
       return
     }
     if (this.data.generating) return
+
+    // 确保已登录
+    if (!wx.getStorageSync('token')) {
+      try {
+        await getApp().login()
+      } catch (e) {
+        console.error('自动登录失败:', e)
+        showToast('登录失败，请重试')
+        return
+      }
+    }
 
     this.setData({ generating: true })
     showLoading('分析中..')

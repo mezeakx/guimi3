@@ -2,7 +2,7 @@
 const config = require('../config/index')
 
 // Mock 数据
-var MOCK_ENABLED = true
+var MOCK_ENABLED = false
 
 var mockData = {
   thinking: '他主动找你聊天，并持续追问你的情况，大概率希望继续推进关系。',
@@ -49,6 +49,7 @@ function request(apiUrl, method, data) {
       url: config.baseUrl + apiUrl,
       method: method,
       data: data,
+      timeout: 30000,
       header: {
         'Content-Type': 'application/json',
         'Authorization': token ? 'Bearer ' + token : ''

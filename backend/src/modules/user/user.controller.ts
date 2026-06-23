@@ -1,4 +1,4 @@
-﻿import { Controller, Get, Post, Body, UseGuards, Logger } from '@nestjs/common';
+﻿import { Controller, Get, Post, Body, UseGuards, Logger, HttpCode } from '@nestjs/common';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { UserService, UserInfo } from './user.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -16,6 +16,7 @@ export class UserController {
   }
 
   @Post('update-profile')
+  @HttpCode(200)
   async updateProfile(
     @CurrentUser() user: any,
     @Body() data: { nickname?: string; avatar?: string },

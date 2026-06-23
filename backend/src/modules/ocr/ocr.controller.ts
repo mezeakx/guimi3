@@ -1,4 +1,4 @@
-﻿import { Controller, Post, UseGuards, Req, UploadedFile, Logger } from '@nestjs/common';
+﻿import { Controller, Post, UseGuards, Req, UploadedFile, Logger, HttpCode } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { OcrService } from './ocr.service';
@@ -11,6 +11,7 @@ export class OcrController {
   constructor(private readonly ocrService: OcrService) {}
 
   @Post('recognize')
+  @HttpCode(200)
   @UseGuards(FileInterceptor('image'))
   async recognize(@Req() req, @UploadedFile() file: Express.Multer.File) {
     this.logger.log('OCR 识别请求');

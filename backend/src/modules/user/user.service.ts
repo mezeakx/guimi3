@@ -1,5 +1,6 @@
-﻿import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+// backend/src/modules/user/user.service.ts
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 
 export interface UserInfo {
   openid: string;
@@ -12,36 +13,89 @@ export interface UserInfo {
 }
 
 @Injectable()
-export class UserService {
+export class UserService extends PrismaClient {
   private readonly logger = new Logger(UserService.name);
-  
-  constructor(private readonly configService: ConfigService) {}
 
   async getUserInfo(openid: string): Promise<UserInfo> {
-    // TODO: 从数据库查询用户信息
-    // 临时返回模拟数据
+    const user = await this.user.findUnique({
+      where: { openid },
+    });
+
+    if (!user) {
+      return {
+        openid,
+        free_count: 3,
+        used_today: 0,
+        total_uses: 0,
+        created_at: new Date(),
+      };
+    }
+
     return {
-      openid,
-      free_count: 3,
-      used_today: 0,
-      total_uses: 0,
-      created_at: new Date(),
+      openid: user.openid,
+      free_count: user.freeCount,
+      used_today: user.usedToday || 0,
+      total_uses: user.totalUses || 0,
+      created_at: user.createdAt,
     };
   }
 
-  async updateUser(openid: string, data: Partial<Pick<UserInfo, 'nickname' | 'avatar'>>): Promise<UserInfo> {
-    this.logger.log(更新用户信息: );
-    // TODO: 更新数据库
+  async updateUser(
+    openid: string,
+    data: Partial<Pick<UserInfo, 'nickname' | 'avatar'>>,
+  ): Promise<UserInfo> {
+    await this.user.update({
+      where: { openid },
+      data,
+    });
     return this.getUserInfo(openid);
   }
 
-  async incrementUsage(openid: string): Promise<void> {
-    this.logger.log(增加使用次数: );
-    // TODO: 更新数据库中的 used_today 和 total_uses
+  /** 扣减一次使用次数，返回剩余次数 */
+  async decrementUsage(openid: string): Promise<{ success: boolean; remaining: number }> {
+    const user = await this.user.findUnique({
+      where: { openid },
+    });
+    if (!user) {
+      return { success: false, remaining: 0 };
+    }
+
+    if (user.freeCount <= 0) {
+      return { success: false, remaining: 0 };
+    }
+
+    const updated = await this.user.update({
+      where: { openid },
+      data: { freeCount: { decrement: 1 } },
+      select: { freeCount: true },
+    });
+
+    return { success: true, remaining: updated.freeCount };
   }
 
+  /** 增加一次免费次数（广告奖励等） */
+  async incrementFreeCount(openid: string): Promise<{ success: boolean; remaining: number }> {
+    const updated = await this.user.update({
+      where: { openid },
+      data: { freeCount: { increment: 1 } },
+      select: { freeCount: true },
+    });
+    return { success: true, remaining: updated.freeCount };
+  }
+
+  /** 增加总使用次数 */
+  async recordUsage(openid: string): Promise<void> {
+    await this.user.update({
+      where: { openid },
+      data: { usedToday: { increment: 1 }, totalUses: { increment: 1 } },
+    });
+  }
+
+  /** 重置每日使用次数（定时任务调用） */
   async resetDailyUsage(openid: string): Promise<void> {
-    this.logger.log(重置日使用次数: );
-    // TODO: 重置 used_today
+    await this.user.update({
+      where: { openid },
+      data: { usedToday: 0, rewardCount: 0 },
+    });
   }
 }
