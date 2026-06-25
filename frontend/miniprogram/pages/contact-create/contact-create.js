@@ -4,30 +4,30 @@ const { showToast, isEmpty } = require('../../utils/helpers')
 
 // 联系人身份选项 - 添加 emoji 图标
 const identities = [
-  { label: '现实情侣', value: 'reality_couple', icon: '\ud83d\udc91' },
-  { label: '暗恋对象', value: 'crush', icon: '\ud83d\udc95' },
-  { label: '暧昧对象', value: 'ambiguous', icon: '\ud83d\udcad' },
-  { label: '追求者', value: 'pursuer', icon: '\ud83c\udf39' },
-  { label: '男神', value: 'god', icon: '\u2728' },
-  { label: '相亲对象', value: 'blind_date', icon: '\ud83e\udd1d' },
-  { label: '网恋对象', value: 'online_lover', icon: '\ud83c\udf10' },
-  { label: '约会对象', value: 'dating', icon: '\u2615' },
-  { label: '前任', value: 'ex', icon: '\ud83d\udc94' },
-  { label: '饭搭子', value: 'meal_partner', icon: '\ud83c\udf5c' },
-  { label: '好朋友', value: 'good_friend', icon: '\ud83d\udc6b' },
-  { label: '普通朋友', value: 'friend', icon: '\ud83d\ude0a' },
-  { label: '发小', value: 'childhood_friend', icon: '\ud83e\udd1c' },
-  { label: '同学', value: 'classmate', icon: '\ud83d\udc55' },
-  { label: '家里介绍', value: 'family_introduce', icon: '\ud83c\udfe0' },
-  { label: '同事', value: 'colleague', icon: '\ud83d\udcbc' },
-  { label: '上司', value: 'boss', icon: '\ud83d\udc54' },
-  { label: '客户', value: 'client', icon: '\ud83d\udccb' },
-  { label: '网友', value: 'netizen', icon: '\ud83d\udcbb' },
-  { label: '游戏搭子', value: 'game_partner', icon: '\ud83c\udfae' },
-  { label: '想拒绝的人', value: 'unwanted', icon: '\ud83d\udeab' },
-  { label: '大佬', value: 'senior', icon: '\ud83c\udf1f' },
-  { label: '年上', value: 'older', icon: '\ud83e\udd35' },
-  { label: '年下', value: 'younger', icon: '\ud83e\uddd2' }
+  { label: '现实情侣', value: 'reality_couple', icon: '💑' },
+  { label: '暗恋对象', value: 'crush', icon: '💕' },
+  { label: '暧昧对象', value: 'ambiguous', icon: '💭' },
+  { label: '追求者', value: 'pursuer', icon: '🌹' },
+  { label: '男神', value: 'god', icon: '✨' },
+  { label: '相亲对象', value: 'blind_date', icon: '🤝' },
+  { label: '网恋对象', value: 'online_lover', icon: '🌐' },
+  { label: '约会对象', value: 'dating', icon: '☕' },
+  { label: '前任', value: 'ex', icon: '💔' },
+  { label: '饭搭子', value: 'meal_partner', icon: '🍜' },
+  { label: '好朋友', value: 'good_friend', icon: '👫' },
+  { label: '普通朋友', value: 'friend', icon: '😊' },
+  { label: '发小', value: 'childhood_friend', icon: '🤜' },
+  { label: '同学', value: 'classmate', icon: '👕' },
+  { label: '家里介绍', value: 'family_introduce', icon: '🏠' },
+  { label: '同事', value: 'colleague', icon: '💼' },
+  { label: '上司', value: 'boss', icon: '👔' },
+  { label: '客户', value: 'client', icon: '📋' },
+  { label: '网友', value: 'netizen', icon: '💻' },
+  { label: '游戏搭子', value: 'game_partner', icon: '🎮' },
+  { label: '想拒绝的人', value: 'unwanted', icon: '🚫' },
+  { label: '大佬', value: 'senior', icon: '🌟' },
+  { label: '年上', value: 'older', icon: '🤵' },
+  { label: '年下', value: 'younger', icon: '🧒' }
 ]
 
 // 年上和年下是互斥组
@@ -36,8 +36,6 @@ const MUTEX_GROUP = ['good_friend', 'friend', 'older', 'younger']
 // 多选最大数量
 const MAX_IDENTITIES = 4
 const MAX_TARGETS = 1
-const MAX_STYLES = 2
-const MIN_STYLES = 1
 
 const targets = [
   { label: '先了解他', value: '了解', icon: '🔍' },
@@ -46,21 +44,6 @@ const targets = [
   { label: '让他主动', value: 'proactive', icon: '🎯' },
   { label: '保持朋友', value: 'friend', icon: '🤗' },
   { label: '委婉拒绝', value: 'reject', icon: '🙅' }
-]
-
-const styles = [
-  { label: '温柔', value: 'gentle', icon: '🌸' },
-  { label: '幽默', value: 'humor', icon: '😄' },
-  { label: '高冷', value: 'cold', icon: '❄️' },
-  { label: '可爱', value: 'cute', icon: '🐰' },
-  { label: '成熟姐姐', value: 'mature', icon: '👠' },
-  { label: '理性', value: 'rational', icon: '🧠' },
-  { label: '自然随性', value: 'casual', icon: '🍃' },
-  { label: '撩人', value: 'flirt', icon: '🔥' },
-  { label: '傲娇', value: 'tsundere', icon: '😤' },
-  { label: '友善', value: 'friendly', icon: '🤝' },
-  { label: '夸夸', value: 'praise', icon: '👏' },
-  { label: '吐槽', value: 'roast', icon: '😏' }
 ]
 
 Page({
@@ -74,11 +57,7 @@ Page({
     selectedTargets: [],
     selectedTargetMap: {},
     maxTargets: MAX_TARGETS,
-    targets: targets,
-    selectedStyles: [],
-    selectedStyleMap: {},
-    maxStyles: MAX_STYLES,
-    styles: styles
+    targets: targets
   },
 
   onNicknameInput(e) {
@@ -181,40 +160,6 @@ Page({
     })
   },
 
-  /**
-   * 选择回复风格（多选，最少1个，最多2个）
-   */
-  selectStyle(e) {
-    const value = e.currentTarget.dataset.value
-    const selected = this.data.selectedStyles.slice()
-    const styleMap = Object.assign({}, this.data.selectedStyleMap)
-
-    // 判断是否已选中
-    const isSelected = styleMap[value] === true
-
-    if (isSelected) {
-      // 取消选中
-      const index = selected.indexOf(value)
-      if (index > -1) {
-        selected.splice(index, 1)
-      }
-      delete styleMap[value]
-    } else {
-      // 已达上限，不允许继续选
-      if (selected.length >= MAX_STYLES) {
-        showToast('最多选择2个风格')
-        return
-      }
-      selected.push(value)
-      styleMap[value] = true
-    }
-
-    this.setData({
-      selectedStyles: selected,
-      selectedStyleMap: styleMap
-    })
-  },
-
   onLoad(options) {
     if (options.id) {
       const contacts = wx.getStorageSync('contacts') || [];
@@ -226,51 +171,33 @@ Page({
       }
       const selectedIdentities = contact.identities || (contact.identity_label ? [contact.identity_label] : []);
       const selectedTargets = contact.target || [];
-      const selectedStyles = contact.style || [];
       const identityMap = {};
       selectedIdentities.forEach(function(v) { identityMap[v] = true; });
       const targetMap = {};
       selectedTargets.forEach(function(v) { targetMap[v] = true; });
-      const styleMap = {};
-      selectedStyles.forEach(function(v) { styleMap[v] = true; });
       this.setData({
         editId: contact.id,
         nickname: contact.nickname || '',
         selectedIdentities: selectedIdentities,
         selectedIdentityMap: identityMap,
         selectedTargets: selectedTargets,
-        selectedTargetMap: targetMap,
-        selectedStyles: selectedStyles,
-        selectedStyleMap: styleMap
+        selectedTargetMap: targetMap
       });
     }
   },
 
 
   onShow() {
-    // 如果 URL 带 scrollTo=style，页面渲染后滚动到回复风格模块
-    const pages = getCurrentPages()
-    const currentPage = pages[pages.length - 1]
-    const options = currentPage.options || {}
-    if (options.scrollTo === 'style') {
-      setTimeout(() => {
-        wx.pageScrollTo({
-          scrollTop: 1200,
-          duration: 300
-        })
-      }, 300)
-    }
-
     // 获取当前页面的参数 - 简化版本
-    console.log('onShow called, options:', options);
+    console.log('onShow called, options:', this.options);
 
     // 如果有ID参数，加载联系人数据进行编辑
-    if (options && options.id) {
+    if (this.options && this.options.id) {
       try {
         const contacts = wx.getStorageSync('contacts') || [];
         console.log('Loaded contacts from storage:', contacts.length);
         
-        const contact = contacts.find(c => String(c.id) === String(options.id));
+        const contact = contacts.find(c => String(c.id) === String(this.options.id));
         console.log('Found contact:', contact);
         
         if (contact) {
@@ -282,9 +209,8 @@ Page({
             selectedIdentities = [contact.identity_label];
           }
           
-          // 提取目标和风格
+          // 提取目标
           const selectedTargets = contact.target || [];
-          const selectedStyles = contact.style || [];
           
           // 创建映射对象
           const identityMap = {};
@@ -293,9 +219,6 @@ Page({
           const targetMap = {};
           selectedTargets.forEach(function(v) { targetMap[v] = true; });
           
-          const styleMap = {};
-          selectedStyles.forEach(function(v) { styleMap[v] = true; });
-          
           // 更新页面数据
           this.setData({
             editId: contact.id,
@@ -303,14 +226,12 @@ Page({
             selectedIdentities: selectedIdentities,
             selectedIdentityMap: identityMap,
             selectedTargets: selectedTargets,
-            selectedTargetMap: targetMap,
-            selectedStyles: selectedStyles,
-            selectedStyleMap: styleMap
+            selectedTargetMap: targetMap
           });
           
           console.log('Contact data loaded successfully for editing');
         } else {
-          console.warn('Contact not found for ID:', options.id);
+          console.warn('Contact not found for ID:', this.options.id);
         }
       } catch (error) {
         console.error('Error loading contact data:', error);
@@ -319,7 +240,7 @@ Page({
   },
 
   saveContact() {
-    const { nickname, selectedIdentities, selectedTargets, selectedStyles } = this.data
+    const { nickname, selectedIdentities, selectedTargets } = this.data
 
     if (isEmpty(nickname)) {
       showToast('请输入联系人昵称')
@@ -331,14 +252,6 @@ Page({
     }
     if (selectedTargets.length === 0) {
       showToast('请选择回复目标')
-      return
-    }
-    if (selectedStyles.length < MIN_STYLES) {
-      showToast('请至少选择一个回复风格')
-      return
-    }
-    if (selectedStyles.length > MAX_STYLES) {
-      showToast('最多选择2个回复风格')
       return
     }
 
@@ -362,20 +275,12 @@ Page({
       return item ? item.label : v
     })
 
-    // 获取选中风格的标签
-    const styleLabels = selectedStyles.map(v => {
-      const item = this.data.styles.find(i => i.value === v)
-      return item ? item.label : v
-    })
-
     const contactData = {
       nickname,
       identities: selectedIdentities,
       identity_labels: labels,
       target: selectedTargets,
       target_labels: targetLabels,
-      style: selectedStyles,
-      style_labels: styleLabels,
       avatar: getIdentityAvatarPath(selectedIdentities)
     }
 

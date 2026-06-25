@@ -129,48 +129,6 @@
       <view class="char-count">{{contextCount}}/{{maxContext}}</view>
     </view>
 
-    <!-- 聊天节奏模块 -->
-    <view class="section pace-section">
-      <view class="section-header">
-        <view class="section-bar"></view>
-        <text class="section-title">聊天节奏</text>
-        <text class="section-subtitle">（默认25%）</text>
-        <text class="help-icon" bindtap="showPaceHelp">?</text>
-      </view>
-
-      <!-- 挡位选择按钮 -->
-      <view class="pace-levels-container">
-        <view
-          wx:for="{{paceLevels}}"
-          wx:key="value"
-          class="pace-level-btn {{paceValue === item.value ? 'active' : ''}}"
-          data-value="{{item.value}}"
-          bindtap="selectPaceLevel"
-        >
-          <text class="pace-level-percent">{{item.value}}%</text>
-          <text class="pace-level-name">{{item.name}}</text>
-        </view>
-      </view>
-
-      <!-- 当前挡位解释区 -->
-      <view class="pace-explanation">
-        <view class="pace-current-badge">
-          <text class="pace-badge-percent">{{paceValue}}%</text>
-          <text class="pace-badge-name">{{paceInfo.name}}</text>
-        </view>
-        <view class="pace-detail">
-          <view class="pace-detail-item">
-            <text class="pace-detail-label">💡 特点：</text>
-            <text class="pace-detail-text">{{paceInfo.features}}</text>
-          </view>
-          <view class="pace-detail-item" wx:if="{{paceInfo.example}}">
-            <text class="pace-detail-label">📝 例如：</text>
-            <text class="pace-detail-example">{{paceInfo.example}}</text>
-          </view>
-        </view>
-      </view>
-    </view>
-
     <!-- 我的人设模块 -->
     <view class="section persona-section">
       <view class="section-header">
@@ -311,48 +269,6 @@
       <view class="char-count">{{contextCount}}/{{maxContext}}</view>
     </view>
 
-    <!-- 聊天节奏模块 -->
-    <view class="section pace-section">
-      <view class="section-header">
-        <view class="section-bar"></view>
-        <text class="section-title">聊天节奏</text>
-        <text class="section-subtitle">（默认25%）</text>
-        <text class="help-icon" bindtap="showPaceHelp">?</text>
-      </view>
-
-      <!-- 挡位选择按钮 -->
-      <view class="pace-levels-container">
-        <view
-          wx:for="{{paceLevels}}"
-          wx:key="value"
-          class="pace-level-btn {{paceValue === item.value ? 'active' : ''}}"
-          data-value="{{item.value}}"
-          bindtap="selectPaceLevel"
-        >
-          <text class="pace-level-percent">{{item.value}}%</text>
-          <text class="pace-level-name">{{item.name}}</text>
-        </view>
-      </view>
-
-      <!-- 当前挡位解释区 -->
-      <view class="pace-explanation">
-        <view class="pace-current-badge">
-          <text class="pace-badge-percent">{{paceValue}}%</text>
-          <text class="pace-badge-name">{{paceInfo.name}}</text>
-        </view>
-        <view class="pace-detail">
-          <view class="pace-detail-item">
-            <text class="pace-detail-label">💡 特点：</text>
-            <text class="pace-detail-text">{{paceInfo.features}}</text>
-          </view>
-          <view class="pace-detail-item" wx:if="{{paceInfo.example}}">
-            <text class="pace-detail-label">📝 例如：</text>
-            <text class="pace-detail-example">{{paceInfo.example}}</text>
-          </view>
-        </view>
-      </view>
-    </view>
-
     <!-- 我的人设模块 -->
     <view class="section persona-section">
       <view class="section-header">
@@ -481,21 +397,6 @@
       </view>
       <view class="modal-actions">
         <view class="modal-action-btn modal-action-primary" bindtap="closeContextHelpModal">
-          <text class="modal-action-text modal-action-primary-text">我知道了</text>
-        </view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 聊天节奏帮助弹窗 -->
-  <view class="modal-mask" wx:if="{{showPaceHelpModal}}" bindtap="closePaceHelpModal">
-    <view class="modal-content thought-help-modal" catchtap>
-      <view class="modal-title">帮助说明</view>
-      <view class="thought-help-content">
-        <text>控制聊天推进速度，选择直接、自然或慢热的交流方式~</text>
-      </view>
-      <view class="modal-actions">
-        <view class="modal-action-btn modal-action-primary" bindtap="closePaceHelpModal">
           <text class="modal-action-text modal-action-primary-text">我知道了</text>
         </view>
       </view>

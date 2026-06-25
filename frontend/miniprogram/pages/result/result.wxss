@@ -410,27 +410,7 @@ page {
   box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.04);
 }
 
-.btn-replace {
-  flex: 1;
-  height: 88rpx;
-  border-radius: 44rpx;
-  border: 3rpx solid #FF69B4;
-  color: #FF69B4;
-  font-size: 32rpx;
-  font-weight: 700;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10rpx;
-  line-height: 1;
-  margin: 0;
-  padding: 0;
-}
 
-.btn-replace::after {
-  border: none;
-}
 
 .btn-regenerate {
   flex: 1;
@@ -453,7 +433,6 @@ page {
   border: none;
 }
 
-.btn-replace-icon,
 .btn-regen-emoji {
   font-size: 32rpx;
 }

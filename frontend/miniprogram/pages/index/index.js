@@ -13,31 +13,24 @@ Page({
     contextCount: 0,
     maxMessage: config.maxMessageLength,
     maxContext: config.maxContextLength,
-    // 聊天节奏
-    paceValue: 25,
-    paceInfo: {},
-    paceLevels: [
-      { value: 0, name: '直球模式', features: '有话直说，不绕弯', example: '好啊\n你想吃什么？' },
-      { value: 25, name: '自然模式', features: '真实表达，不刻意设计', example: '哈哈可以呀\n你有什么推荐吗？' },
-      { value: 50, name: '慢热模式', features: '表达但保留空间', example: '最近有点忙，\n看看时间怎么安排~' },
-      { value: 75, name: '暧昧模式', features: '不说透，让对方接话', example: '这么突然约我呀' },
-      { value: 100, name: '拉扯模式', features: '制造猜测，保留神秘感', example: '你猜我会怎么想~' }
-    ],
 
     // 我的人设
     selectedPersona: '普通女生',
     personaInfo: {},
     personaOptions: [
-      { value: '普通女生', label: '普通女生', name: '普通女生', features: '喜欢自然真实地聊天\n不会刻意撩人，也不会故意高冷\n表达舒服、有礼貌，适合大多数场景', example: '哈哈可以呀\n你说的那个地方我没去过呢' },
-      { value: '纯情女大', label: '纯情女大', name: '纯情女大', features: '容易害羞，不太会主动\n喜欢慢慢熟悉，不喜欢太直接\n偶尔会嘴硬，但其实很好哄', example: '嗯……让我想想嘛\n也没有很想去啦' },
-      { value: '温柔姐姐', label: '温柔姐姐', name: '温柔姐姐', features: '喜欢用温柔、体贴的方式表达\n很少发脾气，不喜欢争吵\n不喜欢过度卖萌，更注重照顾对方感受', example: '辛苦啦~\n要不要一起吃个饭放松一下？' },
-      { value: '元气少女', label: '元气少女', name: '元气少女', features: '喜欢轻松愉快地聊天\n经常使用表情和感叹词\n热情开朗，擅长制造聊天氛围', example: '好耶！终于有空啦～\n我们快去快回！✨' },
-      { value: '甜妹', label: '甜妹', name: '甜妹', features: '喜欢可爱、软萌的表达方式\n经常使用颜文字、表情和语气词\n偶尔会撒娇，希望对方多关注自己', example: '好呀好呀 (◍•ᴗ•◍)\n你真好～' },
-      { value: '钓系御姐', label: '钓系御姐', name: '钓系御姐', features: '不会把喜欢表现得太明显\n擅长制造一点若即若离的感觉\n偶尔会撩人，但始终保持分寸感', example: '哦？是吗～\n那看你表现咯' },
-      { value: '霸气女王', label: '霸气女王', name: '霸气女王', features: '说话自信，有主见\n不喜欢讨好别人，也不会委屈自己\n喜欢平等、直接的交流方式', example: '行啊，我来定\n周六晚上七点' },
-      { value: '酷女孩', label: '酷女孩', name: '酷女孩', features: '不喜欢矫情和过度拉扯\n态度随性，偶尔耍酷\n更喜欢像朋友一样自然相处', example: '随便你啦\n不过我可不是因为想你才说的哦' },
-      { value: '成熟理性派', label: '成熟理性派', name: '成熟理性派', features: '更注重逻辑和沟通效率\n很少情绪化表达\n遇到问题喜欢直接沟通和解决', example: '我觉得我们可以好好聊聊\n说说你的想法' },
-      { value: '抽象搞笑女', label: '抽象搞笑女', name: '抽象搞笑女', features: '喜欢玩梗、接梗和整活\n聊天主打一个有趣，不喜欢太严肃\n即使表达喜欢，也会带点幽默感', example: '你这是在跟我表白吗\n那我先考虑一下要不要接受 (^_^)' }
+      { value: '普通女生', label: '普通女生', name: '普通女生', features: '不营造人设，喜欢自然真实的聊天\n不会刻意撩人，也不会故意高冷\n表达舒服、有礼貌，适合大多数场景', example: '哈哈可以呀\n你说的那个地方我没去过呢' },
+      { value: '纯情女大', label: '纯情女大', name: '纯情女大', features: '有点害羞和慢热，熟了以后才会放松\n嘴上总爱逞强，实际上心软又好哄', example: '嗯……让我想想嘛\n也没有很想去啦' },
+      { value: '温柔姐姐', label: '温柔姐姐', name: '温柔姐姐', features: '喜欢用温柔体贴的方式表达\n很少发脾气，不喜欢争吵\n不喜欢过度卖萌，更注重照顾对方感受', example: '辛苦啦~\n要不要一起吃个饭放松一下？' },
+      { value: '元气少女', label: '元气少女', name: '元气少女', features: '喜欢轻松愉快的聊天，情绪感染力很强\n喜欢使用表情和感叹词\n热情开朗，擅长制造聊天氛围', example: '好耶！终于有空啦～\n我们快去快回！✨' },
+      { value: '邻家甜妹', label: '邻家甜妹', name: '邻家甜妹', features: '喜欢可爱、软萌的表达方式\n偶尔撒娇，偶尔使用颜文字、表情和语气词\n聊天时总能让人感受到甜甜的陪伴感', example: '好呀好呀 (◍•ᴗ•◍)\n你真好～' },
+      { value: '小迷妹', label: '小迷妹', name: '小迷妹', features: '崇拜感和情绪价值拉满\n总是毫不吝啬夸奖\n黏人又热情，会把对方放在很重要的位置', example: '你好厉害啊！\n我怎么这么幸运能认识你' },
+      { value: '钓系御姐', label: '钓系御姐', name: '钓系御姐', features: '举止从容，擅长把握聊天节奏\n不会把喜欢表现的太明显\n时而主动时而疏离，总带着一点若有若无的神秘和撩拨', example: '哦？是吗～\n那看你表现咯' },
+      { value: '霸气女王', label: '霸气女王', name: '霸气女王', features: '自信独立，做事有自己的原则和想法\n表达直接坦率，不讨好别人，也不会轻易被影响\n喜欢平等、直接的交流方式', example: '行啊，我来定\n周六晚上七点' },
+      { value: '高冷美人', label: '高冷美人', name: '高冷美人', features: '清冷克制，带着明显的距离感\n不会轻易敞开心扉，回复简短\n很难轻易被打动', example: '嗯\n随便你' },
+      { value: '酷女孩', label: '酷女孩', name: '酷女孩', features: '性格随性洒脱，偶尔耍酷\n不喜欢矫情，内耗，过度拉扯\n相处轻松自在，自带松弛感', example: '随便你啦\n不过我可不是因为想你才说的哦' },
+      { value: '成熟理性派', label: '成熟理性派', name: '成熟理性派', features: '习惯用逻辑分析问题，情绪稳定且有边界感\n遇事冷静客观，遇到问题喜欢直接沟通和解决', example: '我觉得我们可以好好聊聊\n说说你的想法' },
+      { value: '抽象搞笑女', label: '抽象搞笑女', name: '抽象搞笑女', features: '天生段子手，脑回路清奇\n聊天主打一个有趣，不喜欢太严肃\n擅长玩梗和整活，聊天永远不缺笑点和意想不到的展开', example: '你这是在跟我表白吗\n那我先考虑一下要不要接受 (^_^)' },
+      { value: '毒舌吐槽怪', label: '毒舌吐槽怪', name: '毒舌吐槽怪', features: '嘴巴很毒，看到什么都忍不住吐槽两句\n擅长接梗、回怼和阴阳怪气\n面对挑衅从不示弱，但没什么坏心思', example: '就这？你也配\n别说了，我都替你尴尬' }
     ],
 
     remainingCount: 3,
@@ -85,6 +78,8 @@ Page({
         { label: '想表达感谢', value: '想表达感谢', selected: false }
       ],
       emotion: [
+        { label: '有点开心', value: '有点开心', selected: false },
+        { label: '有点害羞', value: '有点害羞', selected: false },
         { label: '有点委屈', value: '有点委屈', selected: false },
         { label: '有点吃醋', value: '有点吃醋', selected: false },
         { label: '有点生气', value: '有点生气', selected: false },
@@ -135,16 +130,12 @@ Page({
 
     // 前情提要帮助弹窗
     showContextHelpModal: false,
-
-    // 聊天节奏帮助弹窗
-    showPaceHelpModal: false,
   },
 
   onLoad() {
     this.loadRemainingCount()
     this.loadRecentContacts()
     this._initCurrentOptions('affection')
-    this._initPaceInfo()
     this._initPersonaInfo()
   },
 
@@ -169,11 +160,6 @@ Page({
         obj.context = saved.context
         obj.contextCount = (saved.context || '').length
       }
-      if (saved.pace !== undefined) {
-        var level = this.data.paceLevels.find(function(item) { return item.value === saved.pace })
-        obj.paceValue = saved.pace
-        obj.paceInfo = level ? { name: level.name, features: level.features, example: level.example } : this.data.paceInfo
-      }
       if (saved.persona !== undefined) {
         var persona = this.data.personaOptions.find(function(item) { return item.value === saved.persona })
         obj.selectedPersona = saved.persona
@@ -190,23 +176,6 @@ Page({
     }
   },
 
-
-  // 初始化 paceInfo（页面加载时调用）
-  _initPaceInfo() {
-    const value = this.data.paceValue
-    const level = this.data.paceLevels.find(function(item) {
-      return item.value === value
-    })
-    if (level) {
-      this.setData({
-        paceInfo: {
-          name: level.name,
-          features: level.features,
-          example: level.example
-        }
-      })
-    }
-  },
 
   // 初始化 personaInfo（页面加载时调用）
   _initPersonaInfo() {
@@ -241,22 +210,6 @@ Page({
     })
   },
 
-  // 选择聊天节奏档位
-  selectPaceLevel(e) {
-    const value = parseInt(e.currentTarget.dataset.value)
-    const level = this.data.paceLevels.find(function(item) {
-      return item.value === value
-    })
-    this.setData({
-      paceValue: value,
-      paceInfo: level ? {
-        name: level.name,
-        features: level.features,
-        example: level.example
-      } : this.data.paceInfo
-    })
-  },
-
   switchInputMode(e) {
     const mode = e.currentTarget.dataset.mode
     this.setData({ inputMode: mode })
@@ -268,7 +221,9 @@ Page({
   // 初始化当前分类选项
   _initCurrentOptions(category) {
     const opts = (this.data.thoughtOptions[category] || []).map(function(item) {
-      return { label: item.label, value: item.value, selected: item.selected || false }
+      var o = { label: item.label, value: item.value, selected: item.selected || false }
+      if (item.group) o.group = item.group
+      return o
     })
     this.setData({ currentThoughtOptions: opts })
   },
@@ -290,6 +245,27 @@ Page({
       }
       return item
     })
+    // 情绪分类中，"有点开心"与"有点委屈/有点吃醋/有点生气/有点失落/有点不耐烦"互斥
+    // 后五个选项之间可以多选，"有点害羞"始终自由
+    if (category === 'emotion' && value === '有点开心') {
+      const clicked = options.find(function(item) { return item.value === value })
+      if (clicked && clicked.selected) {
+        options.forEach(function(item) {
+          if (['有点委屈', '有点吃醋', '有点生气', '有点失落', '有点不耐烦'].indexOf(item.value) !== -1) {
+            item.selected = false
+          }
+        })
+      }
+    } else if (category === 'emotion' && ['有点委屈', '有点吃醋', '有点生气', '有点失落', '有点不耐烦'].indexOf(value) !== -1) {
+      const clicked = options.find(function(item) { return item.value === value })
+      if (clicked && clicked.selected) {
+        options.forEach(function(item) {
+          if (item.value === '有点开心') {
+            item.selected = false
+          }
+        })
+      }
+    }
     this.setData({ currentThoughtOptions: options })
   },
 
@@ -486,14 +462,6 @@ Page({
     this.setData({ showContextHelpModal: false })
   },
 
-  showPaceHelp() {
-    this.setData({ showPaceHelpModal: true })
-  },
-
-  closePaceHelpModal() {
-    this.setData({ showPaceHelpModal: false })
-  },
-
   // ========== 未选择联系人弹窗 ==========
   checkContactSelection() {
     const selectedId = wx.getStorageSync('selected_contact_id') || ''
@@ -598,7 +566,6 @@ Page({
     var payload = {
       message: this.data.message || '',
       context: this.data.context || '',
-      pace: this.data.paceValue || 25,
       contact_id: selectedId ? Number(selectedId) : null,
       persona: this.data.selectedPersona || '普通女生',
       thoughtCategories: [],

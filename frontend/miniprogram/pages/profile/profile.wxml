@@ -319,7 +319,7 @@
             <text class="text">为了提升用户体验，本产品可能在您的设备本地保存以下信息：</text>
             <text class="text">4.1 人物卡</text>
             <text class="text">包括：</text>
-            <view class="list"><text class="item">联系人昵称</text><text class="item">男生身份</text><text class="item">回复目标</text><text class="item">回复风格</text></view>
+            <view class="list"><text class="item">联系人昵称</text><text class="item">男生身份</text><text class="item">回复目标</text></view>
             <text class="text">保存期限：长期保存，直至用户主动删除。</text>
             <text class="text">4.2 聊天记录</text>
             <text class="text">包括：</text>

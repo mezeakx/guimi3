@@ -60,8 +60,7 @@
 
 .char-count,
 .identity-count,
-.target-count,
-.style-count {
+.target-count {
   font-size: 26rpx;
   color: #FF69B4;
   font-weight: 500;

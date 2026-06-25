@@ -331,69 +331,6 @@
   box-shadow: 0 4rpx 12rpx rgba(255, 105, 180, 0.3);
 }
 
-/* ========== Pace Levels ========== */
-.pace-section {
-  margin-bottom: 28rpx;
-}
-
-.pace-levels-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 10rpx;
-  margin-bottom: 20rpx;
-}
-
-.pace-level-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20rpx 4rpx;
-  background: #F8F8FA;
-  border-radius: 20rpx;
-  transition: all 0.25s ease;
-}
-
-.pace-level-btn:active {
-  opacity: 0.7;
-}
-
-.pace-level-btn.active {
-  background: linear-gradient(135deg, #FF69B4, #9B59B6);
-  box-shadow: 0 6rpx 20rpx rgba(255, 105, 180, 0.35);
-}
-
-.pace-level-percent {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #666666;
-  margin-bottom: 4rpx;
-}
-
-.pace-level-btn.active .pace-level-percent {
-  color: #FFFFFF;
-}
-
-.pace-level-name {
-  font-size: 20rpx;
-  color: #BBBBBB;
-}
-
-.pace-level-btn.active .pace-level-name {
-  color: #FFFFFF;
-  font-weight: bold;
-}
-
-/* ========== Pace Explanation ========== */
-.pace-explanation {
-  padding: 24rpx;
-  background: linear-gradient(135deg, #FFF5F8, #FFF0F5);
-  border-radius: 20rpx;
-  border: 2rpx solid #FFE4F0;
-}
-
 /* ========== Persona Section ========== */
 .persona-section {
   margin-bottom: 28rpx;
@@ -476,69 +413,6 @@
 }
 
 .persona-detail-example {
-  font-size: 24rpx;
-  color: #FF69B4;
-  flex: 1;
-  line-height: 1.5;
-}
-
-/* ========== Pace Explanation ========== */
-.pace-explanation {
-  padding: 24rpx;
-  background: linear-gradient(135deg, #FFF5F8, #FFF0F5);
-  border-radius: 20rpx;
-  border: 2rpx solid #FFE4F0;
-}
-
-.pace-current-badge {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 16rpx;
-}
-
-.pace-badge-percent {
-  font-size: 30rpx;
-  font-weight: 800;
-  background: linear-gradient(135deg, #FF69B4, #9B59B6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-right: 12rpx;
-}
-
-.pace-badge-name {
-  font-size: 26rpx;
-  color: #9B59B6;
-  font-weight: bold;
-}
-
-.pace-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
-}
-
-.pace-detail-item {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-}
-
-.pace-detail-label {
-  font-size: 24rpx;
-  color: #999999;
-  margin-right: 8rpx;
-  white-space: nowrap;
-}
-
-.pace-detail-text {
-  font-size: 24rpx;
-  color: #555555;
-  flex: 1;
-  line-height: 1.5;
-}
-
-.pace-detail-example {
   font-size: 24rpx;
   color: #FF69B4;
   flex: 1;

@@ -216,19 +216,6 @@ Page({
     copyToClipboard(reply.text, '已复制到剪贴板')
   },
 
-  /** 换一种风格 — 跳转到联系人编辑页的回复风格模块 */
-  replaceReply: function() {
-    var self = this
-    var contactId = self.data.currentContactId
-    if (!contactId) {
-      showToast('未找到联系人信息')
-      return
-    }
-    wx.navigateTo({
-      url: '/pages/contact-create/contact-create?id=' + contactId + '&scrollTo=style'
-    })
-  },
-
   /** 再生成 3 条 */
   regenerateReply: function() {
     var self = this
