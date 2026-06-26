@@ -1,4 +1,0 @@
-<!--pages/disclaimer/disclaimer.wxml-->
-<view class="container">
-  <text>免责声明页面已迁移至弹窗展示，请点击"我的"页面中的"免责声明"查看。</text>
-</view>

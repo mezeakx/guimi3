@@ -114,11 +114,12 @@ export class AnalysisService {
 
       // 如果 content 为空，尝试从 reasoning_content 中提取 JSON
       if (!content) {
-        const reasoning = response.data.choices?.[0]?.message?.reasoning_content || '';
+        const reasoning = response.data.choices?.[0]?.message?.reasoning_content ||
+                          response.data.choices?.[0]?.message?.reasoning || '';
         if (reasoning) {
           this.logger.log('从 reasoning_content 提取 JSON');
-          // reasoning_content 可能包含中文描述 + JSON，尝试找到合法的 JSON
-          // 先找 "replies" 字段，从那里往回找 JSON 的起始 {
+
+          // 策略1: 尝试找到 "replies" 字段，从那里往回找 JSON 的起始 {
           const repliesIdx = reasoning.toLowerCase().indexOf('"replies"');
           if (repliesIdx > 0) {
             let braceStart = repliesIdx - 1;
@@ -131,9 +132,71 @@ export class AnalysisService {
               }
             }
           }
+
+          // 策略2: 直接在整个 reasoning_content 中查找最外层的 JSON 对象
           if (!content) {
             const jsonMatch = reasoning.match(/\{[\s\S]*\}/);
             if (jsonMatch) content = jsonMatch[0];
+          }
+
+          // 策略3: reasoning_content 可能完全是 JSON（没有前置中文分析）
+          // 尝试从开头或靠近开头的位置找到合法 JSON
+          if (!content) {
+            const trimmed = reasoning.trim();
+            for (let i = 0; i < trimmed.length; i++) {
+              if (trimmed[i] === '{') {
+                const candidate = trimmed.substring(i);
+                const jsonMatch = candidate.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                  try {
+                    JSON.parse(jsonMatch[0]);
+                    content = jsonMatch[0];
+                    break;
+                  } catch {
+                    // 不是合法 JSON，继续尝试
+                  }
+                }
+              }
+            }
+          }
+
+          // 策略4: 如果 reasoning_content 本身就是完整的 JSON
+          if (!content) {
+            try {
+              const parsed = JSON.parse(reasoning.trim());
+              if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                content = JSON.stringify(parsed);
+              }
+            } catch {
+              // 不是纯 JSON
+            }
+          }
+
+          // 策略5: 尝试从 reasoning_content 中提取 themeReplies 模式
+          if (!content) {
+            const themeRepliesMatch = reasoning.match(/"themeReplies"\s*:\s*\[[\s\S]*?\]/);
+            if (themeRepliesMatch) {
+              const themeIdx = themeRepliesMatch.index!;
+              let braceStart = themeIdx - 1;
+              while (braceStart >= 0 && reasoning[braceStart] !== '{') braceStart--;
+              if (braceStart >= 0) {
+                const candidate = reasoning.substring(braceStart);
+                const jsonMatch = candidate.match(/\{[\s\S]*\}/);
+                if (jsonMatch) content = jsonMatch[0];
+              }
+            }
+          }
+
+          // 策略6: reasoning_content 是半结构化文本文档（非 JSON），没有花括号
+          if (!content) {
+            content = this._parseReasoningContentToJson(reasoning);
+            if (content) {
+              this.logger.log('从 reasoning_content 半结构化文本成功解析为 JSON');
+            }
+          }
+
+          if (!content) {
+            this.logger.warn('reasoning_content 中未找到有效 JSON');
           }
         }
       }
@@ -649,6 +712,169 @@ export class AnalysisService {
   }
 
   /** 尝试修复被截断的 JSON */
+
+  /**
+   * 将 reasoning_content 中的半结构化文本文档解析为 JSON 字符串
+   * 处理 deepseek-v4-flash 偶尔将输出写入 reasoning_content 且不含 JSON 花括号的情况
+   * 支持两种格式：
+   * 1) 主题卡片模式：thinking + thinkingTags + replies(mode/messages/sendHint) + communicationTip
+   * 2) 旧格式：thinking + thinkingTags + remind + remindTags + replies(text/style/active/good/rhythm)
+   */
+  private _parseReasoningContentToJson(raw: string): string | null {
+    const lines = raw.split('\n').map(l => l.replace(/\r$/, ''));
+    const result: any = {};
+
+    // --- 解析 thinking (第一行通常是 thinking 文本) ---
+    let firstFieldIdx = -1;
+    for (let i = 0; i < lines.length; i++) {
+      if (/^(thinking|thinkingTags|remind|remindTags|replies|communicationTip)\s*[:：]/i.test(lines[i])) {
+        firstFieldIdx = i;
+        break;
+      }
+    }
+    if (firstFieldIdx > 0) {
+      const thinkingLines = lines.slice(0, firstFieldIdx).join(' ').trim();
+      if (thinkingLines) {
+        result.thinking = thinkingLines;
+      }
+    }
+
+    // --- 解析 thinkingTags ---
+    const ttMatch = lines.find(l => /^thinkingTags\s*[:：]/i.test(l));
+    if (ttMatch) {
+      const tagsStr = ttMatch.replace(/^thinkingTags\s*[:：]\s*/, '');
+      result.thinkingTags = tagsStr.split(/[,，、]/).map((s: string) => s.trim()).filter(Boolean);
+    }
+
+    // --- 解析 remind ---
+    const rmMatch = lines.find(l => /^remind\s*[:：]/i.test(l) && !/^remindTags/i.test(l));
+    if (rmMatch) {
+      result.remind = rmMatch.replace(/^remind\s*[:：]\s*/, '').trim();
+    }
+
+    // --- 解析 remindTags ---
+    const rtMatch = lines.find(l => /^remindTags\s*[:：]/i.test(l));
+    if (rtMatch) {
+      const tagsStr = rtMatch.replace(/^remindTags\s*[:：]\s*/, '');
+      result.remindTags = tagsStr.split(/[,，、]/).map((s: string) => s.trim()).filter(Boolean);
+    }
+
+    // --- 解析 replies ---
+    const repliesSection = this._extractYamlArray(lines, 'replies');
+    if (repliesSection.length > 0) {
+      result.replies = this._parseYamlReplies(repliesSection);
+    }
+
+    // --- 解析 communicationTip ---
+    const ctMatch = lines.find(l => /^communicationTip\s*[:：]/i.test(l));
+    if (ctMatch) {
+      result.communicationTip = ctMatch.replace(/^communicationTip\s*[:：]\s*/, '').trim();
+    }
+
+    // 至少要有 replies 才能构成有效结果
+    if (!result.replies || result.replies.length === 0) {
+      return null;
+    }
+
+    return JSON.stringify(result);
+  }
+
+  /**
+   * 从行数组中提取 YAML 风格的数组内容
+   */
+  private _extractYamlArray(lines: string[], fieldName: string): string[] {
+    const result: string[] = [];
+    let inArray = false;
+
+    for (const line of lines) {
+      if (!inArray) {
+        const trimmedLine = line.trim();
+        if (new RegExp('^' + fieldName + '\\s*[:：]\\s*$').test(trimmedLine) ||
+            new RegExp('^' + fieldName + '\\s*[:：]\\s*\\[').test(trimmedLine)) {
+          inArray = true;
+          continue;
+        }
+        continue;
+      }
+
+      const dashMatch = line.match(/^(\s*)-\s*(.*)/);
+      if (dashMatch) {
+        result.push(line);
+        continue;
+      }
+
+      const trimmed = line.trim();
+      if (trimmed.length > 0 && !line.startsWith(' ') && !line.startsWith('\t')) {
+        break;
+      }
+
+      if (trimmed === '') {
+        continue;
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * 解析 YAML 风格的 replies 数组项为 JSON 对象数组
+   */
+  private _parseYamlReplies(yamlLines: string[]): Array<any>[] {
+    const replies: Array<any>[] = [];
+    let currentReply: any = null;
+
+    for (const line of yamlLines) {
+      const newDashMatch = line.match(/^\s*-\s+(\w+)\s*[:：]\s*(.*)/);
+      if (newDashMatch && !line.match(/^\s+-\s+/)) {
+        if (currentReply) {
+          replies.push(currentReply);
+        }
+        const key = newDashMatch[1];
+        const value = newDashMatch[2].trim();
+
+        if (key === 'mode') {
+          currentReply = { mode: value };
+        } else if (key === 'text') {
+          currentReply = { text: value };
+        } else {
+          currentReply = null;
+        }
+        continue;
+      }
+
+      if (!currentReply) continue;
+
+      const fieldMatch = line.match(/^\s+(messages|sendHint|text|style|active|good|rhythm)\s*[:：]\s*(.*)/);
+      if (fieldMatch) {
+        const field = fieldMatch[1];
+        const value = fieldMatch[2].trim();
+
+        if (field === 'messages') {
+          const arrayMatch = value.match(/^\[([^\]]*)\]/);
+          if (arrayMatch) {
+            const items = arrayMatch[1]
+              .split(',')
+              .map((s: string) => s.replace(/^["']|["']$/g, '').trim())
+              .filter(Boolean);
+            currentReply.messages = items;
+          } else {
+            currentReply.messages = [value];
+          }
+        } else if (field === 'active' || field === 'good') {
+          currentReply[field] = parseInt(value, 10) || 0;
+        } else {
+          currentReply[field] = value;
+        }
+      }
+    }
+
+    if (currentReply) {
+      replies.push(currentReply);
+    }
+
+    return replies;
+  }
+
   private fixTruncatedJson(json: string): string | null {
     if (!json) return null;
 
