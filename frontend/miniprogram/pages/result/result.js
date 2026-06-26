@@ -11,7 +11,7 @@ Page({
       thinkingTags: [],
       remindTags: []
     },
-    // 三条回复
+    // 五条回复
     replies: [],
     // 原始数据
     rawData: null,
@@ -92,6 +92,10 @@ Page({
           rhythm: r.rhythm || r.pace || ''
         })
       })
+      // 过滤掉空文本的回复
+      const filtered = replies.filter(function(r) { return r.text && r.text.trim().length > 0 })
+      replies.length = 0
+      replies.push(...filtered)
     } else if (data.reply_A || data.reply_B || data.reply_C) {
       // 旧格式兼容
       var cs = data.contactStyles || []
@@ -122,12 +126,26 @@ Page({
       })
     }
 
+    // 补齐到 5 条（legacy 格式可能只有 3 条）
+    if (replies.length > 0 && replies.length < 5) {
+      var legacyDefaults = [
+        { text: '暂时无法生成，请重试', style: '自然', active: 2, good: 4, rhythm: '自然' },
+        { text: '暂时无法生成，请重试', style: '慢热', active: 3, good: 5, rhythm: '稍快' },
+        { text: '暂时无法生成，请重试', style: '稳妥', active: 1, good: 3, rhythm: '慢热' },
+        { text: '暂时无法生成，请重试', style: '撒娇', active: 4, good: 5, rhythm: '积极' },
+        { text: '暂时无法生成，请重试', style: '高冷', active: 1, good: 2, rhythm: '被动' }
+      ]
+      while (replies.length < 5) {
+        replies.push(legacyDefaults[replies.length])
+      }
+    }
+
     // 分析数据
     var analysis = {
       thinking: data.thinking || data.boy_intent || data.analysis || '',
       remind: data.remind || data.risk_warning || data.warning || '',
-      thinkingTags: Array.isArray(data.thinking_tags) ? data.thinking_tags : (Array.isArray(data.tags) ? data.tags.filter(function(t) { return t && t.type === 'thinking'; }) : []),
-      remindTags: Array.isArray(data.remind_tags) ? data.remind_tags : (Array.isArray(data.tags) ? data.tags.filter(function(t) { return t && t.type === 'remind'; }) : [])
+      thinkingTags: Array.isArray(data.thinkingTags) ? data.thinkingTags : (Array.isArray(data.thinking_tags) ? data.thinking_tags : []),
+      remindTags: Array.isArray(data.remindTags) ? data.remindTags : (Array.isArray(data.remind_tags) ? data.remind_tags : [])
     }
 
     // 深度克隆 replies（JSON 序列化确保完全新的对象引用）
@@ -141,11 +159,27 @@ Page({
         rhythm: r.rhythm || ''
       })
     })
+    // 过滤空文本
+    finalReplies = finalReplies.filter(function(r) { return r.text && r.text.trim().length > 0 })
+
+    // 补齐到 5 条
+    var defaults = [
+      { text: '暂时无法生成，请重试', style: '自然', active: 2, good: 4, rhythm: '自然' },
+      { text: '暂时无法生成，请重试', style: '慢热', active: 3, good: 5, rhythm: '稍快' },
+      { text: '暂时无法生成，请重试', style: '稳妥', active: 1, good: 3, rhythm: '慢热' },
+      { text: '暂时无法生成，请重试', style: '撒娇', active: 4, good: 5, rhythm: '积极' },
+      { text: '暂时无法生成，请重试', style: '高冷', active: 1, good: 2, rhythm: '被动' }
+    ]
+    while (finalReplies.length < 5) {
+      finalReplies.push(defaults[finalReplies.length])
+    }
 
     this.setData({
       analysis: analysis,
       replies: JSON.parse(JSON.stringify(finalReplies)),
       rawData: data,
+      themeReplies: data.themeReplies || [],  // 新格式：主题卡片组（暂不渲染）
+      communicationTip: data.communicationTip || '',  // 沟通雷区（整合进 remind）
       currentMessage: data.message || '',
       currentContext: data.context || '',
       currentPace: Number(data.pace) || 25,
@@ -163,10 +197,15 @@ Page({
     var styleC = styles.length >= 2
       ? (styles[0] + '+' + styles[1])
       : '轻微拉扯'
+    var styleE = styles.length >= 4
+      ? (styles[3] + '+理性')
+      : '高冷傲娇'
     return [
       { text: '暂时无法生成，请重试', style: styleA, active: 2, good: 4, rhythm: '自然' },
       { text: '暂时无法生成，请重试', style: styleB, active: 3, good: 5, rhythm: '稍快' },
-      { text: '暂时无法生成，请重试', style: styleC, active: 1, good: 3, rhythm: '慢热' }
+      { text: '暂时无法生成，请重试', style: styleC, active: 1, good: 3, rhythm: '慢热' },
+      { text: '暂时无法生成，请重试', style: styleD, active: 4, good: 5, rhythm: '积极' },
+      { text: '暂时无法生成，请重试', style: styleE, active: 1, good: 2, rhythm: '被动' }
     ]
   },
 
@@ -180,11 +219,16 @@ Page({
       ? styles[0] + '+' + styles[1]
       : (styles[0] ? styles[0] + '+自然' : '风格一+自然')
 
+    var styleD = styles.length >= 3 ? styles[2] : (styles.length >= 2 ? styles[0] + '+撒娇' : '撒娇模式')
+    var styleE = styles.length >= 4 ? styles[3] : (styles.length >= 3 ? styles[1] + '+理性' : '高冷傲娇')
+
     this.setData({
       replies: [
         { text: '加载中...', style: styleA, active: 2, good: 4, rhythm: '自然' },
         { text: '加载中...', style: styleB, active: 3, good: 5, rhythm: '稍快' },
-        { text: '加载中...', style: styleC, active: 1, good: 3, rhythm: '慢热' }
+        { text: '加载中...', style: styleC, active: 1, good: 3, rhythm: '慢热' },
+        { text: '加载中...', style: styleD, active: 4, good: 5, rhythm: '积极' },
+        { text: '加载中...', style: styleE, active: 1, good: 2, rhythm: '被动' }
       ]
     })
   },
@@ -216,7 +260,7 @@ Page({
     copyToClipboard(reply.text, '已复制到剪贴板')
   },
 
-  /** 再生成 3 条 */
+  /** 再生成 5 条 */
   regenerateReply: function() {
     var self = this
     var contactStyles = self.data.contactStyles || []
@@ -226,6 +270,12 @@ Page({
     var sC = contactStyles.length >= 2
       ? contactStyles[0] + '+' + contactStyles[1]
       : (contactStyles[0] ? contactStyles[0] + '+自然' : '风格一+自然')
+    var sD = contactStyles.length >= 3
+      ? contactStyles[2]
+      : (contactStyles.length >= 2 ? contactStyles[0] + '+撒娇' : '撒娇模式')
+    var sE = contactStyles.length >= 4
+      ? contactStyles[3]
+      : (contactStyles.length >= 3 ? contactStyles[1] + '+理性' : '高冷傲娇')
     showLoading('正在生成新回复...')
     self._callAPI({ action: 'regenerate' }, function(data) {
       hideLoading()
@@ -251,15 +301,40 @@ Page({
           })
         })
       }
+      // 过滤空文本
+      newReplies = newReplies.filter(function(r) { return r.text && r.text.trim().length > 0 })
+
+      // 补齐到 5 条
+      var regenDefaults = [
+        { text: '暂时无法生成，请重试', style: '自然', active: 2, good: 4, rhythm: '自然' },
+        { text: '暂时无法生成，请重试', style: '慢热', active: 3, good: 5, rhythm: '稍快' },
+        { text: '暂时无法生成，请重试', style: '稳妥', active: 1, good: 3, rhythm: '慢热' },
+        { text: '暂时无法生成，请重试', style: '撒娇', active: 4, good: 5, rhythm: '积极' },
+        { text: '暂时无法生成，请重试', style: '高冷', active: 1, good: 2, rhythm: '被动' }
+      ]
+      while (newReplies.length < 5) {
+        newReplies.push(regenDefaults[newReplies.length])
+      }
+
       // 如果没有 style 标签，用联系人的风格填充
       if (newReplies.length) {
-        var labels = [sA, sB, sC]
-        for (var i = 0; i < newReplies.length && i < 3; i++) {
+        var labels = [sA, sB, sC, sD, sE]
+        for (var i = 0; i < newReplies.length && i < 5; i++) {
           if (!newReplies[i].style) {
             newReplies[i].style = labels[i] || '自然'
           }
         }
-        self.setData({ replies: newReplies })
+        self.setData({
+          replies: newReplies,
+          analysis: {
+            thinking: data.thinking || '',
+            thinkingTags: data.thinkingTags || data.thinking_tags || [],
+            remind: data.remind || '',
+            remindTags: data.remindTags || data.remind_tags || []
+          },
+          themeReplies: data.themeReplies || [],
+          communicationTip: data.communicationTip || ''
+        })
         showToast('已生成新回复')
       } else {
         showToast('生成失败，请稍后再试')

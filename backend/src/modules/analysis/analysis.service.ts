@@ -15,6 +15,12 @@ export interface AnalysisResult {
     good: number;
     rhythm: string;
   }>;
+  themeReplies?: Array<{
+    mode: string;
+    messages: string[];
+    sendHint: string;
+  }>;
+  communicationTip?: string;
 }
 
 @Injectable()
@@ -59,6 +65,8 @@ export class AnalysisService {
         replies: [
           { text: '请修改您的输入后重试', style: '自然', active: 1, good: 1, rhythm: '自然' },
           { text: '内容无法识别，请重新输入', style: '自然', active: 1, good: 1, rhythm: '自然' },
+          { text: '抱歉，该内容暂无法分析', style: '自然', active: 1, good: 1, rhythm: '自然' },
+          { text: '请修改您的输入后重试', style: '自然', active: 1, good: 1, rhythm: '自然' },
           { text: '抱歉，该内容暂无法分析', style: '自然', active: 1, good: 1, rhythm: '自然' },
         ],
       };
@@ -155,7 +163,7 @@ export class AnalysisService {
         const result: AnalysisResult = JSON.parse(content);
 
         // 输出内容安全审核
-        const outputText = [result.thinking, result.remind, ...(result.replies?.map((r) => r.text) || [])].join('\n');
+        const outputText = [result.thinking, result.remind, ...(result.replies?.map((r: any) => r.messages?.[0] || r.text) || [])].join('\n');
         try {
           const outputCheck = await this.contentSafety.msgSecCheck(outputText);
           if (!outputCheck.passed) {
@@ -167,14 +175,62 @@ export class AnalysisService {
           // 审核失败时放行，不阻塞主流程
         }
 
-        // 校验必填字段
-        if (!result.replies || !Array.isArray(result.replies) || result.replies.length === 0) {
-          this.logger.warn('AI 返回的 replies 字段无效');
-          return this.getFallbackResult();
+        // 检测是否为新格式（主题卡片模式：replies 数组中的对象有 mode/messages 字段）
+        const isNewFormat = result.replies
+          && Array.isArray(result.replies)
+          && result.replies.length >= 1
+          && typeof result.replies[0] === 'object'
+          && 'mode' in result.replies[0];
+
+        if (isNewFormat) {
+          // 新格式：将 themeReplies 转为 replies 兼容格式
+          const themeReplies = result.replies as any[];
+          result.replies = themeReplies
+            .slice(0, 5)
+            .map((r) => ({
+              text: r.messages?.[0] || r.text || '',
+              style: r.mode || '自然',
+              active: 2,
+              good: 4,
+              rhythm: '自然'
+            }))
+            .filter((r) => r.text && r.text.trim().length > 0);
+          result.themeReplies = themeReplies;
+          result.communicationTip = result.communicationTip || '';
+
+          // 补齐到 5 条
+          const padDefaults = [
+            { text: '哈哈可以呀～你有什么推荐的吗？', style: '自然', active: 2, good: 4, rhythm: '自然' },
+            { text: '听起来不错呀～有机会一起去看看', style: '慢热', active: 3, good: 5, rhythm: '稍快' },
+            { text: '怎么突然想约我啦～', style: '稳妥', active: 1, good: 3, rhythm: '慢热' },
+            { text: '那你呢？你想怎么样？', style: '撒娇', active: 4, good: 5, rhythm: '积极' },
+            { text: '随便吧，看你表现', style: '高冷', active: 1, good: 2, rhythm: '被动' }
+          ];
+          while (result.replies.length < 5) {
+            result.replies.push(padDefaults[result.replies.length]);
+          }
+
+          // 补齐分析字段
+          if (!result.thinkingTags || !Array.isArray(result.thinkingTags)) result.thinkingTags = [];
+          if (!result.remindTags || !Array.isArray(result.remindTags)) result.remindTags = [];
+          const [thinking, remind] = await Promise.all([
+            result.thinking ? Promise.resolve(result.thinking) : this.generateThinking(data),
+            result.remind ? Promise.resolve(result.remind) : this.generateRemind(data),
+          ]);
+          result.thinking = thinking || '对方主动联系你，希望能继续互动。';
+          result.remind = remind || '保持自然节奏，观察对方投入程度。';
+
+          this.logger.log('AI 分析成功（主题卡片模式），thinking 长度:', result.thinking?.length);
+          this.logger.log('AI 分析成功，themeReplies count:', result.themeReplies?.length);
+          return result;
         }
 
+        // ===== 以下是旧格式处理逻辑（保留兼容）=====
+        // 过滤空文本
+        result.replies = result.replies.filter((r) => r.text && r.text.trim().length > 0);
+
         // 补齐 replies 字段
-        result.replies = result.replies.slice(0, 3).map((r) => ({
+        result.replies = result.replies.slice(0, 5).map((r) => ({
           text: r.text || '',
           style: r.style || '自然',
           active: Number(r.active) || 2,
@@ -186,9 +242,11 @@ export class AnalysisService {
         const padDefaults = [
           { text: '哈哈可以呀～你有什么推荐的吗？', style: '自然', active: 2, good: 4, rhythm: '自然' },
           { text: '听起来不错呀～有机会一起去看看', style: '慢热', active: 3, good: 5, rhythm: '稍快' },
-          { text: '怎么突然想约我啦～', style: '稳妥', active: 1, good: 3, rhythm: '慢热' }
+          { text: '怎么突然想约我啦～', style: '稳妥', active: 1, good: 3, rhythm: '慢热' },
+          { text: '那你呢？你想怎么样？', style: '撒娇', active: 4, good: 5, rhythm: '积极' },
+          { text: '随便吧，看你表现', style: '高冷', active: 1, good: 2, rhythm: '被动' }
         ];
-        while (result.replies.length < 3) {
+        while (result.replies.length < 5) {
           result.replies.push(padDefaults[result.replies.length]);
         }
 
@@ -227,14 +285,26 @@ export class AnalysisService {
               const defaults = [
                 { text: '哈哈可以呀～有什么推荐的吗？', style: '自然', active: 2, good: 4, rhythm: '自然' },
                 { text: '听起来不错呀～有机会一起去看看', style: '慢热', active: 3, good: 5, rhythm: '稍快' },
-                { text: '怎么突然想约我啦～', style: '稳妥', active: 1, good: 3, rhythm: '慢热' }
+                { text: '怎么突然想约我啦～', style: '稳妥', active: 1, good: 3, rhythm: '慢热' },
+                { text: '那你呢？你想怎么样？', style: '撒娇', active: 4, good: 5, rhythm: '积极' },
+                { text: '随便吧，看你表现', style: '高冷', active: 1, good: 2, rhythm: '被动' }
               ];
-              while (fixedResult.replies.length < 3) {
+              while (fixedResult.replies.length < 5) {
                 fixedResult.replies.push(defaults[fixedResult.replies.length]);
               }
             }
-            if (!fixedResult.thinking) fixedResult.thinking = await this.generateThinking(data);
-            if (!fixedResult.remind) fixedResult.remind = await this.generateRemind(data);
+            // 确保 thinking/remind 始终有值（JSON.stringify 会丢弃 undefined）
+            if (!fixedResult.thinking) fixedResult.thinking = '对方主动联系你，希望能继续互动。';
+            if (!fixedResult.remind) fixedResult.remind = '保持自然节奏，观察对方投入程度。';
+            if (!fixedResult.thinkingTags) fixedResult.thinkingTags = [];
+            if (!fixedResult.remindTags) fixedResult.remindTags = [];
+            // 异步补充 thinking/remind（用默认值保底，不影响返回）
+            const thinkingPromise = !fixedResult.thinking ? this.generateThinking(data) : Promise.resolve('');
+            const remindPromise = !fixedResult.remind ? this.generateRemind(data) : Promise.resolve('');
+            Promise.all([thinkingPromise, remindPromise]).then(([t, r]) => {
+              if (t) fixedResult.thinking = t;
+              if (r) fixedResult.remind = r;
+            }).catch(() => {});
             return fixedResult;
           }
         } catch (fixError) {
@@ -350,9 +420,46 @@ export class AnalysisService {
     prompt += '### 我的想法和情绪\n' + thoughtDesc + '\n\n';
     prompt += '### 前情提要\n' + (safeCtx(data.context) || '无') + '\n\n';
     prompt += '### 对方的消息\n' + (safe(data.message) || '请根据上下文理解') + '\n\n';
-    prompt += '## 回复要求\n\n你必须生成恰好 3 条回复，一条都不能少：\n- 第1条(A): 稳妥自然风格\n- 第2条(B): 稍主动风格\n- 第3条(C): 留余地风格\n\n每条回复的 text 字段必须有实际内容，不能超过 15 字。\n\n';
-    prompt += '## 输出格式\n\n严格返回以下 JSON 结构（不要任何额外文字，不要 Markdown 代码块标记）：\n{"replies":[{"text":"第1条回复内容","style":"自然","active":2,"good":4,"rhythm":"自然"},{"text":"第2条回复内容","style":"慢热","active":3,"good":5,"rhythm":"稍快"},{"text":"第3条回复内容","style":"稳妥","active":1,"good":3,"rhythm":"慢热"}]}\n\n';
-    prompt += '## 重要提醒\n\n1. 必须返回 3 条回复，replies 数组长度必须等于 3\n2. 每条回复的 text 必须有实际聊天内容，不能为空\n3. style 和 rhythm 只用一个词\n4. 不要输出思考过程或其他文字，只输出 JSON';
+    prompt += '## 任务\n\n请根据对方的消息内容和上下文，从以下 8 大类 100 种回复模式中选出 **恰好 5 种** 最适合当前场景的模式，并为每种模式生成 2 条具体回复文案。\n\n';
+    prompt += '可选模式范围（共 100 种，分布在 8 个大类中）：\n';
+    prompt += '- 撩系：小狐狸模式、钓系模式、反撩模式、欲擒故纵、暗撩、情绪拉扯、暧昧引导、软钩子、氛围制造…\n';
+    prompt += '- 冷感：冷脸模式、冷处理、高墙模式、极简回复、冷幽默、克制回应…\n';
+    prompt += '- 怼人：拿捏模式、阴阳模式、毒舌模式、反杀、冷刀、回踩、反向输出…\n';
+    prompt += '- 软萌：奶凶模式、委屈模式、撒娇反抗、软顶嘴、软刺、小炸毛…\n';
+    prompt += '- 摆烂：摆烂模式、佛系、躺平、低电量、已读不回、延迟回应…\n';
+    prompt += '- 掌控：控场模式、节奏掌控、规则制定、主导提问、压制推进…\n';
+    prompt += '- 作精：作精模式、戏精、小剧场、情绪放大、夸张委屈、反复横跳…\n';
+    prompt += '- 调侃：拽姐模式、调戏、互损、打趣、反讽调侃、语言戏弄…\n\n';
+
+    prompt += '选择规则：\n';
+    prompt += '1. 5 个模式之间风格差异要大，不要选同一种类型的\n';
+    prompt += '2. 要结合对方的语气来选择——对方撩你就要选撩系模式，对方挑衅就要选怼人模式\n';
+    prompt += '3. 要符合我的人设、我的想法和回复目标\n';
+    prompt += '4. 5 个模式中至少要包含：1 个稳妥型 + 1 个主动型 + 1 个进攻/反击型\n\n';
+
+    prompt += '## 输出格式\n\n严格返回以下 JSON（不要任何额外文字，不要 Markdown 代码块标记）：\n\n';
+    prompt += '{\n';
+    prompt += '  "thinking": "一句话分析对方意图和心态（20字内")",\n';
+    prompt += '  "thinkingTags": ["标签1", "标签2", "标签3"],\n';
+    prompt += '  "remind": "一句话沟通提醒（20字内")",\n';
+    prompt += '  "remindTags": ["标签1", "标签2", "标签3"],\n';
+    prompt += '  "replies": [\n';
+    prompt += '    {\n';
+    prompt += '      "mode": "选中的模式名称",\n';
+    prompt += '      "messages": ["回复文案1", "回复文案2"],\n';
+    prompt += '      "sendHint": "建议：先发第一条，紧接着发第二条"\n';
+    prompt += '    },\n';
+    prompt += '    …共 5 个对象\n';
+    prompt += '  ],\n';
+    prompt += '  "communicationTip": "沟通雷区/建议说明（30字内")"\n';
+    prompt += '}\n\n';
+
+    prompt += '每条回复要求：\n';
+    prompt += '- 控制在 15 字以内，口语化、自然、有实际内容\n';
+    prompt += '- 两条回复之间形成递进或转折关系\n';
+    prompt += '- 风格要贴合所选模式的定义\n';
+    prompt += '- 不要空洞的"嗯""哦""哈哈"\n';
+    prompt += '- 不要解释你的行为，不要输出系统信息';
     return prompt;
   }
 
@@ -384,6 +491,8 @@ export class AnalysisService {
         { text: '哈哈刚看到消息～', style: '自然', active: 2, good: 4, rhythm: '自然' },
         { text: '最近有点忙呢～', style: '慢热', active: 1, good: 3, rhythm: '慢热' },
         { text: '谢谢你的消息～', style: '稳妥', active: 2, good: 3, rhythm: '自然' },
+        { text: '那你呢？你想怎么样？', style: '撒娇', active: 4, good: 5, rhythm: '积极' },
+        { text: '随便吧，看你表现', style: '高冷', active: 1, good: 2, rhythm: '被动' },
       ],
     };
   }
@@ -418,34 +527,124 @@ export class AnalysisService {
     };
     const paceLabel = paceMap[pace]?.name || '自然';
 
+    const hasPlayful = /猪|笨|傻|呆|丑|胖|懒/i.test(message);
+    const hasInvite = /出来|一起|见面|吃饭|看电影|逛街|约|去/.test(message);
+    const hasFlirt = /喜欢|爱|想|宝贝|亲爱的|老婆|老公|帅|美/.test(message);
+
+    let thinkingText = '';
+    let remindText = '';
+    let communicationTipText = '';
+
+    if (hasPlayful) {
+      thinkingText = '他在用玩笑逗你，说明想拉近关系，氛围很轻松。';
+      remindText = '别当真别生气，顺着玩笑接就好，保持轻松氛围。';
+      communicationTipText = '对方明显在开玩笑逗你，顺着他的玩笑往下接，把氛围带得更轻松或更暧昧才是正解。';
+    } else if (hasInvite) {
+      thinkingText = '他主动约你出去，说明对你有好感，想推进关系。';
+      remindText = '先观察他的态度和诚意，不要马上答应，保持一点神秘感。';
+      communicationTipText = '他主动邀约是好信号，但不要太快答应，保持一点矜持会让对方更珍惜。';
+    } else if (hasFlirt) {
+      thinkingText = '他在表达好感，语气比较直接，期待你的回应。';
+      remindText = '可以根据你的人设选择回应方式，不要太快暴露太多需求感。';
+      communicationTipText = '对方在表达好感，保持你的人设节奏，不要过度热情也不要太冷淡。';
+    } else {
+      thinkingText = '他主动联系你，简单聊了几句，大概率希望继续推进关系。';
+      remindText = '保持自然节奏，观察对方投入程度，不要急于回复。';
+      communicationTipText = '对方主动找你聊天，保持自然回应就好，不用太刻意。';
+    }
+
+    const thinkingTags = ['对' + personaLabel + '有好感', '想继续话题', '期待回应'];
+
+    const themeReplies = [
+      {
+        mode: '奶凶模式',
+        messages: hasPlayful
+          ? ['你才是呢', '本仙女明明是小香猪']
+          : ['谁理你呀', '自己想办法'],
+        sendHint: '建议先发第一条，紧接着发第二条'
+      },
+      {
+        mode: '拽姐模式',
+        messages: hasPlayful
+          ? ['哼', '那也是你惯出来的']
+          : ['哦', '然后呢'],
+        sendHint: '建议先发第一条，紧接着发第二条'
+      },
+      {
+        mode: '反撩模式',
+        messages: hasPlayful
+          ? ['猪怎么啦', '拱你这颗大白菜刚刚好']
+          : ['怎么突然找我', '不会无事不登三宝殿吧'],
+        sendHint: '建议先发第一条，紧接着发第二条'
+      },
+      {
+        mode: '摆烂模式',
+        messages: hasPlayful
+          ? ['嗯，是猪', '那你是养猪专业户吗']
+          : ['嗯嗯', '你说得都对'],
+        sendHint: '建议先发第一条，紧接着发第二条'
+      },
+      {
+        mode: '冷脸模式',
+        messages: hasPlayful
+          ? ['啧', '你见过凌晨一点还这么美的猪吗']
+          : ['？', '有事说事'],
+        sendHint: '建议先发第一条，紧接着发第二条'
+      },
+    ];
+
+    const legacyReplies = [
+      {
+        text: hasInvite
+          ? '哈哈可以呀～不过我对这边不太熟，你有什么推荐吗？'
+          : '哈哈好的呀～',
+        style: themeReplies[0].mode,
+        active: 2,
+        good: 4,
+        rhythm: '自然',
+      },
+      {
+        text: hasInvite
+          ? '听起来还不错～有机会可以一起去看看呀～'
+          : '嗯嗯，知道了～',
+        style: themeReplies[1].mode,
+        active: 3,
+        good: 5,
+        rhythm: '稍快',
+      },
+      {
+        text: hasFlirt
+          ? '怎么突然这么说啦～'
+          : '怎么突然想约我啦～',
+        style: themeReplies[2].mode,
+        active: 1,
+        good: 3,
+        rhythm: '慢热',
+      },
+      {
+        text: '哈哈哈笑死我了',
+        style: themeReplies[3].mode,
+        active: 4,
+        good: 5,
+        rhythm: '积极',
+      },
+      {
+        text: '？',
+        style: themeReplies[4].mode,
+        active: 1,
+        good: 2,
+        rhythm: '被动',
+      },
+    ];
+
     return {
-      thinking: '他主动找你聊天，' + (message.length > 10 ? '还说了不少内容，说明挺在意这次对话的' : '简单聊了几句') + '，大概率希望继续推进关系。',
-      thinkingTags: ['对' + personaLabel + '有好感', '想继续话题', '期待' + paceLabel + '的回应'],
-      remind: '建议保持' + paceLabel + '的节奏，不要太快回应，观察他的投入程度。',
-      remindTags: ['不要立刻答应', '先观察他的态度', '保持轻松自然'],
-      replies: [
-        {
-          text: '哈哈可以呀～不过我对那边不太熟，你有什么推荐吗？',
-          style: '稳妥自然',
-          active: 2,
-          good: 4,
-          rhythm: paceLabel,
-        },
-        {
-          text: '听起来还不错～有机会可以一起去看看呀～',
-          style: '提升好感',
-          active: 3,
-          good: 5,
-          rhythm: paceLabel === '慢热' ? '稍快' : paceLabel,
-        },
-        {
-          text: '怎么突然想约我啦～',
-          style: '轻微拉扯',
-          active: 1,
-          good: 3,
-          rhythm: paceLabel === '直球' ? '自然' : paceLabel,
-        },
-      ],
+      thinking: thinkingText,
+      thinkingTags: thinkingTags,
+      remind: remindText,
+      remindTags: ['保持轻松自然'],
+      replies: legacyReplies,
+      themeReplies: themeReplies,
+      communicationTip: communicationTipText,
     };
   }
 
@@ -539,13 +738,15 @@ export class AnalysisService {
         }
       }
 
-      // 补齐到 3 条：优先用 AI 的实际回复，不足再用默认值
+      // 补齐到 5 条：优先用 AI 的实际回复，不足再用默认值
       const defaultReplies = [
         { text: '哈哈可以呀～有什么推荐的吗？', style: '自然', active: 2, good: 4, rhythm: '自然' },
         { text: '听起来不错呀～有机会一起去看看', style: '慢热', active: 3, good: 5, rhythm: '稍快' },
-        { text: '怎么突然想约我啦～', style: '稳妥', active: 1, good: 3, rhythm: '慢热' }
+        { text: '怎么突然想约我啦～', style: '稳妥', active: 1, good: 3, rhythm: '慢热' },
+        { text: '那你呢？你想怎么样？', style: '撒娇', active: 4, good: 5, rhythm: '积极' },
+        { text: '随便吧，看你表现', style: '高冷', active: 1, good: 2, rhythm: '被动' }
       ];
-      while (existingReplies.length < 3) {
+      while (existingReplies.length < 5) {
         existingReplies.push(defaultReplies[existingReplies.length]);
       }
 
@@ -606,13 +807,15 @@ export class AnalysisService {
       }
 
       if (existingReplies.length > 0) {
-        // 补齐到 3 条，用有内容的默认回复
+        // 补齐到 5 条，用有内容的默认回复
         const defaultReplies = [
           { text: '哈哈可以呀～有什么推荐的吗？', style: '自然', active: 2, good: 4, rhythm: '自然' },
           { text: '听起来不错呀～有机会一起去看看', style: '慢热', active: 3, good: 5, rhythm: '稍快' },
-          { text: '怎么突然想约我啦～', style: '稳妥', active: 1, good: 3, rhythm: '慢热' }
+          { text: '怎么突然想约我啦～', style: '稳妥', active: 1, good: 3, rhythm: '慢热' },
+          { text: '那你呢？你想怎么样？', style: '撒娇', active: 4, good: 5, rhythm: '积极' },
+          { text: '随便吧，看你表现', style: '高冷', active: 1, good: 2, rhythm: '被动' }
         ];
-        while (existingReplies.length < 3) {
+        while (existingReplies.length < 5) {
           existingReplies.push(defaultReplies[existingReplies.length]);
         }
 
@@ -664,6 +867,8 @@ export class AnalysisService {
       { text: '哈哈刚看到消息～', style: '自然', active: 2, good: 4, rhythm: '自然' },
       { text: '最近有点忙呢～', style: '慢热', active: 1, good: 3, rhythm: '慢热' },
       { text: '谢谢你的消息～', style: '稳妥', active: 2, good: 3, rhythm: '自然' },
+      { text: '那你呢？你想怎么样？', style: '撒娇', active: 4, good: 5, rhythm: '积极' },
+      { text: '随便吧，看你表现', style: '高冷', active: 1, good: 2, rhythm: '被动' },
     ];
   }
 

@@ -218,9 +218,10 @@ Page({
     }
   },
 
-  // 初始化当前分类选项
+  // 初始化当前分类选项 — 从 thoughtOptions 源数据读取，不覆盖已保存的选中状态
   _initCurrentOptions(category) {
-    const opts = (this.data.thoughtOptions[category] || []).map(function(item) {
+    const srcOpts = this.data.thoughtOptions[category] || []
+    const opts = srcOpts.map(function(item) {
       var o = { label: item.label, value: item.value, selected: item.selected || false }
       if (item.group) o.group = item.group
       return o
@@ -267,6 +268,11 @@ Page({
       }
     }
     this.setData({ currentThoughtOptions: options })
+
+    // 同步更新 thoughtOptions 源数据，保证切回该分类时选中状态不丢失
+    const updatedThoughtOptions = Object.assign({}, this.data.thoughtOptions)
+    updatedThoughtOptions[category] = options
+    this.setData({ thoughtOptions: updatedThoughtOptions })
   },
 
   // 切换关系标签

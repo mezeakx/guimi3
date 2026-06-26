@@ -201,6 +201,14 @@ page {
   background: #F59E0B;
 }
 
+.reply-card-teal::before {
+  background: #14B8A6;
+}
+
+.reply-card-blue::before {
+  background: #6366F1;
+}
+
 .reply-card-top {
   display: flex;
   justify-content: space-between;
@@ -227,6 +235,14 @@ page {
   flex-shrink: 0;
 }
 
+.badge-teal {
+  background: #14B8A6;
+}
+
+.badge-blue {
+  background: #6366F1;
+}
+
 .reply-style {
   font-size: 28rpx;
   font-weight: 600;
@@ -242,6 +258,14 @@ page {
 
 .style-orange {
   color: #F59E0B;
+}
+
+.style-teal {
+  color: #14B8A6;
+}
+
+.style-blue {
+  color: #6366F1;
 }
 
 /* ========== 复制按钮 ========== */
@@ -284,6 +308,16 @@ page {
 .copy-btn-orange {
   color: #F59E0B;
   border-color: #fde0a0;
+}
+
+.copy-btn-teal {
+  color: #14B8A6;
+  border-color: #a7f3d0;
+}
+
+.copy-btn-blue {
+  color: #6366F1;
+  border-color: #c7d2fe;
 }
 
 .copy-icon {
@@ -445,6 +479,8 @@ page {
 .reply-card:nth-child(1) { animation-delay: 0.1s; }
 .reply-card:nth-child(2) { animation-delay: 0.2s; }
 .reply-card:nth-child(3) { animation-delay: 0.3s; }
+.reply-card:nth-child(4) { animation-delay: 0.4s; }
+.reply-card:nth-child(5) { animation-delay: 0.5s; }
 
 @keyframes fadeInUp {
   from {
