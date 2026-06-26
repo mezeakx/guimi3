@@ -1,0 +1,50 @@
+<!--components/custom-tabbar/custom-tabbar.wxml-->
+<view class="tab-bar">
+  <view
+    class="tab-bar-item {{currentTab === 0 ? 'active' : ''}}"
+    bindtap="switchTab"
+    data-index="0"
+  >
+    <view class="tab-icon-wrap tab-icon--chat">
+      <view class="chat-bubble">
+        <view class="chat-dot"></view>
+        <view class="chat-dot"></view>
+        <view class="chat-dot"></view>
+      </view>
+    </view>
+    <text class="tab-text">首页</text>
+  </view>
+
+  <view
+    class="tab-bar-item {{currentTab === 1 ? 'active' : ''}}"
+    bindtap="switchTab"
+    data-index="1"
+  >
+    <view class="tab-icon-wrap tab-icon--people">
+      <view class="person">
+        <view class="person-head"></view>
+        <view class="person-body"></view>
+      </view>
+      <view class="person person--secondary">
+        <view class="person-head"></view>
+        <view class="person-body"></view>
+      </view>
+    </view>
+    <text class="tab-text">联系人</text>
+  </view>
+
+  <view
+    class="tab-bar-item {{currentTab === 2 ? 'active' : ''}}"
+    bindtap="switchTab"
+    data-index="2"
+  >
+    <view class="tab-icon-wrap tab-icon--smile">
+      <view class="smile-face">
+        <view class="smile-eye"></view>
+        <view class="smile-eye"></view>
+        <view class="smile-mouth"></view>
+      </view>
+    </view>
+    <text class="tab-text">我的</text>
+  </view>
+</view>

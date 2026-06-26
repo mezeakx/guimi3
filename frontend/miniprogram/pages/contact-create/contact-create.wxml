@@ -1,0 +1,76 @@
+<!--pages/contact-create/contact-create.wxml-->
+<view class="container">
+  <!-- 联系人昵称 -->
+  <view class="card">
+    <view class="section-header">
+      <view class="section-title-wrapper">
+        <view class="section-icon"><image class="section-icon-img" src="/assets/icons/section/user.svg" mode="aspectFit" /></view>
+        <text class="section-title">联系人昵称</text>
+      </view>
+      <text class="char-count">{{nickname.length}}/20</text>
+    </view>
+    <input
+      class="input-field"
+      placeholder="请输入联系人昵称"
+      value="{{nickname}}"
+      maxlength="20"
+      bindinput="onNicknameInput"
+    />
+  </view>
+
+  <!-- 他的身份 -->
+  <view class="card">
+    <view class="section-header">
+      <view class="section-title-wrapper">
+        <view class="section-icon"><image class="section-icon-img" src="/assets/icons/section/chat.svg" mode="aspectFit" /></view>
+        <text class="section-title">他的身份</text>
+      </view>
+      <text class="identity-count">{{selectedIdentities.length}}/{{maxIdentities}}</text>
+    </view>
+    <view class="option-grid">
+      <view
+        wx:for="{{identities}}"
+        wx:key="value"
+        class="option-item {{selectedIdentityMap[item.value] ? 'selected' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="selectIdentity"
+      >
+        <text class="option-emoji">{{item.icon}}</text>
+        <text class="option-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 回复目标 -->
+  <view class="card">
+    <view class="section-header">
+      <view class="section-title-wrapper">
+        <view class="section-icon">
+          <text class="section-icon-text">🎯</text>
+        </view>
+        <text class="section-title">回复目标</text>
+      </view>
+      <text class="target-count">{{selectedTargets.length}}/{{maxTargets}}</text>
+    </view>
+    <view class="option-grid">
+      <view
+        wx:for="{{targets}}"
+        wx:key="value"
+        class="option-item {{selectedTargetMap[item.value] ? 'selected' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="selectTarget"
+      >
+        <text class="option-emoji">{{item.icon}}</text>
+        <text class="option-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 底部悬浮保存按钮 -->
+<view class="save-area">
+  <view class="btn-gradient" bindtap="saveContact">
+    <view class="btn-icon-save"></view>
+    <text class="btn-text">保存联系人</text>
+  </view>
+</view>

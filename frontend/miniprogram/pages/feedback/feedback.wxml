@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="section">
+    <text class="label">反馈内容 *</text>
+    <textarea class="textarea" placeholder="请描述你的问题或建议..." value="{{content}}" bindinput="onContentInput" maxlength="500" />
+  </view>
+  <view class="section">
+    <text class="label">截图（可选）</text>
+    <view class="upload-area" bindtap="uploadImage">
+      <image wx:if="{{image}}" src="{{image}}" mode="aspectFit" />
+      <text wx:else>点击上传图片</text>
+    </view>
+  </view>
+  <view class="section">
+    <text class="label">联系方式（选填）</text>
+    <input class="input" placeholder="方便我们联系你..." value="{{contact}}" bindinput="onContactInput" />
+  </view>
+  <button class="btn-gradient submit-btn" bindtap="onSubmit">提交反馈</button>
+</view>
