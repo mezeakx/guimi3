@@ -524,10 +524,12 @@ export class AnalysisService {
             thinkingTags: Array.isArray(raw.thinkingTags) ? raw.thinkingTags : [],
             remind: raw.remind || '保持自然节奏，观察对方投入程度。',
             remindTags: Array.isArray(raw.remindTags) ? raw.remindTags : [],
-            replies: raw.replies.slice(0, 5).map((r: any) => ({
+            replies: raw.replies.slice(0, 5).map((r: any, idx: number) => ({
               text: r.messages?.[0] || '',
               style: r.mode || '自然',
-              active: 2, good: 4, rhythm: '自然'
+              active: Number(r.active) || [2, 3, 1, 4, 1][idx % 5],
+              good: Number(r.good) || [4, 5, 3, 5, 2][idx % 5],
+              rhythm: r.rhythm || ['自然', '稍快', '慢热', '积极', '被动'][idx % 5]
             })),
             themeReplies: raw.replies,
             communicationTip: raw.communicationTip || ''
@@ -547,10 +549,12 @@ export class AnalysisService {
               thinkingTags: Array.isArray(raw.thinkingTags) ? raw.thinkingTags : [],
               remind: raw.remind || '保持自然节奏，观察对方投入程度。',
               remindTags: Array.isArray(raw.remindTags) ? raw.remindTags : [],
-              replies: raw.replies.slice(0, 5).map((r: any) => ({
+              replies: raw.replies.slice(0, 5).map((r: any, idx: number) => ({
                 text: r.messages?.[0] || '',
                 style: r.mode || '自然',
-                active: 2, good: 4, rhythm: '自然'
+                active: Number(r.active) || [2, 3, 1, 4, 1][idx % 5],
+                good: Number(r.good) || [4, 5, 3, 5, 2][idx % 5],
+                rhythm: r.rhythm || ['自然', '稍快', '慢热', '积极', '被动'][idx % 5]
               })),
             };
             const padDefaults = [
@@ -593,10 +597,12 @@ export class AnalysisService {
                 thinkingTags: Array.isArray(raw.thinkingTags) ? raw.thinkingTags : [],
                 remind: raw.remind || '保持自然节奏，观察对方投入程度。',
                 remindTags: Array.isArray(raw.remindTags) ? raw.remindTags : [],
-                replies: raw.replies.slice(0, 5).map((r: any) => ({
+                replies: raw.replies.slice(0, 5).map((r: any, idx: number) => ({
                   text: r.messages?.[0] || '',
                   style: r.mode || '自然',
-                  active: 2, good: 4, rhythm: '自然'
+                  active: Number(r.active) || [2, 3, 1, 4, 1][idx % 5],
+                  good: Number(r.good) || [4, 5, 3, 5, 2][idx % 5],
+                  rhythm: r.rhythm || ['自然', '稍快', '慢热', '积极', '被动'][idx % 5]
                 })),
                 themeReplies: raw.replies,
                 communicationTip: raw.communicationTip || ''
@@ -676,7 +682,7 @@ export class AnalysisService {
           thinkingTags: Array.isArray(raw.thinkingTags) ? raw.thinkingTags : [],
           remind: raw.remind || '',
           remindTags: Array.isArray(raw.remindTags) ? raw.remindTags : [],
-          replies: raw.replies.slice(0, 5).map((r: any) => ({
+          replies: raw.replies.slice(0, 5).map((r: any, idx: number) => ({
             text: r.text || '',
             style: r.style || '自然',
             active: Number(r.active) || 2,
@@ -840,10 +846,13 @@ export class AnalysisService {
 
     prompt += '## 严格格式要求（重要！）\n\n';
     prompt += '你必须且只能使用以下新格式。禁止使用任何旧格式（如 text/style/active/good/rhythm 字段）。\n\n';
-    prompt += '每个回复对象必须包含这三个字段：\n';
+    prompt += '每个回复对象必须包含这六个字段：\n';
     prompt += '- "mode": 模式名称（从上方推荐列表中选择）\n';
     prompt += '- "messages": 数组，包含1条回复文案（15字以内）\n';
-    prompt += '- "sendHint": 发送建议（30字以内）\n\n';
+    prompt += '- "sendHint": 发送建议（30字以内）\n';
+    prompt += '- "active": 主动程度 (1-5)，1=被动，5=非常主动\n';
+    prompt += '- "good": 好感提升 (1-5)，1=可能减分，5=大幅提升好感\n';
+    prompt += '- "rhythm": 节奏标签，从 "自然" / "稍快" / "慢热" / "积极" / "被动" 中选一个\n\n';
 
     // Generate dynamic example using 5 candidate modes
     const exampleModes = uniqueModes.slice(0, 5);
@@ -867,7 +876,11 @@ export class AnalysisService {
       prompt += '    {\n';
       prompt += '      "mode": "' + exampleModes[i] + '",\n';
       prompt += '      "messages": ["' + exampleMessages[i] + '"],\n';
-      prompt += '      "sendHint": "' + exampleHints[i] + '"\n';
+      prompt += '      "sendHint": "' + exampleHints[i] + '",\n';
+
+      prompt += '      "active": ' + [2, 3, 4, 1, 5][i] + ',\n';
+      prompt += '      "good": ' + [4, 5, 4, 3, 5][i] + ',\n';
+      prompt += '      "rhythm": "' + ['自然', '稍快', '积极', '慢热', '被动'][i] + '"\n';
       prompt += '    }' + (i < 4 ? ',' : '') + '\n';
     }
     prompt += '  ],\n';
@@ -886,7 +899,10 @@ export class AnalysisService {
     prompt += '    {\n';
     prompt += '      "mode": "从上方推荐列表中选择的一个模式",\n';
     prompt += '      "messages": ["回复文案1（15字以内）"],\n';
-    prompt += '      "sendHint": "建议说明（30字内")"\n';
+    prompt += '      "sendHint": "建议说明（30字内")",\n';
+    prompt += '      "active": 2,\n';
+    prompt += '      "good": 4,\n';
+    prompt += '      "rhythm": "自然"\n';
     prompt += '    },\n';
     prompt += '    ...共 5 个对象\n';
     prompt += '  ],\n';
@@ -906,6 +922,16 @@ export class AnalysisService {
     prompt += '- 风格要贴合所选模式的定义\n';
     prompt += '- 不要空洞的"嗯""哦""哈哈"\n';
     prompt += '- 不要解释你的行为，不要输出系统信息\n';
+
+    prompt += '每个回复必须标注 active/good/rhythm 评分字段：\n';
+    prompt += '- **active** (1-5)：主动程度。1=完全被动，5=非常主动出击\n';
+    prompt += '- **good** (1-5)：好感提升。1=可能减分，5=大幅提升好感\n';
+    prompt += '- **rhythm**：节奏标签，从 "自然" / "稍快" / "慢热" / "积极" / "被动" 中选一个\n';
+    prompt += '评分指南：\n';
+    prompt += '- 主动邀约/撩拨类回复：active 4-5, good 4-5\n';
+    prompt += '- 稳妥自然类回复：active 2-3, good 3-4\n';
+    prompt += '- 高冷/被动类回复：active 1-2, good 2-3\n';
+    prompt += '- 根据「我的想法和情绪」中用户的需求调整：用户想约他就给高 active\n';
 
     return prompt;
   }
@@ -1036,7 +1062,7 @@ export class AnalysisService {
         const mm = rem.match(/\{\s*"mode"\s*:\s*"([^"]*)"[^}]*"messages"\s*:\s*\[([^\]]*)\]/);
         if (mm) {
           const msgs = mm[2].split(/[,，]/).map((s: string) => s.replace(/['"]'/g, '').trim()).filter(Boolean);
-          er.push({ text: msgs[0] || '', style: mm[1], active: 2, good: 4, rhythm: '自然' });
+          er.push({ text: msgs[0] || '', style: mm[1], active: [2, 3, 1, 4, 1][er.length % 5], good: [4, 5, 3, 5, 2][er.length % 5], rhythm: ['自然', '稍快', '慢热', '积极', '被动'][er.length % 5] });
           const nb = rem.indexOf('{', 1); rem = nb > 0 ? rem.substring(nb) : '';
           continue;
         }
@@ -1070,7 +1096,7 @@ export class AnalysisService {
         const mm = rem.match(/\{\s*"mode"\s*:\s*"([^"]*)"[^}]*"messages"\s*:\s*\[([^\]]*)\]/);
         if (mm) {
           const msgs = mm[2].split(/[,，]/).map((s: string) => s.replace(/['"]'/g, '').trim()).filter(Boolean);
-          er.push({ text: msgs[0] || '', style: mm[1], active: 2, good: 4, rhythm: '自然' });
+          er.push({ text: msgs[0] || '', style: mm[1], active: [2, 3, 1, 4, 1][er.length % 5], good: [4, 5, 3, 5, 2][er.length % 5], rhythm: ['自然', '稍快', '慢热', '积极', '被动'][er.length % 5] });
           const nb = rem.indexOf('{', 1); rem = nb > 0 ? rem.substring(nb) : '';
           continue;
         }
@@ -1178,14 +1204,14 @@ export class AnalysisService {
     let m;
     while ((m = mp.exec(trimmed)) !== null) {
       const msgs = m[2].split(/[,，]/).map((s: string) => s.replace(/['"]'/g, '').trim()).filter(Boolean);
-      er.push({ text: msgs[0] || '', style: m[1], active: 2, good: 4, rhythm: '自然' });
+      er.push({ text: msgs[0] || '', style: m[1], active: [2, 3, 1, 4, 1][er.length % 5], good: [4, 5, 3, 5, 2][er.length % 5], rhythm: ['自然', '稍快', '慢热', '积极', '被动'][er.length % 5] });
     }
     if (er.length === 0) {
       const rp = /\{\s*"text"\s*:\s*"([^"]*)"[^}]*"style"\s*:\s*"([^"]*)"[^}]*"active"\s*:\s*(\d+)[^}]*"good"\s*:\s*(\d+)/g;
       while ((m = rp.exec(trimmed)) !== null) er.push({ text: m[1], style: m[2], active: Number(m[3]), good: Number(m[4]), rhythm: '自然' });
     }
     if (er.length === 0 && thinking === '' && remind === '') return null;
-    while (er.length < 5) er.push({ text: '哈哈可以呀～你有什么推荐的吗？', style: '自然', active: 2, good: 4, rhythm: '自然' });
+    while (er.length < 5) er.push({ text: '哈哈可以呀～你有什么推荐的吗？', style: '自然', active: [2, 3, 1, 4, 1][er.length % 5], good: [4, 5, 3, 5, 2][er.length % 5], rhythm: ['自然', '稍快', '慢热', '积极', '被动'][er.length % 5] });
     return JSON.stringify({ thinking: thinking || '对方主动联系你，希望能继续互动。',
       thinkingTags: ['主动发起'],
       remind: remind || '保持自然节奏，观察对方投入程度。',
@@ -1208,14 +1234,14 @@ export class AnalysisService {
     let m;
     while ((m = mp.exec(trimmed)) !== null) {
       const msgs = m[2].split(/[,，]/).map((s: string) => s.replace(/['"]'/g, '').trim()).filter(Boolean);
-      er.push({ text: msgs[0] || '', style: m[1], active: 2, good: 4, rhythm: '自然' });
+      er.push({ text: msgs[0] || '', style: m[1], active: [2, 3, 1, 4, 1][er.length % 5], good: [4, 5, 3, 5, 2][er.length % 5], rhythm: ['自然', '稍快', '慢热', '积极', '被动'][er.length % 5] });
     }
     if (er.length === 0) {
       const rp = /\{\s*"text"\s*:\s*"([^"]*)"[^}]*"style"\s*:\s*"([^"]*)"[^}]*"active"\s*:\s*(\d+)[^}]*"good"\s*:\s*(\d+)/g;
       while ((m = rp.exec(trimmed)) !== null) er.push({ text: m[1], style: m[2], active: Number(m[3]), good: Number(m[4]), rhythm: '自然' });
     }
     if (er.length === 0 && thinking === '' && remind === '') return null;
-    while (er.length < 5) er.push({ text: '哈哈可以呀～你有什么推荐的吗？', style: '自然', active: 2, good: 4, rhythm: '自然' });
+    while (er.length < 5) er.push({ text: '哈哈可以呀～你有什么推荐的吗？', style: '自然', active: [2, 3, 1, 4, 1][er.length % 5], good: [4, 5, 3, 5, 2][er.length % 5], rhythm: ['自然', '稍快', '慢热', '积极', '被动'][er.length % 5] });
     return JSON.stringify({ thinking: thinking || '对方主动联系你，希望能继续互动。',
       thinkingTags: ['主动发起'],
       remind: remind || '保持自然节奏，观察对方投入程度。',
