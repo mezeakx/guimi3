@@ -325,7 +325,7 @@ export class AnalysisService {
           this.logger.error('内容安全审核异常:', safetyError instanceof Error ? safetyError.message : safetyError);
         }
 
-        const isNewFormat = raw.replies && Array.isArray(raw.replies) && raw.replies.length > 0 && raw.replies[0]?.mode;
+        const isNewFormat = raw.replies && Array.isArray(raw.replies) && raw.replies.length > 0 && (raw.replies[0]?.mode || raw.replies[0]?.messages);
 
         if (isNewFormat) {
           // Deduplicate replies by text to prevent duplicate cards
@@ -388,6 +388,41 @@ export class AnalysisService {
             result.remind = remind || '保持自然节奏，观察对方投入程度。';
             this.logger.log('AI 分析成功（旧格式-新数据转换）');
             return result;
+          }
+          // AI returned old format (text/style/active/good/rhythm) — convert to new format
+          if (raw.replies[0]?.text && !raw.replies[0]?.mode && !raw.replies[0]?.messages) {
+            this.logger.log('Detected old format, converting to new format');
+            const oldReplies = raw.replies.map((r: any) => ({
+              mode: r.style || '自然',
+              messages: [r.text || ''],
+              sendHint: ''
+            }));
+            raw.replies = oldReplies;
+            const isNewFormat2 = raw.replies && Array.isArray(raw.replies) && raw.replies.length > 0 && (raw.replies[0]?.mode || raw.replies[0]?.messages);
+            if (isNewFormat2) {
+              const seenText = new Set<string>();
+              const deduped: typeof raw.replies = [];
+              for (const r of raw.replies) {
+                const key = r.messages?.[0] || '';
+                if (!seenText.has(key)) { seenText.add(key); deduped.push(r); }
+              }
+              if (deduped.length > 0) raw.replies = deduped;
+              const result: AnalysisResult = {
+                thinking: raw.thinking || '对方主动联系你，希望能继续互动。',
+                thinkingTags: Array.isArray(raw.thinkingTags) ? raw.thinkingTags : [],
+                remind: raw.remind || '保持自然节奏，观察对方投入程度。',
+                remindTags: Array.isArray(raw.remindTags) ? raw.remindTags : [],
+                replies: raw.replies.slice(0, 5).map((r: any) => ({
+                  text: r.messages?.[0] || '',
+                  style: r.mode || '自然',
+                  active: 2, good: 4, rhythm: '自然'
+                })),
+                themeReplies: raw.replies,
+                communicationTip: raw.communicationTip || ''
+              };
+              this.logger.log('AI 分析成功（旧格式转新格式）');
+              return result;
+            }
           }
         }
 
@@ -612,6 +647,51 @@ export class AnalysisService {
     prompt += '2. 要结合对方的语气来选择\n';
     prompt += '3. 要符合我的人设、我的想法和回复目标\n';
     prompt += '4. 5 个模式中至少要包含：1 个稳妥型 + 1 个主动型 + 1 个进攻/反击型\n\n';
+
+    prompt += '## 严格格式要求（重要！）\n\n';
+    prompt += '你必须且只能使用以下新格式。禁止使用任何旧格式（如 text/style/active/good/rhythm 字段）。\n\n';
+    prompt += '每个回复对象必须包含这三个字段：\n';
+    prompt += '- "mode": 模式名称（从上方100种模式中选择）\n';
+    prompt += '- "messages": 数组，包含1条回复文案（15字以内）\n';
+    prompt += '- "sendHint": 发送建议（30字以内）\n\n';
+
+    prompt += '## 完整输出示例\n\n';
+    prompt += '```json\n';
+    prompt += '{\n';
+    prompt += '  "thinking": "他在试探你的态度，想确认你对他有没有兴趣",\n';
+    prompt += '  "thinkingTags": ["试探", "确认意图", "观察态度"],\n';
+    prompt += '  "remind": "保持自然，不要过度解读他的一句话",\n';
+    prompt += '  "remindTags": ["保持轻松", "不过度解读"],\n';
+    prompt += '  "replies": [\n';
+    prompt += '    {\n';
+    prompt += '      "mode": "小狐狸模式",\n';
+    prompt += '      "messages": ["那你觉得我是什么态度呀？"],\n';
+    prompt += '      "sendHint": "把问题抛回去，让他自己说"\n';
+    prompt += '    },\n';
+    prompt += '    {\n';
+    prompt += '      "mode": "冷脸模式",\n';
+    prompt += '      "messages": ["哦"],\n';
+    prompt += '      "sendHint": "简短回应，制造一点距离感"\n';
+    prompt += '    },\n';
+    prompt += '    {\n';
+    prompt += '      "mode": "撒娇模式",\n';
+    prompt += '      "messages": ["你怎么突然这么问呀～"],\n';
+    prompt += '      "sendHint": "用疑问转移话题，保持可爱"\n';
+    prompt += '    },\n';
+    prompt += '    {\n';
+    prompt += '      "mode": "摆烂模式",\n';
+    prompt += '      "messages": ["随便你怎么想"],\n';
+    prompt += '      "sendHint": "无所谓态度，降低他的期待"\n';
+    prompt += '    },\n';
+    prompt += '    {\n';
+    prompt += '      "mode": "掌控模式",\n';
+    prompt += '      "messages": ["你想知道什么？直接说"],\n';
+    prompt += '      "sendHint": "掌握主动权，不绕弯子"\n';
+    prompt += '    }\n';
+    prompt += '  ],\n';
+    prompt += '  "communicationTip": "不要急于表态，让他多表达一些"\n';
+    prompt += '}\n';
+    prompt += '```\n\n';
 
     prompt += '## 输出格式\n\n';
     prompt += '严格返回以下 JSON（不要任何额外文字，不要 Markdown 代码块标记）：\n\n';
