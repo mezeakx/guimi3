@@ -218,7 +218,7 @@ export class AnalysisService {
         return this.getFallbackResult();
       }
       content = content.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
-      content = content.replace(/�]/g, ':');
+      content = content.replace(/[�]/g, ':');
 
       // Normalize Chinese/curly quotes to ASCII for JSON.parse
       const DQ_P = String.fromCharCode(34);
@@ -301,6 +301,15 @@ export class AnalysisService {
 
       try {
         let raw: any = JSON.parse(content);
+        // Deduplicate replies by text to prevent duplicate cards
+        const seenAll = new Set<string>();
+        const dedupedAll: any[] = [];
+        for (const r of raw.replies) {
+          const key = r.text || r.messages?.[0] || '';
+          if (!seenAll.has(key)) { seenAll.add(key); dedupedAll.push(r); }
+        }
+        if (dedupedAll.length > 0) raw.replies = dedupedAll;
+
 
         const outputText = [raw.thinking, raw.remind, ...(raw.replies?.map((r: any) => r.messages?.[0] || r.text) || [])].join('\n');
         try {
@@ -338,7 +347,7 @@ export class AnalysisService {
           const mc = response.data.choices?.[0]?.message?.content || '';
           if (mc) {
             let fc = mc.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
-            fc = fc.replace(/�]/g, ':');
+            fc = fc.replace(/[�]/g, ':');
             const DQ_R = String.fromCharCode(34);
             const SQ_R = String.fromCharCode(39);
             fc = fc.replace(/[\u201C\u201D\uFF02]/g, DQ_R)
@@ -677,13 +686,13 @@ export class AnalysisService {
       const ef = (fn: string): string | null => {
         const m = prefix.match(new RegExp('"' + fn + '"\\s*:\\s*"([^"]*)'));
         if (m) return m[1];
-        const m2 = prefix.match(new RegExp(fn + '\\s*[：:]\\s*([^\\n，,\\]]+)'));
+        const m2 = prefix.match(new RegExp(fn + '\\s*[：:]\\s*([^\\n，]]+)'));
         return m2 ? m2[1].trim() : null;
       };
       const ea = (fn: string): string[] => {
         const m = prefix.match(new RegExp('"' + fn + '"\\s*:\\s*\\[([^\\]]*)'));
         if (m) return m[1].split(',').map((s: string) => s.replace(/"/g, '').trim()).filter(Boolean);
-        const m2 = prefix.match(new RegExp(fn + '\\s*[：:]\\s*([^\\n，\\]]+)'));
+        const m2 = prefix.match(new RegExp(fn + '\\s*[：:]\\s*([^\\n，]]+)'));
         return m2 ? m2[1].split(/[，,]/).map((s: string) => s.trim()).filter(Boolean) : [];
       };
       const thinking = ef('thinking') || '对方主动联系你，希望能继续互动。';
@@ -755,13 +764,13 @@ export class AnalysisService {
         const ef = (fn: string): string | null => {
           const m = prefix.match(new RegExp('"' + fn + '"\\s*:\\s*"([^"]*)'));
           if (m) return m[1];
-          const m2 = prefix.match(new RegExp(fn + '\\s*[：:]\\s*([^\\n，,\\]]+)'));
+          const m2 = prefix.match(new RegExp(fn + '\\s*[：:]\\s*([^\\n，]]+)'));
           return m2 ? m2[1].trim() : null;
         };
         const ea = (fn: string): string[] => {
           const m = prefix.match(new RegExp('"' + fn + '"\\s*:\\s*\\[([^\\]]*)'));
           if (m) return m[1].split(',').map((s: string) => s.replace(/"/g, '').trim()).filter(Boolean);
-          const m2 = prefix.match(new RegExp(fn + '\\s*[：:]\\s*([^\\n，\\]]+)'));
+          const m2 = prefix.match(new RegExp(fn + '\\s*[：:]\\s*([^\\n，]]+)'));
           return m2 ? m2[1].split(/[，,]/).map((s: string) => s.trim()).filter(Boolean) : [];
         };
         return JSON.stringify({
