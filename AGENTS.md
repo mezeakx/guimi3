@@ -392,3 +392,31 @@ function validateJSON(str) {
 - [ ] 需要传递结构化数据时，使用独立 JS 文件或 here-string
 - [ ] 所有外部输入的 JSON 在解析前都做 try/catch 校验
 - [ ] 调试 API 报错时，先打印原始字符串确认 JSON 合法性
+
+---
+
+## Cowork 权限管理
+
+### ⚠️ 每次新会话必须首先获取 Cowork 目录挂载权限
+
+**规则：** 每当开启一个新的 Cowork 会话，Claude 必须在执行任何任务之前，**第一时间**调用 `mcp__cowork__request_cowork_directory` 工具挂载项目目录，获得用户授权后再继续工作。
+
+**具体操作步骤：**
+
+1. **会话开始的第一步**：立即调用 `mcp__cowork__request_cowork_directory(path: "D:\\codex\\guimi3")`
+2. **等待用户确认**：Cowork 会弹出权限确认对话框，用户点击"Allow"后挂载生效
+3. **挂载成功后**：项目目录可通过以下路径访问：
+   - **Read/Write/Edit/Grep/Glob 工具**：使用 `D:\codex\guimi3\` 路径
+   - **mcp__workspace__bash**：使用 `/sessions/gallant-awesome-knuth/mnt/guimi3/` 路径
+4. **挂载成功后方可执行**：任何文件读写、代码修改、脚本执行等任务
+
+**为什么必须这样做：**
+- Cowork 的沙箱机制要求每次会话重新挂载目录
+- 如果不先挂载，后续所有文件操作都会失败
+- 一次授权后，**当前会话内**不会再重复询问，所有操作可直接使用
+- 提前挂载可以避免中途因权限问题中断任务
+
+**重要提醒：**
+- 不要等到执行文件操作时才想起挂载
+- 不要假设上一次的挂载会在本次会话中生效
+- 每次新会话 = 全新的沙箱环境 = 必须重新挂载

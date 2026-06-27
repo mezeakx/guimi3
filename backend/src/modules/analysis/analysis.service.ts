@@ -212,12 +212,13 @@ export class AnalysisService {
         if (!content) this.logger.warn('No valid JSON in reasoning_content');
       }
 
+
       if (!content) {
         this.logger.error('AI 返回内容为空，完整响应:', JSON.stringify(response.data).substring(0, 500));
         return this.getFallbackResult();
       }
       content = content.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
-      content = content.replace(/：/g, ':');
+      content = content.replace(/�]/g, ':');
 
       // Normalize Chinese/curly quotes to ASCII for JSON.parse
       const DQ_P = String.fromCharCode(34);
@@ -299,7 +300,7 @@ export class AnalysisService {
       }
 
       try {
-        const raw: any = JSON.parse(content);
+        let raw: any = JSON.parse(content);
 
         const outputText = [raw.thinking, raw.remind, ...(raw.replies?.map((r: any) => r.messages?.[0] || r.text) || [])].join('\n');
         try {
@@ -333,8 +334,55 @@ export class AnalysisService {
         }
 
         if (!raw.replies || !Array.isArray(raw.replies) || raw.replies.length === 0) {
-          this.logger.warn('AI 返回的 replies 字段无效');
-          return this.getFallbackResult();
+                    this.logger.warn('AI replies invalid, retrying from message.content');
+          const mc = response.data.choices?.[0]?.message?.content || '';
+          if (mc) {
+            let fc = mc.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
+            fc = fc.replace(/�]/g, ':');
+            const DQ_R = String.fromCharCode(34);
+            const SQ_R = String.fromCharCode(39);
+            fc = fc.replace(/[\u201C\u201D\uFF02]/g, DQ_R)
+                   .replace(/[\u2018\u2019]/g, SQ_R);
+            let fx = '', ins = false, ex = false;
+            for (let i = 0; i < fc.length; i++) {
+              const ch = fc[i];
+              if (ex) { fx += ch; ex = false; continue; }
+              if (ch === '\\') { fx += ch; ex = true; continue; }
+              if (ch === '"') {
+                if (!ins) { ins = true; fx += ch; }
+                else {
+                  let pk = i + 1;
+                  while (pk < fc.length && fc[pk] === ' ') pk++;
+                  if (pk < fc.length && fc[pk] === ':') { fx += ch; ins = false; }
+                  else { fx += DQ_R; }
+                }
+              } else { fx += ch; }
+            }
+            fc = fx;
+            const bs2 = fc.indexOf('{');
+            if (bs2 >= 0) {
+              let dp = 0, be2 = -1;
+              for (let i = bs2; i < fc.length; i++) {
+                if (fc[i] === '{') dp++;
+                else if (fc[i] === '}') { dp--; if (dp === 0) { be2 = i; break; } }
+              }
+              if (be2 > bs2) {
+                try {
+                  const rp = JSON.parse(fc.substring(bs2, be2 + 1));
+                  if (rp && rp.replies && Array.isArray(rp.replies) && rp.replies.length > 0) {
+                    content = fc.substring(bs2, be2 + 1);
+                    raw = rp;
+                    this.logger.log('Retry from message.content succeeded');
+                  }
+                } catch {}
+              }
+            }
+          }
+          if (!raw.replies || !Array.isArray(raw.replies) || raw.replies.length === 0) {
+            this.logger.warn('Retry failed, using default replies');
+            return this.getFallbackResult();
+          }
+
         }
 
         const result: AnalysisResult = {
