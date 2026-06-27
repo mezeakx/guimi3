@@ -114,33 +114,102 @@ export class AnalysisService {
       this.logger.log('AI 返回 choices 数量:', response.data.choices?.length);
 
       let content = response.data.choices?.[0]?.message?.content || '';
-      const reasoning = response.data.choices?.[0]?.message?.reasoning_content ||
+      let reasoning = response.data.choices?.[0]?.message?.reasoning_content ||
                         response.data.choices?.[0]?.message?.reasoning || '';
       if (!content && reasoning) {
-        this.logger.log('从 reasoning_content 提取 JSON');
+        this.logger.log('From reasoning_content extract JSON');
+
+        // Normalize Chinese/curly quotes to ASCII before extraction
+        const DQ_N = String.fromCharCode(34);
+        const SQ_N = String.fromCharCode(39);
+        reasoning = reasoning.replace(/[\u201C\u201D\uFF02]/g, DQ_N)
+                               .replace(/[\u2018\u2019]/g, SQ_N);
+
+        const extractBalancedObj = (text, start) => {
+          let depth = 0, inStr = false, esc = false;
+          for (let i = start; i < text.length; i++) {
+            const ch = text[i];
+            if (esc) { esc = false; continue; }
+            if (ch === '\\') { esc = true; continue; }
+            if (ch === '"' && !esc) { inStr = !inStr; continue; }
+            if (inStr) continue;
+            if (ch === '{') depth++;
+            else if (ch === '}') { depth--; if (depth === 0) return text.substring(start, i + 1); }
+          }
+          return null;
+        };
+
+        const attachRepliesFromRest = (obj, rest) => {
+          const trimmed = rest.trim();
+          const m = trimmed.match(/^\,\s*"replies"\s*:\s*(\[)/);
+          if (!m) return obj;
+          let depth = 0, inStr = false, esc = false, arrEnd = -1;
+          for (let i = 0; i < trimmed.length; i++) {
+            const ct = trimmed[i];
+            if (esc) { esc = false; continue; }
+            if (ct === '\\') { esc = true; continue; }
+            if (ct === '"' && !esc) { inStr = !inStr; continue; }
+            if (inStr) continue;
+            if (ct === '[') depth++;
+            else if (ct === ']') { depth--; if (depth === 0) { arrEnd = i; break; } }
+          }
+          if (arrEnd >= 0) {
+            const arrStr = trimmed.substring(0, arrEnd + 1);
+            try {
+              const parsed = JSON.parse(arrStr);
+              if (Array.isArray(parsed)) {
+                return obj.replace(/}$/, ', ' + DQ_N + 'replies' + DQ_N + ': ' + JSON.stringify(parsed) + '}');
+              }
+            } catch {}
+          }
+          return obj;
+        };
+
         const ri = reasoning.toLowerCase().indexOf('"replies"');
         if (ri > 0) {
           let bs = ri - 1;
           while (bs >= 0 && reasoning[bs] !== '{') bs--;
-          if (bs >= 0) { const jm = reasoning.substring(bs).match(/\{[\s\S]*\}/); if (jm) content = jm[0]; }
+          if (bs >= 0) {
+            const obj = extractBalancedObj(reasoning, bs);
+            if (obj) {
+              const rest = reasoning.substring(bs + obj.length);
+              content = attachRepliesFromRest(obj, rest);
+            }
+          }
         }
-        if (!content) { const jm = reasoning.match(/\{[\s\S]*\}/); if (jm) content = jm[0]; }
+
         if (!content) {
           const tr = reasoning.trim();
           for (let i = 0; i < tr.length; i++) {
-            if (tr[i] === '{') { const jm = tr.substring(i).match(/\{[\s\S]*\}/); if (jm) { try { JSON.parse(jm[0]); content = jm[0]; break; } catch {} } }
+            if (tr[i] === '{') {
+              const obj = extractBalancedObj(tr, i);
+              if (obj) { try { JSON.parse(obj); content = obj; break; } catch {} }
+            }
           }
         }
+
         if (!content) {
           try { const p = JSON.parse(reasoning.trim()); if (p && typeof p === 'object' && !Array.isArray(p)) content = JSON.stringify(p); } catch {}
         }
+
         if (!content) {
-          const tm = reasoning.match(/"themeReplies"\s*:\s*\[[\s\S]*?\]/);
-          if (tm) { let bs = tm.index! - 1; while (bs >= 0 && reasoning[bs] !== '{') bs--; if (bs >= 0) { const jm = reasoning.substring(bs).match(/\{[\s\S]*\}/); if (jm) content = jm[0]; } }
+          const tm = reasoning.match(/"themeReplies"\s*:\s*\[/);
+          if (tm) {
+            let bs = tm.index! - 1;
+            while (bs >= 0 && reasoning[bs] !== '{') bs--;
+            if (bs >= 0) {
+              const obj = extractBalancedObj(reasoning, bs);
+              if (obj) {
+                const rest = reasoning.substring(bs + obj.length);
+                content = attachRepliesFromRest(obj, rest) || obj;
+              }
+            }
+          }
         }
-        if (!content) { content = this._parseReasoningContentToJson(reasoning); if (content) this.logger.log('从 reasoning_content 半结构化文本成功解析为 JSON'); }
-        if (!content && reasoning) { content = this._parseTruncatedReasoning(reasoning); if (content) this.logger.log('从截断的 reasoning_content 提取到部分数据'); }
-        if (!content) this.logger.warn('reasoning_content 中未找到有效 JSON');
+
+        if (!content) { content = this._parseReasoningContentToJson(reasoning); if (content) this.logger.log('From reasoning_content semi-structured parse'); }
+        if (!content && reasoning) { content = this._parseTruncatedReasoning(reasoning); if (content) this.logger.log('From truncated reasoning_content'); }
+        if (!content) this.logger.warn('No valid JSON in reasoning_content');
       }
 
       if (!content) {
@@ -150,9 +219,80 @@ export class AnalysisService {
       content = content.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
       content = content.replace(/：/g, ':');
 
+      // Normalize Chinese/curly quotes to ASCII for JSON.parse
+      const DQ_P = String.fromCharCode(34);
+      const SQ_P = String.fromCharCode(39);
+      content = content.replace(/[\u201C\u201D\uFF02]/g, DQ_P)
+                       .replace(/[\u2018\u2019]/g, SQ_P);
+      content = content.replace(/[\u2014]/g, '-')
+                       .replace(/[\u2013]/g, '-');
+
+      // Fix premature } before replies array
+      let braceStart = content.indexOf('{');
+      if (braceStart >= 0) {
+        let depth = 0, braceEnd = -1, inStr = false, esc = false;
+        for (let i = braceStart; i < content.length; i++) {
+          const ch = content[i];
+          if (esc) { esc = false; continue; }
+          if (ch === '\\') { esc = true; continue; }
+          if (ch === '"' && !esc) { inStr = !inStr; continue; }
+          if (inStr) continue;
+          if (ch === '{') depth++;
+          else if (ch === '}') { depth--; if (depth === 0) { braceEnd = i; break; } }
+        }
+        if (braceEnd > braceStart) {
+          let extracted = content.substring(braceStart, braceEnd + 1);
+          const rest = content.substring(braceEnd + 1).trim();
+          const repliesMatch = rest.match(/^\,\s*"replies"\s*:\s*(\[.+)$/s);
+          if (repliesMatch) {
+            let repStr = repliesMatch[1];
+            let rDepth = 0, rEnd = -1, rInStr = false, rEsc = false;
+            for (let j = 0; j < repStr.length; j++) {
+              const ch = repStr[j];
+              if (rEsc) { rEsc = false; continue; }
+              if (ch === '\\') { rEsc = true; continue; }
+              if (ch === '"' && !rEsc) { rInStr = !rInStr; continue; }
+              if (rInStr) continue;
+              if (ch === '[') rDepth++;
+              else if (ch === ']') { rDepth--; if (rDepth === 0) { rEnd = j; break; } }
+            }
+            if (rEnd >= 0) {
+              const repliesArray = repStr.substring(0, rEnd + 1);
+              try {
+                const parsedReplies = JSON.parse(repliesArray);
+                if (Array.isArray(parsedReplies)) {
+                  extracted = extracted.replace(/}$/, ', ' + DQ_P + 'replies' + DQ_P + ': ' + JSON.stringify(parsedReplies) + '}');
+                }
+              } catch {}
+            }
+          }
+          content = extracted;
+        }
+      }
+
+      // Fix unescaped quotes inside JSON string values
+      let fixed = '', inStr = false, esc = false;
+      for (let i = 0; i < content.length; i++) {
+        const ch = content[i];
+        if (esc) { fixed += ch; esc = false; continue; }
+        if (ch === '\\') { fixed += ch; esc = true; continue; }
+        if (ch === '"') {
+          if (!inStr) { inStr = true; fixed += ch; }
+          else {
+            let peek = i + 1;
+            while (peek < content.length && content[peek] === ' ') peek++;
+            if (peek < content.length && content[peek] === ':') {
+              fixed += ch; inStr = false;
+            } else {
+              fixed += DQ_P;
+            }
+          }
+        } else { fixed += ch; }
+      }
+      content = fixed;
+
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) content = jsonMatch[0];
-
       if (!content.trim()) {
         this.logger.warn('AI 返回内容清洗后为空，使用 fallback');
         return this.getFallbackResult();
