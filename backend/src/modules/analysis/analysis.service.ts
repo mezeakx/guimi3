@@ -103,8 +103,9 @@ export class AnalysisService {
 
       const response = await axios.post(
         this.aiBaseUrl + '/chat/completions',
-        { model: 'deepseek-v4-flash',
+        { model: 'deepseek-v4-flash', temperature: 0.3,
           messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: data.message }],
+          max_tokens: 4096,
         },
         { headers: { Authorization: 'Bearer ' + this.aiApiKey, 'Content-Type': 'application/json' }, timeout: 90000 },
       );
@@ -313,6 +314,56 @@ export class AnalysisService {
           if (dedupedAll.length > 0) raw.replies = dedupedAll;
         }
 
+
+        // Auto-retry if AI returned wrong number of replies (must be exactly 5)
+        const replyCount = raw.replies && Array.isArray(raw.replies) ? raw.replies.length : 0;
+        if (replyCount !== 5) {
+          this.logger.warn('AI returned ' + replyCount + ' replies, expected 5. Retrying...');
+          const retryResponse = await axios.post(
+            this.aiBaseUrl + '/chat/completions',
+            { model: 'deepseek-v4-flash', temperature: 0.3,
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: data.message + '\n\n【重要提醒】你上一次回复的 replies 数组数量不正确（' + replyCount + ' 条，应为 5 条）。请重新生成，确保恰好 5 条不同的回复。' }
+              ],
+              max_tokens: 4096,
+            },
+            { headers: { Authorization: 'Bearer ' + this.aiApiKey, 'Content-Type': 'application/json' }, timeout: 90000 },
+          );
+          const retryContent = retryResponse.data.choices?.[0]?.message?.content || '';
+          const retryReasoning = retryResponse.data.choices?.[0]?.message?.reasoning_content || '';
+          let retryJson = retryContent || '';
+          if (!retryJson && retryReasoning) {
+            const DQ_N = String.fromCharCode(34);
+            const SQ_N = String.fromCharCode(39);
+            const cleanReasoning = retryReasoning.replace(/[\u201C\u201D\uFF02]/g, DQ_N).replace(/[\u2018\u2019]/g, SQ_N);
+            for (let i = 0; i < cleanReasoning.length; i++) {
+              if (cleanReasoning[i] === '{') {
+                let depth = 0;
+                for (let j = i; j < cleanReasoning.length; j++) {
+                  if (cleanReasoning[j] === '{') depth++;
+                  else if (cleanReasoning[j] === '}') { depth--; if (depth === 0) { retryJson = cleanReasoning.substring(i, j + 1); break; } }
+                }
+                if (retryJson) break;
+              }
+            }
+          }
+          if (retryJson) {
+            try {
+              const retryRaw = JSON.parse(retryJson);
+              const retryCount = retryRaw.replies && Array.isArray(retryRaw.replies) ? retryRaw.replies.length : 0;
+              if (retryCount > 0) {
+                this.logger.log('Retry succeeded: got ' + retryCount + ' replies');
+                raw = retryRaw;
+                content = retryJson;
+              } else {
+                this.logger.warn('Retry also returned 0 replies, falling back');
+              }
+            } catch (retryParseError) {
+              this.logger.error('Retry JSON parse failed: ' + (retryParseError instanceof Error ? retryParseError.message : retryParseError));
+            }
+          }
+        }
 
         const outputText = [raw.thinking, raw.remind, ...(raw.replies?.map((r: any) => r.messages?.[0] || r.text) || [])].join('\n');
         try {
@@ -710,6 +761,13 @@ export class AnalysisService {
     prompt += '  ],\n';
     prompt += '  "communicationTip": "沟通雷区/建议说明（30字内")"\n';
     prompt += '}\n\n';
+
+    prompt += '## 回复数量强制要求（最重要！）\n\n';
+    prompt += '你必须生成恰好 5 条不同的回复建议，不多不少正好 5 条。\n';
+    prompt += 'replies 数组中必须有且仅有 5 个对象。\n';
+    prompt += '少于 5 条或超过 5 条都视为输出错误，会导致前端无法显示。\n';
+    prompt += '每条回复的模式名称必须不同，文案内容也必须不同。\n';
+    prompt += '如果不确定某条回复是否合适，宁可多写几句分析也不要省略回复。\n\n';
 
     prompt += '## 每条回复要求\n\n';
     prompt += '- 每条回复只生成 1 条文案（messages 数组只放 1 个元素）\n';
