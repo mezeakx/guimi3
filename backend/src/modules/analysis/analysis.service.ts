@@ -300,6 +300,7 @@ export class AnalysisService {
       }
 
       try {
+        this.logger.log('JSON content preview: ' + content.substring(0, 500));
         let raw: any = JSON.parse(content);
         // Deduplicate replies by text to prevent duplicate cards
         if (raw.replies && Array.isArray(raw.replies)) {
@@ -391,7 +392,19 @@ export class AnalysisService {
         }
 
         if (!raw.replies || !Array.isArray(raw.replies) || raw.replies.length === 0) {
-                    this.logger.warn('AI replies invalid, retrying from message.content');
+          // Try to recover replies from the original content before giving up
+          this.logger.log('AI replies empty, attempting recovery from content');
+          const recovered = this.fixTruncatedJson(content);
+          if (recovered) {
+            try {
+              const recoveredRaw: any = JSON.parse(recovered);
+              if (recoveredRaw.replies && Array.isArray(recoveredRaw.replies) && recoveredRaw.replies.length > 0) {
+                raw = recoveredRaw;
+                this.logger.log('Reply recovery from fixTruncatedJson succeeded');
+              }
+            } catch {}
+          }
+          this.logger.warn('AI replies invalid, retrying from message.content');
           const mc = response.data.choices?.[0]?.message?.content || '';
           if (mc) {
             let fc = mc.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
